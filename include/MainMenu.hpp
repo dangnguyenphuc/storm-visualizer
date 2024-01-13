@@ -9,7 +9,7 @@
 
 #define MAX_NUMBER_IN_MENU 3
 #define MENU_WIDTH WIN_WIDTH
-#define MENU_HEIGHT 12
+#define MENU_HEIGHT 20
 #define CHARACTER_SIZE MENU_HEIGHT
 
 #define TEXT_COLOR sf::Color::White
