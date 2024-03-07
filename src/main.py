@@ -48,6 +48,12 @@ def get_vertices_by_threshold(radar, threshold = 30, sweep = 3):
       vertices.append((sweep_gate_position[i][0], sweep_gate_position[i][1], sweep_gate_position[i][2]))
   return vertices
 
+def get_all_vertices_by_threshold(radar, threshold = 0):
+  vertices = []
+  for i in range(radar.nsweeps):
+    vertices += get_vertices_by_threshold(radar=radar, threshold=threshold,sweep=i)
+
+  return vertices
 
 day = '01/'
 path = '../Data/'
@@ -59,7 +65,7 @@ one_prt = [firstDir + fileName for fileName in os.listdir(firstDir)]
 two_prt = [secondDir + fileName for fileName in os.listdir(secondDir)]
 
 radar = pyart.io.read(one_prt[0])
-vertices = get_vertices_by_threshold(radar)
+vertices = get_all_vertices_by_threshold(radar, 30)
 
 # print(vertices)
 
