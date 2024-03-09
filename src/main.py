@@ -11,6 +11,8 @@ import pyart
 import cartopy.crs as ccrs
 import os
 
+from Radar import *
+
 
 def get_gate_set(sweep_num, radar):
     gates = radar.get_gate_x_y_z(sweep_num)
@@ -55,17 +57,9 @@ def get_all_vertices_by_threshold(radar, threshold = 0):
 
   return vertices
 
-day = '01/'
-path = '../Data/'
-data = [path + day + fileName for fileName in os.listdir(path + day)]
-data.sort()
-firstDir = path + day + '1_prt/'
-secondDir = path + day + '2_prt/'
-one_prt = [firstDir + fileName for fileName in os.listdir(firstDir)]
-two_prt = [secondDir + fileName for fileName in os.listdir(secondDir)]
 
-radar = pyart.io.read(one_prt[0])
-vertices = get_all_vertices_by_threshold(radar, 30)
+
+vertices = get_all_vertices_by_threshold(Radar(0).radar, 30)
 
 # print(vertices)
 
@@ -80,7 +74,10 @@ pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
 
 # Move "camera" back a bit
-glTranslatef(0.0, 0.0, -5)
+glTranslatef(0.0, 0.0, -5.0)
+
+# Rotate the cube
+glRotatef(-90, 1, 0, 0)  # Rotation angle and axis (x, y, z)
 
 # Main loop
 running = True
@@ -93,7 +90,7 @@ while running:
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     # Rotate the cube
-    glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
+    glRotatef(1, 0, 0, 1)  # Rotation angle and axis (x, y, z)
 
     # Draw the vertices (points)
     glBegin(GL_POINTS)
