@@ -10,6 +10,7 @@ import cartopy.crs as ccrs
 import os
 
 from Config import *
+# from UI import *
 
 class App:
 
@@ -32,7 +33,7 @@ class App:
 
   def setUpOpenGL(self):
     glClearColor(0.0, 0.0, 0.0, 1)
-    # glEnable(GL_DEPTH_TEST)
+    glEnable(GL_DEPTH_TEST)
 
   def setUpTimer(self):
     self.clock = pygame.time.Clock()
