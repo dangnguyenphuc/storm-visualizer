@@ -1,4 +1,5 @@
 import pygame
+from Config import *
 
 def drawTextOnScreen(surface, text, font, textColor, x, y):
 
@@ -6,18 +7,15 @@ def drawTextOnScreen(surface, text, font, textColor, x, y):
     surface.blit(img, (x,y))
 
 def convertGameTime2Minute(time):
-    minute = (time // FPS) // 60
-    second = (time // FPS) - 60 * minute
+    minute = (time // WINDOW_PROPERTIES.FPS) // 60
+    second = (time // WINDOW_PROPERTIES.FPS) - 60 * minute
     return "{:02d}:{:02d}".format(minute, second)
 
 class Timer:
-    def __init__(self, time ,fps=FPS):
-        self.time = time*FPS
-        self.currentTime = time*FPS
+    def __init__(self, time ,fps=WINDOW_PROPERTIES.FPS):
+        self.time = time*fps
+        self.currentTime = time*fps
         self.flag = False
-
-    def getFlag(self):
-        return self.flag
 
     def run(self):
         self.currentTime -= 1
@@ -29,12 +27,9 @@ class Timer:
         self.flag = False
         self.currentTime = self.time
 
-    def removeAndSetOtherTime(self, time, fps=FPS):
-        self.time = time*FPS
-        self.currentTime = time*FPS
+    def removeAndSetOtherTime(self, time, fps=WINDOW_PROPERTIES.FPS):
+        self.time = time*fps
+        self.currentTime = time*fps
         self.flag = False
-
-    def getTime(self):
-        return self.time//FPS
 
 

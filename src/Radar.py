@@ -12,6 +12,7 @@ class DIRECTORY:
 class DataManager:
 
   DATA = None
+  NUM_OF_FILES = 0
 
   @staticmethod
   def getAllDataFilePaths(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
@@ -31,6 +32,8 @@ class DataManager:
         mode
         + fileName for fileName in filePaths
         ]
+
+    DataManager.NUM_OF_FILES = len(filePaths)
 
     return filePaths
 
@@ -64,19 +67,33 @@ class DataManager:
 
 class Radar:
 
-  def __init__(self, fileIndex = 0):
+  def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     if not DataManager.DATA:
-      DataManager.DATA = DataManager.getAllDataFilePaths()
+      DataManager.DATA = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
 
-    self.radar = pyart.io.read(DataManager.DATA[0])
+    self.currentIndex = fileIndex
+    self.getRadar()
+
+  def getRadar(self):
+    self.data = pyart.io.read(DataManager.DATA[self.currentIndex])
+
+  def increaseIndex(self):
+    self.currentIndex += 1
+
+    if (self.currentIndex >= DataManager.NUM_OF_FILES):
+      self.currentIndex = 0
 
   def readDataFromFilePath(self, filePath: str):
-    self.radar = pyart.io.read(filePath)
+    self.data = pyart.io.read(filePath)
 
   def readDataFromOtherMode(self, mode: str, fileIndex: int = 0):
     data = DataManager.getAllDataFilePaths(mode = mode)
-    self.radar = pyart.io.read(data[fileIndex])
+    self.data = pyart.io.read(data[fileIndex])
 
   def readDataFromOtherDate(self, date: str, mode: str, fileIndex: int = 0):
     data = DataManager.getAllDataFilePaths(date = date, mode=mode)
-    self.radar = pyart.io.read(data[fileIndex])
+    self.data = pyart.io.read(data[fileIndex])
+
+  def update(self):
+    self.increaseIndex()
+    self.getRadar()
