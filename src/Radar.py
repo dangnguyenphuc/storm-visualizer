@@ -34,28 +34,33 @@ class DataManager:
 
     return filePaths
 
-    @staticmethod
-    def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-      if radarName == "NHB" and mode == "RAW":
-        data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
-        one_prt = []
-        two_prt = []
+  @staticmethod
+  def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+    print("Run splitData")
+    print
+    if radarName == "NHB/" and mode == "raw/":
+      data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
+      one_prt = []
+      two_prt = []
 
-        for i in range(len(data)):
-            if pyart.io.read(data[i]).instrument_parameters['prt_mode']['data'][0].decode() == 'fixed':
-              one_prt.append(data[i])
-            else: two_prt.append(data[i])
+      for i in range(len(data)):
+          if pyart.io.read(data[i]).instrument_parameters['prt_mode']['data'][0].decode() == 'fixed':
+            one_prt.append(data[i])
+          else: two_prt.append(data[i])
 
-        firstDir = filePath + radarName + date + '1_prt/'
-        secondDir = filePath + radarName + date + '2_prt/'
+      firstDir = filePath + radarName + date + '1_prt/'
+      secondDir = filePath + radarName + date + '2_prt/'
 
-        os.mkdir(firstDir)
-        os.mkdir(secondDir)
+      print("Creating firstDir at: ", firstDir)
+      print("Creating secondDir at: ", secondDir)
 
-        for i in one_prt:
-            os.rename(i, firstDir + i.split('/')[-1])
-        for i in two_prt:
-            os.rename(i, secondDir + i.split('/')[-1])
+      os.mkdir(firstDir)
+      os.mkdir(secondDir)
+
+      for i in one_prt:
+          os.rename(i, firstDir + i.split('/')[-1])
+      for i in two_prt:
+          os.rename(i, secondDir + i.split('/')[-1])
 
 class Radar:
 
@@ -75,4 +80,3 @@ class Radar:
   def readDataFromOtherDate(self, date: str, mode: str, fileIndex: int = 0):
     data = DataManager.getAllDataFilePaths(date = date, mode=mode)
     self.radar = pyart.io.read(data[fileIndex])
-
