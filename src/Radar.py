@@ -40,7 +40,6 @@ class DataManager:
   @staticmethod
   def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     print("Run splitData")
-    print
     if radarName == "NHB/" and mode == "raw/":
       data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
       one_prt = []
