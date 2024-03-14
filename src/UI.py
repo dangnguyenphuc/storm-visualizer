@@ -24,13 +24,13 @@ class Button:
         elif padding:
             if background:
                 self.rectangle.topleft = (
-                    SCREEN_WIDTH//2 - int(background.get_width()*scale)//2 - padding[0],
-                    SCREEN_HEIGHT//2 - int(background.get_height()*scale)//2 - padding[1]
+                    WINDOW_PROPERTIES.SCREEN_WIDTH//2 - int(background.get_width()*scale)//2 - padding[0],
+                    WINDOW_PROPERTIES.SCREEN_HEIGHT//2 - int(background.get_height()*scale)//2 - padding[1]
                 )
             else:
                 self.rectangle.topleft = (
-                    SCREEN_WIDTH//2 - int(width*scale)//2 - padding[0],
-                    SCREEN_HEIGHT//2 - int(height*scale)//2 - padding[1]
+                    WINDOW_PROPERTIES.SCREEN_WIDTH//2 - int(width*scale)//2 - padding[0],
+                    WINDOW_PROPERTIES.SCREEN_HEIGHT//2 - int(height*scale)//2 - padding[1]
                 )
         else:
             self.rectangle.topleft = (0,0)
@@ -93,7 +93,7 @@ class Slider:
     if self.containerBackground:
       surface.blit(self.containerBackground, (self.containerBackgroundRect.x , self.containerBackgroundRect.y))
     else:
-      pygame.draw.rect(surface, "white", self.containerRect)
+      pygame.draw.rect(surface, "green", self.containerRect)
 
     pygame.draw.rect(surface, "darkgrey", self.buttonRect)
 
@@ -103,7 +103,7 @@ class Slider:
         str(self.getValue()),
         font,
         textColor,
-        self.containerRect.right + SLIDER_FONT_SIZE,
+        self.containerRect.right + FONT.FONTSIZE["SLIDER_FONT_SIZE"],
         self.containerRect.top
       )
 
@@ -130,12 +130,12 @@ class Menu:
             self.y = xy[1]
         elif menuBackground:
             #center align
-            self.x = SCREEN_WIDTH // 2 - menuBackground.get_width() // 2
-            self.y = SCREEN_HEIGHT // 2 - menuBackground.get_height() // 2
+            self.x = WINDOW_PROPERTIES.SCREEN_WIDTH // 2 - menuBackground.get_width() // 2
+            self.y = WINDOW_PROPERTIES.SCREEN_HEIGHT // 2 - menuBackground.get_height() // 2
         else:
             #center align
-            self.x = SCREEN_WIDTH // 2 - size[0] // 2
-            self.y = SCREEN_HEIGHT // 2 - size[1] // 2
+            self.x = WINDOW_PROPERTIES.SCREEN_WIDTH // 2 - size[0] // 2
+            self.y = WINDOW_PROPERTIES.SCREEN_HEIGHT // 2 - size[1] // 2
 
         self.isDisplay = False
         self.buttonsValue = [False] * len(buttons)

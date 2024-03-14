@@ -2,4 +2,22 @@ class WINDOW_PROPERTIES:
   SCREEN_WIDTH = 1000
   SCREEN_HEIGHT = 800
 
+  ASSETS_DIR = "assets/"
+
   FPS = 60
+
+class FONT:
+  JETBRAINS_MONO = WINDOW_PROPERTIES.ASSETS_DIR + "font/JetBrainsMonoNerdFontMono-Regular.ttf"
+  OPENDYSLEXIC = WINDOW_PROPERTIES.ASSETS_DIR + "font/OpenDyslexicAltNerdFont-Bold.otf"
+  BIGBLUETERMPLUS = WINDOW_PROPERTIES.ASSETS_DIR + "font/BigBlueTermPlusNerdFont-Regular.ttf"
+
+  FONTSIZE = {
+    "INTRO_FONT_SIZE":  20,
+    "BUTTON_FONT_SIZE": 40,
+    "SLIDER_FONT_SIZE": 20,
+    "TEXT_FONT_SIZE": 25
+  }
+
+class COLOR:
+  TEXT = (255,255,255,1)
+
