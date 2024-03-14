@@ -40,7 +40,7 @@ class App:
 
   def update(self):
     # Rotate
-    # glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
+    glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
 
     self.runTimers()
 

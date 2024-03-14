@@ -5,6 +5,9 @@ from OpenGL.GLU import *
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
+from functools import partial
+import multiprocessing
+
 class VertexPoint:
   def __init__(self, index = 0, threshold = 0):
     self.setUpRadar(index=index)
@@ -54,22 +57,30 @@ class VertexPoint:
     return self.radar.data.fields['reflectivity']['data'][start_ray_index : end_ray_index+1].flatten()
 
   def get_vertices_by_threshold(self, threshold = 0, sweep = 0):
+    print("running sweep", sweep)
     sweep_gate_position = self.get_gate_set(sweep)
 
     # scale
-    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     sweep_gate_position = scaler.fit_transform(sweep_gate_position)
 
     sweep_gate_reflectivies = self.get_gate_reflectivity(sweep)
     vertices = []
     for i in range(len(sweep_gate_reflectivies)):
       if sweep_gate_reflectivies[i] >= threshold:
-        vertices.append((sweep_gate_position[i][0], sweep_gate_position[i][1], sweep_gate_position[i][2]))
+        vertices.append(sweep_gate_position[i][0])
+        vertices.append(sweep_gate_position[i][1])
+        vertices.append(sweep_gate_position[i][2])
     return vertices
 
   def get_all_vertices_by_threshold(self, threshold = 0):
-    vertices = []
-    for i in range(self.radar.data.nsweeps):
-      vertices += self.get_vertices_by_threshold(threshold=threshold,sweep=i)
+    # Create a pool of processes (adjust num_processes as needed)
+    with multiprocessing.Pool(processes=self.radar.data.nsweeps) as pool:
+      # Calculate squares in parallel and collect results
+      vertices = pool.starmap(
+        self.get_vertices_by_threshold,                           # function
+        [(threshold, i) for i in range(self.radar.data.nsweeps)]  # arguments
+      )
+      pool.close()
 
     return vertices
