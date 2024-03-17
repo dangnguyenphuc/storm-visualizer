@@ -197,7 +197,7 @@ class App:
                     running = False
 
             #update cube
-            self.cube.update()
+            # self.cube.update()
 
             #refresh screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -233,13 +233,10 @@ class CubeMesh:
         """
 
         # Vertices for a cube
-        self.timer = Timer(1)
-        self.vertex = VertexPoint()
+        self.timer = Timer(0.5)
+        self.vertex = VertexPoint(threshold=35)
 
-        vertices = []
-        for i in self.vertex.vertices:
-          vertices += i
-        vertices = np.array(vertices, dtype=np.float32)
+        vertices = np.array(self.vertex.vertices, dtype=np.float32)
         self.vertex_count = len(vertices) // 3
         self.vao = glGenVertexArrays(1)
         glBindVertexArray(self.vao)
@@ -259,11 +256,7 @@ class CubeMesh:
 
         if self.timer.flag:
           self.vertex.update()
-
-          vertices = []
-          for i in self.vertex.vertices:
-            vertices += i
-          vertices = np.array(vertices, dtype=np.float32)
+          vertices = np.array(self.vertex.vertices, dtype=np.float32)
           self.vertex_count = len(vertices) // 3
           glBindVertexArray(self.vao)
 
