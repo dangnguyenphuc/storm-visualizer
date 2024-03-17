@@ -6,22 +6,27 @@ from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
 from functools import partial
-import multiprocessing
+import concurrent.futures
 
 class VertexPoint:
   def __init__(self, index = 0, threshold = 0):
     self.setUpRadar(index=index)
-    self.getVertices(threshold)
+    self.setUpThreshold(threshold)
+    self.getVertices()
 
   def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     self.radar = Radar(index, filePath, radarName, date, mode)
 
-  def getVertices(self, threshold = 0):
-    self.vertices = self.get_all_vertices_by_threshold(threshold)
+  def setUpThreshold(self, threshold = 0):
+    self.threshold = threshold
+    self.getVertices()
 
-  def update(self, threshold = 0):
+  def getVertices(self):
+    self.vertices = self.get_all_vertices_by_threshold()
+
+  def update(self):
     self.radar.update()
-    self.getVertices(threshold)
+    self.getVertices()
 
   def draw(self):
     # Draw the vertices (points)
@@ -56,7 +61,7 @@ class VertexPoint:
 
     return self.radar.data.fields['reflectivity']['data'][start_ray_index : end_ray_index+1].flatten()
 
-  def get_vertices_by_threshold(self, threshold = 0, sweep = 0):
+  def get_vertices_by_threshold(self, sweep = 0):
     print("running sweep", sweep)
     sweep_gate_position = self.get_gate_set(sweep)
 
@@ -67,20 +72,21 @@ class VertexPoint:
     sweep_gate_reflectivies = self.get_gate_reflectivity(sweep)
     vertices = []
     for i in range(len(sweep_gate_reflectivies)):
-      if sweep_gate_reflectivies[i] >= threshold:
+      if sweep_gate_reflectivies[i] >= self.threshold:
         vertices.append(sweep_gate_position[i][0])
         vertices.append(sweep_gate_position[i][1])
         vertices.append(sweep_gate_position[i][2])
     return vertices
 
-  def get_all_vertices_by_threshold(self, threshold = 0):
-    # Create a pool of processes (adjust num_processes as needed)
-    with multiprocessing.Pool(processes=self.radar.data.nsweeps) as pool:
-      # Calculate squares in parallel and collect results
-      vertices = pool.starmap(
-        self.get_vertices_by_threshold,                           # function
-        [(threshold, i) for i in range(self.radar.data.nsweeps)]  # arguments
-      )
-      pool.close()
+  def get_all_vertices_by_threshold(self):
+    all_vertices = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        # Use ThreadPoolExecutor.map for simplified management
+        nsweeps = self.radar.data.nsweeps
+        futures = executor.map(self.get_vertices_by_threshold, range(nsweeps))
 
-    return vertices
+        # Iterate through results
+        for result in futures:
+            all_vertices.extend(result)
+
+    return all_vertices
