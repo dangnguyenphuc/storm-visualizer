@@ -5,8 +5,8 @@ from OpenGL.GLU import *
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
-from functools import partial
-import concurrent.futures
+# from functools import partial
+# import concurrent.futures
 
 class VertexPoint:
   def __init__(self, index = 0, threshold = 0):
@@ -19,10 +19,10 @@ class VertexPoint:
 
   def setUpThreshold(self, threshold = 0):
     self.threshold = threshold
-    self.getVertices()
 
   def getVertices(self):
     self.vertices = self.get_all_vertices_by_threshold()
+    # print("Nums to render:", len(self.vertices))
 
   def update(self):
     self.radar.update()
@@ -39,54 +39,53 @@ class VertexPoint:
     self.radar = None
     self.vertices = []
 
-  def get_gate_set(self, sweep_num):
-    gates = self.radar.data.get_gate_x_y_z(sweep_num)
-
-    gate_set = []
-    for i in range(len(gates[0])):
-        for j in range(len(gates[0][i])):
-            gate_set += [
-                    [
-                        gates[0][i][j],     #   X
-                        gates[1][i][j],     #   Y
-                        gates[2][i][j]      #   Z
-                    ]
-                ]
-    gate_set = np.array(gate_set)
-    return gate_set
-
   def get_gate_reflectivity(self, sweep_num):
     start_ray_index = self.radar.data.sweep_start_ray_index['data'][sweep_num]
     end_ray_index = self.radar.data.sweep_end_ray_index['data'][sweep_num]
 
     return self.radar.data.fields['reflectivity']['data'][start_ray_index : end_ray_index+1].flatten()
 
-  def get_vertices_by_threshold(self, sweep = 0):
-    print("running sweep", sweep)
-    sweep_gate_position = self.get_gate_set(sweep)
+  def get_vertices_positionX(self, indices=None):
+    if indices:
+      return self.radar.data.gate_x["data"][indices]
+    else:  return self.radar.data.gate_x["data"]
 
-    # scale
-    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-    sweep_gate_position = scaler.fit_transform(sweep_gate_position)
+  def get_vertices_positionY(self, indices=None):
+    if indices:
+      return self.radar.data.gate_y["data"][indices]
+    else:  return self.radar.data.gate_y["data"]
 
-    sweep_gate_reflectivies = self.get_gate_reflectivity(sweep)
-    vertices = []
-    for i in range(len(sweep_gate_reflectivies)):
-      if sweep_gate_reflectivies[i] >= self.threshold:
-        vertices.append(sweep_gate_position[i][0])
-        vertices.append(sweep_gate_position[i][1])
-        vertices.append(sweep_gate_position[i][2])
-    return vertices
+  def get_vertices_positionZ(self, indices=None):
+    if indices:
+      return self.radar.data.gate_z["data"][indices]
+    else:  return self.radar.data.gate_z["data"]
+
+  def get_vertices_position(self, scaler):
+    return scaler.fit_transform(
+      np.column_stack(
+        (
+          self.radar.data.gate_x["data"].flatten(),
+          self.radar.data.gate_y["data"].flatten(),
+          self.radar.data.gate_z["data"].flatten()
+        )
+      )
+    )
 
   def get_all_vertices_by_threshold(self):
-    all_vertices = []
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        # Use ThreadPoolExecutor.map for simplified management
-        nsweeps = self.radar.data.nsweeps
-        futures = executor.map(self.get_vertices_by_threshold, range(nsweeps))
+    # all_vertices = []
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     # Use ThreadPoolExecutor.map for simplified management
+    #     nsweeps = self.radar.data.nsweeps
+    #     futures = executor.map(self.get_vertices_by_threshold, range(nsweeps))
 
-        # Iterate through results
-        for result in futures:
-            all_vertices.extend(result)
+    #     # Iterate through results
+    #     for result in futures:
+    #         all_vertices.extend(result)
 
-    return all_vertices
+    # return all_vertices
+    reflectivity = self.radar.data.fields['reflectivity']['data'].flatten()
+
+    indices = np.where(np.logical_and(np.logical_not(reflectivity.mask), reflectivity.data >= self.threshold))
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    vertices = self.get_vertices_position(scaler)
+    return vertices[indices].flatten()
