@@ -1,10 +1,3 @@
-# from App import *
-
-# if __name__ == "__main__":
-#   app = App()
-#   app.run()
-#   app.destroy()
-
 import pygame as pg
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram,compileShader
@@ -130,6 +123,7 @@ class App:
         pg.display.gl_set_attribute(pg.GL_CONTEXT_PROFILE_MASK,
                                     pg.GL_CONTEXT_PROFILE_CORE)
         pg.display.set_mode((640,480), pg.OPENGL|pg.DOUBLEBUF)
+        pg.display.set_caption("RADAR 3D VISUALIZATION")
 
     def _set_up_timer(self) -> None:
         """
@@ -197,7 +191,7 @@ class App:
                     running = False
 
             #update cube
-            # self.cube.update()
+            self.cube.update()
 
             #refresh screen
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -233,17 +227,15 @@ class CubeMesh:
         """
 
         # Vertices for a cube
-        self.timer = Timer(0.5)
-        self.vertex = VertexPoint(threshold=35)
-
-        vertices = np.array(self.vertex.vertices, dtype=np.float32)
-        self.vertex_count = len(vertices) // 3
+        self.timer = Timer(1)
+        self.vertex = VertexPoint()
+        self.vertex_count = len(self.vertex.vertices) // 3
         self.vao = glGenVertexArrays(1)
         glBindVertexArray(self.vao)
 
         self.vbo = glGenBuffers(1)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-        glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, self.vertex.vertices.nbytes, self.vertex.vertices, GL_STATIC_DRAW)
 
         glEnableVertexAttribArray(0)
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
@@ -255,16 +247,14 @@ class CubeMesh:
         self.timer.run()
 
         if self.timer.flag:
-          self.vertex.update()
-          vertices = np.array(self.vertex.vertices, dtype=np.float32)
-          self.vertex_count = len(vertices) // 3
-          glBindVertexArray(self.vao)
+            self.vertex.update()
+            self.vertex_count = len(self.vertex.vertices) // 3
+            glBindVertexArray(self.vao)
 
-          glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-          glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+            glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+            glBufferData(GL_ARRAY_BUFFER, self.vertex.vertices.nbytes, self.vertex.vertices, GL_STATIC_DRAW)
 
-          self.timer.reset()
-
+            self.timer.reset()
 
         glBindVertexArray(self.vao)
 
