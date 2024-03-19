@@ -43,20 +43,20 @@ class Entity:
             Update the object, this is hard coded for now.
         """
 
-        self.eulers[2] += 0.25
+        self.eulers[0] += 0.25
 
-        if self.eulers[2] > 360:
-            self.eulers[2] -= 360
+        if self.eulers[0] > 360:
+            self.eulers[0] -= 360
 
     def updateZ(self) -> None:
         """
             Update the object, this is hard coded for now.
         """
 
-        self.eulers[0] += 0.25
+        self.eulers[2] += 0.25
 
-        if self.eulers[0] > 360:
-            self.eulers[0] -= 360
+        if self.eulers[2] > 360:
+            self.eulers[2] -= 360
 
     def getModelTransform(self, index = 1) -> np.ndarray:
         """
@@ -66,14 +66,35 @@ class Entity:
 
         model_transform = pyrr.matrix44.create_identity(dtype=np.float32)
 
-        axis = [0,0,0]
-        axis[index] = 1
+        # axis = [0,0,0]
+        # axis[index] = 1
+        # model_transform = pyrr.matrix44.multiply(
+        #     m1=model_transform,
+        #     m2=pyrr.matrix44.create_from_axis_rotation(
+        #         axis = axis,
+        #         theta = np.radians(self.eulers[1]),
+        #         dtype = np.float32
+        #     )
+        # )
+
+        # Rotate around Y-axis by -90 degrees (or 270 degrees)
+        if index == 1:
+            model_transform = pyrr.matrix44.multiply(
+                m1=model_transform,
+                m2=pyrr.matrix44.create_from_axis_rotation(
+                    axis=[1, 0, 0],  # X-axis
+                    theta=np.radians(-90),  # Rotate -90 degrees around Y-axis
+                    dtype=np.float32
+                )
+            )
+
+        # Rotate around X-axis
         model_transform = pyrr.matrix44.multiply(
             m1=model_transform,
             m2=pyrr.matrix44.create_from_axis_rotation(
-                axis = axis,
-                theta = np.radians(self.eulers[1]),
-                dtype = np.float32
+                axis=[0, 1, 0],  # X-axis
+                theta=np.radians(self.eulers[1]),  # Rotate around X-axis based on entity's rotation
+                dtype=np.float32
             )
         )
 

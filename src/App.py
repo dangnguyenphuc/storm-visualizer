@@ -31,7 +31,7 @@ class App:
   def createAsset(self):
     self.entity = Entity(
                   position = [0,0,-3],
-                  eulers = [0,0,0]
+                  eulers = [0,-90,0]
                 )
 
     self.vertex = VertexPoint()
@@ -54,6 +54,7 @@ class App:
         near = 1.0, far = 10, dtype=np.float32
     )
 
+    # assign projection_transform to SHADER SCRIPT
     glUniformMatrix4fv(
         glGetUniformLocation(self.shader,"projection"),
         1, GL_FALSE, projection_transform
@@ -69,6 +70,9 @@ class App:
 
 
   def setUpPyGame(self):
+    """
+        PyGame Initilization
+    """
     pygame.init()
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
     pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
@@ -79,6 +83,9 @@ class App:
 
 
   def setUpOpenGL(self):
+    """
+        PyOpenGL default setups
+    """
     glClearColor(0.0, 0.0, 0.0, 1)
     glEnable(GL_DEPTH_TEST)
 
@@ -87,9 +94,9 @@ class App:
     self.switchFrameTimer = Timer(1)
 
   def update(self):
-    # Rotate
-    # glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
-    self.entity.updateY()
+    """
+    App update Logic
+    """
 
     self.runTimers()
 
@@ -100,16 +107,33 @@ class App:
   def runTimers(self):
     self.switchFrameTimer.run()
 
+  def getModelTransform(self, index=1):
+    """
+    @param:
+      + index: range(0,3)
+        - 0: for x axis
+        - 1: for y axis
+        - 2: for z axis
+    """
+    self.entity.updateY()
+
+    glUniformMatrix4fv(
+        self.modelMatrixLocation, 1, GL_FALSE,
+        self.entity.getModelTransform(index)
+    )
+
+
   def render(self):
+    """
+    Draw all entities
+    """
+
     # Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
     glUseProgram(self.shader)
 
-    glUniformMatrix4fv(
-        self.modelMatrixLocation, 1, GL_FALSE,
-        self.entity.getModelTransform()
-    )
+    self.getModelTransform(1)
 
     self.vertex.arm()
     self.vertex.draw()
@@ -118,7 +142,10 @@ class App:
     pygame.display.flip()
 
   def limitFrameRate(self):
-    # Limit frame rate
+    """
+    Limit frame rate
+    """
+
     self.clock.tick(WINDOW_PROPERTIES.FPS)
 
   def run(self):
