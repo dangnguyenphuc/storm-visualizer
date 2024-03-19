@@ -3,7 +3,7 @@ from pygame.locals import *
 
 from Config import *
 from Vertex import *
-from Utils import *
+from Utils import create_shader, Timer
 # from UI import *
 
 class App:
@@ -13,26 +13,74 @@ class App:
   THREE_DIM_SCREEN = 1
 
   def __init__(self):
-    self.appState = App.THREE_DIM_SCREEN
-    self.setUpPyGame()
-    self.setUpTimer()
-    self.setUpVertices()
 
-  def setUpVertices(self):
+    self.appState = App.THREE_DIM_SCREEN
+
+    self.setUpPyGame()
+
+    self.setUpTimer()
+
+    self.setUpOpenGL()
+
+    self.createAsset()
+
+    self.setOnetimeUniforms()
+
+    self.getUniformLocations()
+
+  def createAsset(self):
+    self.entity = Entity(
+                  position = [0,0,-3],
+                  eulers = [0,0,0]
+                )
+
     self.vertex = VertexPoint()
+
+    self.shader = create_shader(
+                    vertex_filepath = "shaders/vertex.txt",
+                    fragment_filepath = "shaders/fragment.txt"
+                  )
+
+  def setOnetimeUniforms(self) -> None:
+    """
+        Some shader data only needs to be set once.
+    """
+
+    glUseProgram(self.shader)
+
+    # Use orthographic projection
+    projection_transform = pyrr.matrix44.create_perspective_projection(
+        fovy = 45, aspect = WINDOW_PROPERTIES.SCREEN_WIDTH/WINDOW_PROPERTIES.SCREEN_HEIGHT,
+        near = 1.0, far = 10, dtype=np.float32
+    )
+
+    glUniformMatrix4fv(
+        glGetUniformLocation(self.shader,"projection"),
+        1, GL_FALSE, projection_transform
+    )
+
+  def getUniformLocations(self) -> None:
+    """
+        Query and store the locations of shader uniforms
+    """
+
+    glUseProgram(self.shader)
+    self.modelMatrixLocation = glGetUniformLocation(self.shader,"model")
+
 
   def setUpPyGame(self):
     pygame.init()
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MAJOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_MINOR_VERSION, 3)
+    pygame.display.gl_set_attribute(pygame.GL_CONTEXT_PROFILE_MASK,
+                                pygame.GL_CONTEXT_PROFILE_CORE)
     pygame.display.set_mode((WINDOW_PROPERTIES.SCREEN_WIDTH, WINDOW_PROPERTIES.SCREEN_HEIGHT), pygame.OPENGL|pygame.DOUBLEBUF)
+    pygame.display.set_caption("RADAR 3D VISUALIZATION")
+
 
   def setUpOpenGL(self):
-    # Set up the OpenGL perspective
-    gluPerspective(0, (WINDOW_PROPERTIES.SCREEN_WIDTH / WINDOW_PROPERTIES.SCREEN_HEIGHT), 0.1, 50.0)
-
-    # Move "camera" back a bit
-    glTranslatef(0.0, 0.0, -5.0)
     glClearColor(0.0, 0.0, 0.0, 1)
-    # glRotatef(-90, 1, 0, 0)  # Rotation angle and axis (x, y, z)
+    glEnable(GL_DEPTH_TEST)
 
   def setUpTimer(self):
     self.clock = pygame.time.Clock()
@@ -40,7 +88,8 @@ class App:
 
   def update(self):
     # Rotate
-    glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
+    # glRotatef(1, 0, 1, 0)  # Rotation angle and axis (x, y, z)
+    self.entity.updateY()
 
     self.runTimers()
 
@@ -55,7 +104,14 @@ class App:
     # Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
-    # Draw vertices
+    glUseProgram(self.shader)
+
+    glUniformMatrix4fv(
+        self.modelMatrixLocation, 1, GL_FALSE,
+        self.entity.getModelTransform()
+    )
+
+    self.vertex.arm()
     self.vertex.draw()
 
     # Update the display
@@ -81,4 +137,5 @@ class App:
           self.appState = App.EXIT
 
   def destroy(self):
+    self.vertex.clear()
     pygame.quit()
