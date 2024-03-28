@@ -37,8 +37,8 @@ class App:
     self.vertex = VertexPoint()
 
     self.shader = create_shader(
-                    vertex_filepath = "shaders/vertex.txt",
-                    fragment_filepath = "shaders/fragment.txt"
+                    vertex_filepath = "../shaders/vertex.txt",
+                    fragment_filepath = "../shaders/fragment.txt"
                   )
 
   def setOnetimeUniforms(self) -> None:
