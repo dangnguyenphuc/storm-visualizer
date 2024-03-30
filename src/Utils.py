@@ -1,4 +1,3 @@
-import pygame
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
@@ -33,11 +32,6 @@ def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
                             compileShader(fragment_src, GL_FRAGMENT_SHADER))
 
     return shader
-
-def drawTextOnScreen(surface, text, font, textColor, x, y):
-
-    img = font.render(text, True, textColor)
-    surface.blit(img, (x,y))
 
 def convertGameTime2Minute(time):
     minute = (time // WINDOW_PROPERTIES.FPS) // 60
