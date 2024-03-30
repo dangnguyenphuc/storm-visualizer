@@ -1,11 +1,23 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
-
+from Object3d import GLWidget
+from PyQt5 import QtCore    
+from PyQt5 import QtWidgets       
 from sidebar_ui import Ui_MainWindow
+import sys                   
+
+
 
 
 class MainWindow(QMainWindow):
+    """
+    DashBoard contains side bar.
+    We implement behaviors of dashboard here.
+
+    Args:
+        QMainWindow (QWidget): Main widget
+    """
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -15,7 +27,11 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
-
+        self.initGL()
+        timer = QtCore.QTimer(self)
+        timer.setInterval(20)   # period, in milliseconds
+        timer.timeout.connect(self.glWidget.updateGL)
+        timer.start()
     ## Function for searching
     def on_search_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(5)
@@ -45,7 +61,7 @@ class MainWindow(QMainWindow):
     
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
-
+        
     def on_dashborad_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
@@ -70,26 +86,39 @@ class MainWindow(QMainWindow):
     def on_customers_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(4)
 
+    def initGL(self):
+        self.ui.gridLayout_3.removeWidget(self.ui.page_2)
+        self.ui.gridLayout_3.removeWidget(self.ui.label_5)
+        self.glWidget = GLWidget(self)
+        self.ui.gridLayout_3.addWidget(self.glWidget)
+        sliderX = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        sliderX.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+
+        sliderY = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        sliderY.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+
+        sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))     
+        self.ui.gridLayout_3.addWidget(sliderX)
+        self.ui.gridLayout_3.addWidget(sliderY)
+        self.ui.gridLayout_3.addWidget(sliderZ)
+
+def loadStyle(QApplication):
+    """
+    load style file for application
+    Args:
+        QApplication (QtGui.QGuiApplication): our application
+    """
+    style_file = QFile("./style/style.qss")
+    style_file.open(QFile.ReadOnly | QFile.Text)
+    style_stream = QTextStream(style_file)
+    QApplication.setStyleSheet(style_stream.readAll())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-
-    ## loading style file
-    # with open("style.qss", "r") as style_file:
-    #     style_str = style_file.read()
-    # app.setStyleSheet(style_str)
-
-    ## loading style file, Example 2
-    style_file = QFile("style.qss")
-    style_file.open(QFile.ReadOnly | QFile.Text)
-    style_stream = QTextStream(style_file)
-    app.setStyleSheet(style_stream.readAll())
-
-
+    loadStyle(app)
     window = MainWindow()
     window.show()
-
     sys.exit(app.exec())
-
 
 
