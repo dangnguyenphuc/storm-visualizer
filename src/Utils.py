@@ -2,8 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL.shaders import compileProgram,compileShader
-
-from Config import *
+import numpy as np
+from matplotlib import cm
 
 def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     """
@@ -33,15 +33,31 @@ def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
 
     return shader
 
-def convertGameTime2Minute(time):
-    minute = (time // WINDOW_PROPERTIES.FPS) // 60
-    second = (time // WINDOW_PROPERTIES.FPS) - 60 * minute
-    return "{:02d}:{:02d}".format(minute, second)
+def color(value):
+    """
+    Generate colors based on input values.
+
+    Args:
+        value: Array of values.
+
+    Returns:
+        colors: Array of RGB colors corresponding to input values.
+    """
+    # Normalize values to range [0, 1]
+    normalized_values = (value - 0) / (80 - 0)
+
+    # Map normalized values to RGB colors
+    # Here is a simple example, you can modify this for your specific color scheme
+    colors = np.zeros((len(value), 3))
+    colors[:, 0] = 1.0 - normalized_values # Red channel
+    colors[:, 1] = normalized_values        # Green channel
+    colors[:, 2] = 1.0       # Blue channel
+    return colors
 
 class Timer:
-    def __init__(self, time ,fps=WINDOW_PROPERTIES.FPS):
-        self.time = time*fps
-        self.currentTime = time*fps
+    def __init__(self, time):
+        self.time = time
+        self.currentTime = time
         self.flag = False
 
     def run(self):
@@ -54,9 +70,9 @@ class Timer:
         self.flag = False
         self.currentTime = self.time
 
-    def removeAndSetOtherTime(self, time, fps=WINDOW_PROPERTIES.FPS):
-        self.time = time*fps
-        self.currentTime = time*fps
+    def removeAndSetOtherTime(self, time):
+        self.time = time
+        self.currentTime = time
         self.flag = False
 
 

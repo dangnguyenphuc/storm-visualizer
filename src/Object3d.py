@@ -12,6 +12,7 @@ from OpenGL.arrays import vbo
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from Radar import *
+from Utils import color
 
 
 class GLWidget(QtOpenGL.QGLWidget):
@@ -58,21 +59,33 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
 
-        gl.glColor3f(1.0, 1.0, 1.0)  # Set color to white (R, G, B)
+        # gl.glColor3f(1.0, 1.0, 1.0)  # Set color to white (R, G, B)
         gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glEnableClientState(gl.GL_COLOR_ARRAY)
 
-        gl.glVertexPointer(3, gl.GL_FLOAT, 0, self.vbo)
+        gl.glVertexPointer(3, gl.GL_FLOAT, 0, self.vertVBO)
+        gl.glColorPointer(3, gl.GL_FLOAT, 0, self.colorVBO)
 
         gl.glDrawElements(gl.GL_POINTS, len(self.vertices//3), gl.GL_UNSIGNED_INT, self.vertexIndex)
 
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glDisableClientState(gl.GL_COLOR_ARRAY)
 
         gl.glPopMatrix()    # restore the previous modelview matrix
 
     def setVertices(self):
-        self.vertices = self.get_all_vertices_by_threshold()
-        self.vbo = vbo.VBO(self.vertices.astype(np.float32))
-        self.vbo.bind()
+        v = self.get_all_vertices_by_threshold()
+
+
+        self.vertices = v['position']
+        self.vertVBO = vbo.VBO(self.vertices.astype(np.float32))
+        self.vertVBO.bind()
+
+        self.colorArray = v['color']
+        self.colorVBO = vbo.VBO(v['color'].astype(np.float32))
+        self.colorVBO.bind()
+        print(self.colorArray)
+
 
         self.vertexIndex = np.array(range(len(self.vertices)))
 
@@ -117,4 +130,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         indices = np.where(np.logical_and(np.logical_not(reflectivity.mask), reflectivity.data >= self.threshold))
         scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
         vertices = self.get_vertices_position(scaler)
-        return vertices[indices].flatten()
+        return {
+            'position': vertices[indices].flatten(),
+            'color': color(reflectivity[indices]).flatten()
+        }

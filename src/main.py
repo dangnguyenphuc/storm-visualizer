@@ -2,10 +2,10 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from Object3d import GLWidget
-from PyQt5 import QtCore    
-from PyQt5 import QtWidgets       
+from PyQt5 import QtCore
+from PyQt5 import QtWidgets
 from sidebar_ui import Ui_MainWindow
-import sys                   
+import sys
 
 
 
@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        
+
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
@@ -47,21 +47,21 @@ class MainWindow(QMainWindow):
     def on_stackedWidget_currentChanged(self, index):
         btn_list = self.ui.icon_only_widget.findChildren(QPushButton) \
                     + self.ui.full_menu_widget.findChildren(QPushButton)
-        
+
         for btn in btn_list:
             if index in [5, 6]:
                 btn.setAutoExclusive(False)
                 btn.setChecked(False)
             else:
                 btn.setAutoExclusive(True)
-            
+
     ## functions for changing menu page
     def on_home_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
-    
+
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
-        
+
     def on_dashborad_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         sliderY.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
 
         sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))     
+        sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
         self.ui.gridLayout_3.addWidget(sliderX)
         self.ui.gridLayout_3.addWidget(sliderY)
         self.ui.gridLayout_3.addWidget(sliderZ)
@@ -120,5 +120,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
-
