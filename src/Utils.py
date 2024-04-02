@@ -44,14 +44,15 @@ def color(value):
         colors: Array of RGB colors corresponding to input values.
     """
     # Normalize values to range [0, 1]
-    normalized_values = (value - 0) / (80 - 0)
+
+    normalized_values = (value - 0) / (65 - 0)
 
     # Map normalized values to RGB colors
     # Here is a simple example, you can modify this for your specific color scheme
     colors = np.zeros((len(value), 3))
-    colors[:, 0] = 1.0 - normalized_values # Red channel
+    colors[:, 0] = 0.2 + normalized_values # Red channel
     colors[:, 1] = normalized_values        # Green channel
-    colors[:, 2] = 1.0       # Blue channel
+    colors[:, 2] = 0.6-normalized_values     # Blue channel
     return colors
 
 class Timer:
