@@ -87,21 +87,23 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(4)
 
     def initGL(self):
-        self.ui.gridLayout_3.removeWidget(self.ui.page_2)
-        self.ui.gridLayout_3.removeWidget(self.ui.label_5)
+        self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
+        # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
         self.glWidget = GLWidget(self)
-        self.ui.gridLayout_3.addWidget(self.glWidget)
+        self.ui.verticalLayout_6.insertWidget(0, self.glWidget)
+        
         sliderX = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         sliderX.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+        self.ui.horizontalSlider.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
 
         sliderY = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         sliderY.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+        self.ui.horizontalSlider_2.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
 
         sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
-        self.ui.gridLayout_3.addWidget(sliderX)
-        self.ui.gridLayout_3.addWidget(sliderY)
-        self.ui.gridLayout_3.addWidget(sliderZ)
+        self.ui.horizontalSlider_3.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+
 
 def loadStyle(QApplication):
     """
