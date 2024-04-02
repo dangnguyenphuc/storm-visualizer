@@ -91,17 +91,11 @@ class MainWindow(QMainWindow):
         # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
         self.glWidget = GLWidget(self)
         self.ui.verticalLayout_6.insertWidget(0, self.glWidget)
-        
-        sliderX = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderX.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+
         self.ui.horizontalSlider.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
 
-        sliderY = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderY.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
         self.ui.horizontalSlider_2.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
 
-        sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
         self.ui.horizontalSlider_3.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
 
 
