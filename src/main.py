@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         self.ui.home_btn_2.setChecked(True)
         self.initGL()
         timer = QtCore.QTimer(self)
-        timer.setInterval(20)   # period, in milliseconds
+        timer.setInterval(10)   # period, in milliseconds
         timer.timeout.connect(self.glWidget.updateGL)
         timer.start()
     ## Function for searching
@@ -87,27 +87,17 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(4)
 
     def initGL(self):
-        self.ui.gridLayout_3.removeWidget(self.ui.page_2)
-        self.ui.gridLayout_3.removeWidget(self.ui.label_5)
+        self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
+        # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
         self.glWidget = GLWidget(self)
-        self.ui.gridLayout_3.addWidget(self.glWidget)
-        sliderX = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderX.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+        self.ui.verticalLayout_6.insertWidget(0, self.glWidget)
 
-        sliderY = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderY.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+        self.ui.horizontalSlider.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
 
-        sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+        self.ui.horizontalSlider_2.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
 
-        # sliderScale = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        # sliderScale.valueChanged.connect(lambda val: self.glWidget.setUpScale(val))
+        self.ui.horizontalSlider_3.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
 
-
-        self.ui.gridLayout_3.addWidget(sliderX)
-        self.ui.gridLayout_3.addWidget(sliderY)
-        self.ui.gridLayout_3.addWidget(sliderZ)
-        # self.ui.gridLayout_4.addWidget(sliderScale)
 
 def loadStyle(QApplication):
     """
