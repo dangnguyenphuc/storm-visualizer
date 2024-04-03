@@ -99,9 +99,15 @@ class MainWindow(QMainWindow):
 
         sliderZ = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         sliderZ.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+
+        # sliderScale = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        # sliderScale.valueChanged.connect(lambda val: self.glWidget.setUpScale(val))
+
+
         self.ui.gridLayout_3.addWidget(sliderX)
         self.ui.gridLayout_3.addWidget(sliderY)
         self.ui.gridLayout_3.addWidget(sliderZ)
+        # self.ui.gridLayout_4.addWidget(sliderScale)
 
 def loadStyle(QApplication):
     """
