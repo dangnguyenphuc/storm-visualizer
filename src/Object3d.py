@@ -10,9 +10,7 @@ import sys                    # we'll need this later to run our Qt application
 
 from OpenGL.arrays import vbo
 import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 from Radar import *
-from Utils import color
 
 
 class GLWidget(QtOpenGL.QGLWidget):
@@ -21,6 +19,10 @@ class GLWidget(QtOpenGL.QGLWidget):
         super().__init__(parent)
         self.setUpRadar(index=index)
         self.setUpThreshold(threshold)
+        self.setUpScale()
+
+    def setUpScale(self, val=1.0):
+        self.scale = val
 
     def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
         self.radar = Radar(index, filePath, radarName, date, mode)
@@ -53,7 +55,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glPushMatrix()    # push the current matrix to the current stack
 
         gl.glTranslate(0.0, 0.0, -5.0)    # third, translate cube to specified depth
-        gl.glScale(1.5, 1.5, 1.5)       # second, scale cube
+        gl.glScale(self.scale, self.scale, self.scale)       # second, scale cube
         gl.glRotate(self.rotX, 1.0, 0.0, 0.0)
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
@@ -78,7 +80,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def initGeometry(self):
 
-        v = self.get_all_vertices_by_threshold()
+        v = self.radar.get_all_vertices_by_threshold(self.threshold)
         self.cubeVtxArray = v['position']
         self.vertVBO = vbo.VBO(np.reshape(self.cubeVtxArray,
                                           (1, -1)).astype(np.float32))
@@ -99,41 +101,4 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def setRotZ(self, val):
         self.rotZ = np.pi * val
-
-    def get_vertices_positionX(self, indices=None):
-        if indices:
-            return self.radar.data.gate_x["data"][indices]
-        else:  return self.radar.data.gate_x["data"]
-
-    def get_vertices_positionY(self, indices=None):
-        if indices:
-            return self.radar.data.gate_y["data"][indices]
-        else:  return self.radar.data.gate_y["data"]
-
-    def get_vertices_positionZ(self, indices=None):
-        if indices:
-            return self.radar.data.gate_z["data"][indices]
-        else:  return self.radar.data.gate_z["data"]
-
-    def get_vertices_position(self, scaler):
-        return scaler.fit_transform(
-            np.column_stack(
-                (
-                self.radar.data.gate_x["data"].flatten(),
-                self.radar.data.gate_y["data"].flatten(),
-                self.radar.data.gate_z["data"].flatten()
-                )
-            )
-        )
-
-    def get_all_vertices_by_threshold(self):
-        reflectivity = self.radar.data.fields['reflectivity']['data'].flatten()
-
-        indices = np.where(np.logical_and(np.logical_not(reflectivity.mask), reflectivity.data >= self.threshold))
-        scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-        vertices = self.get_vertices_position(scaler)
-        return {
-            'position': vertices[indices],
-            'color': color(reflectivity[indices])
-        }
 
