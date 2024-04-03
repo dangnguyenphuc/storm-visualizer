@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>950</width>
+    <width>1024</width>
     <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Thesis Titian </string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/icon/icon/thunderstorm.png</normaloff>:/icon/icon/thunderstorm.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -120,7 +124,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="dashborad_btn_2">
+          <widget class="QPushButton" name="view3d_2">
            <property name="font">
             <font>
              <family>Arial</family>
@@ -151,7 +155,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="orders_btn_2">
+          <widget class="QPushButton" name="view2d_2">
            <property name="font">
             <font>
              <family>Arial</family>
@@ -182,7 +186,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="products_btn_2">
+          <widget class="QPushButton" name="other_2">
            <property name="font">
             <font>
              <family>Arial</family>
@@ -328,15 +332,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="dashborad_btn_1">
+          <widget class="QPushButton" name="view3d_1">
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset>
              <normaloff>icon/3d-cube.ico</normaloff>
-             <normalon>:/icon/icon/dashboard-5-48.ico</normalon>
+             <normalon>:/icon/icon/3d-cube.ico</normalon>
              <disabledoff>:/icon/icon/3d-cube.ico</disabledoff>
+             <disabledon>:/icon/icon/3d-cube.ico</disabledon>
+             <activeon>:/icon/icon/3d-cube.ico</activeon>
              <selectedon>:/icon/icon/3d-cube.ico</selectedon>icon/3d-cube.ico</iconset>
            </property>
            <property name="iconSize">
@@ -354,7 +360,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="orders_btn_1">
+          <widget class="QPushButton" name="view2d_1">
            <property name="text">
             <string/>
            </property>
@@ -377,7 +383,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="products_btn_1">
+          <widget class="QPushButton" name="other_1">
            <property name="text">
             <string/>
            </property>
@@ -576,28 +582,251 @@
            <item row="2" column="0">
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
+              <layout class="QGridLayout" name="gridLayout_9">
+               <item row="0" column="6">
+                <widget class="QCheckBox" name="IsGrid">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;grid file or not&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::RightToLeft</enum>
+                 </property>
+                 <property name="text">
+                  <string>IS GRID FILE</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_13">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>RADAR</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="5">
+                <widget class="QComboBox" name="fileBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentIndex">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>All file</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>File 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>File 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>File 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>File 5</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_14">
+                 <property name="text">
+                  <string>DATE</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="5">
+                <widget class="QComboBox" name="modeBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentIndex">
+                  <number>-1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Mode 1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mode 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mode 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mode 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Mode 5</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="4">
+                <widget class="QLabel" name="label_16">
+                 <property name="text">
+                  <string>MODE</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>FILE</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QComboBox" name="radarBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::DefaultContextMenu</enum>
+                 </property>
+                 <property name="toolTip">
+                  <string>Radar name</string>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;radar name&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentIndex">
+                  <number>-1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Name radar 1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Name radar 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Name radar 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Name radar 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Name radar 5</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QComboBox" name="dateBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="whatsThis">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
               <widget class="QOpenGLWidget" name="openGLWidget"/>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="0" column="3">
-                  <widget class="QLabel" name="label_5">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_11">
                    <property name="text">
-                    <string>Threshold</string>
+                    <string>Z aixs</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QSlider" name="horizontalSlider_2">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
+                 <item row="0" column="4">
+                  <widget class="QLineEdit" name="threshHold">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;press enter to confirm thresh hold&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
-                  <widget class="QSlider" name="horizontalSlider_3">
+                 <item row="0" column="1">
+                  <widget class="QSlider" name="slider_3d_x">
+                   <property name="styleSheet">
+                    <string notr="true">border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(245, 224, 176, 255), stop:0.09 rgba(246, 189, 237, 255), stop:0.14 rgba(194, 207, 246, 255), stop:0.19 rgba(184, 160, 168, 255), stop:0.25 rgba(171, 186, 248, 255), stop:0.32 rgba(243, 248, 224, 255), stop:0.385 rgba(249, 162, 183, 255), stop:0.47 rgba(100, 115, 124, 255), stop:0.58 rgba(251, 205, 202, 255), stop:0.65 rgba(170, 128, 185, 255), stop:0.75 rgba(252, 222, 204, 255), stop:0.805 rgba(206, 122, 218, 255), stop:0.86 rgba(254, 223, 175, 255), stop:0.91 rgba(254, 236, 244, 255), stop:1 rgba(255, 191, 221, 255));</string>
+                   </property>
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -610,17 +839,10 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_11">
+                 <item row="0" column="3">
+                  <widget class="QLabel" name="label_5">
                    <property name="text">
-                    <string>Z aixs</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QSlider" name="horizontalSlider">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
+                    <string>Threshold</string>
                    </property>
                   </widget>
                  </item>
@@ -631,13 +853,10 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="4">
-                  <widget class="QLineEdit" name="lineEdit">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                 <item row="1" column="1">
+                  <widget class="QSlider" name="slider_3d_y">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
                    </property>
                   </widget>
                  </item>
@@ -658,6 +877,13 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="2" column="1">
+                  <widget class="QSlider" name="slider_3d_z">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -669,19 +895,83 @@
          <widget class="QWidget" name="page_3">
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="font">
-              <font>
-               <pointsize>20</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>2D show</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="comboBox_2">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_18">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QLineEdit" name="lineEdit_4"/>
+                 </item>
+                 <item row="0" column="6">
+                  <widget class="QCheckBox" name="checkBox_2">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>CheckBox</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="radarBox_2">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="4">
+                  <widget class="QLabel" name="label_19">
+                   <property name="text">
+                    <string>TextLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="5">
+                  <widget class="QComboBox" name="comboBox_3"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QOpenGLWidget" name="openGLWidget_2"/>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -769,6 +1059,28 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>home_btn_1</tabstop>
+  <tabstop>home_btn_2</tabstop>
+  <tabstop>view3d_2</tabstop>
+  <tabstop>view2d_2</tabstop>
+  <tabstop>other_2</tabstop>
+  <tabstop>exit_btn_1</tabstop>
+  <tabstop>other_1</tabstop>
+  <tabstop>view3d_1</tabstop>
+  <tabstop>slider_3d_y</tabstop>
+  <tabstop>change_btn</tabstop>
+  <tabstop>view2d_1</tabstop>
+  <tabstop>slider_3d_z</tabstop>
+  <tabstop>slider_3d_x</tabstop>
+  <tabstop>threshHold</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>radarBox</tabstop>
+  <tabstop>modeBox</tabstop>
+  <tabstop>fileBox</tabstop>
+  <tabstop>IsGrid</tabstop>
+  <tabstop>exit_btn_2</tabstop>
+ </tabstops>
  <resources>
   <include location="resource.qrc"/>
  </resources>
@@ -800,8 +1112,136 @@
      <y>25</y>
     </hint>
     <hint type="destinationlabel">
-     <x>173</x>
+     <x>168</x>
      <y>257</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>view3d_1</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>view3d_2</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>33</x>
+     <y>100</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>67</x>
+     <y>99</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>view2d_1</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>view2d_2</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>33</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>158</x>
+     <y>156</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>other_1</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>other_2</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>26</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>158</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>view3d_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>view3d_1</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>26</x>
+     <y>90</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>view2d_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>view2d_1</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>156</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>41</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>other_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>other_1</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>158</x>
+     <y>189</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>45</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exit_btn_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>584</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>284</x>
+     <y>603</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exit_btn_1</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>34</x>
+     <y>592</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>47</x>
+     <y>603</y>
     </hint>
    </hints>
   </connection>
@@ -822,54 +1262,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>dashborad_btn_1</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dashborad_btn_2</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>33</x>
-     <y>100</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>67</x>
-     <y>99</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>orders_btn_1</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>orders_btn_2</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>33</x>
-     <y>123</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>69</x>
-     <y>125</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>products_btn_1</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>products_btn_2</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>24</x>
-     <y>148</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>72</x>
-     <y>148</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>home_btn_2</sender>
    <signal>toggled(bool)</signal>
    <receiver>home_btn_1</receiver>
@@ -882,86 +1274,6 @@
     <hint type="destinationlabel">
      <x>41</x>
      <y>60</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>dashborad_btn_2</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>dashborad_btn_1</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>160</x>
-     <y>99</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>26</x>
-     <y>90</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>orders_btn_2</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>orders_btn_1</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>143</x>
-     <y>112</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>114</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>products_btn_2</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>products_btn_1</receiver>
-   <slot>setChecked(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>162</x>
-     <y>142</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>43</x>
-     <y>144</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>exit_btn_2</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>126</x>
-     <y>584</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>284</x>
-     <y>606</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>exit_btn_1</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>34</x>
-     <y>592</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>47</x>
-     <y>626</y>
     </hint>
    </hints>
   </connection>

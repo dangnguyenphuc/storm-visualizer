@@ -29,12 +29,13 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
+        self.setUpVBO()
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))    # initialize the screen to blue
         gl.glEnable(gl.GL_DEPTH_TEST)                  # enable depth testing
 
-        self.initGeometry()
+        self.setUpVBO()
 
         self.rotX = 0.0
         self.rotY = 0.0
@@ -68,7 +69,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glEnableClientState(gl.GL_COLOR_ARRAY)
         gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
 
-        gl.glDrawElements(gl.GL_POINTS, len(self.cubeIdxArray), gl.GL_UNSIGNED_INT, self.cubeIdxArray)
+        gl.glDrawElements(gl.GL_POINTS, len(self.indexArray), gl.GL_UNSIGNED_INT, self.indexArray)
 
         # Unbind and disable after drawing
         self.vertVBO.unbind()
@@ -78,20 +79,20 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         gl.glPopMatrix()    # restore the previous modelview matrix
 
-    def initGeometry(self):
+    def setUpVBO(self):
 
         v = self.radar.get_all_vertices_by_threshold(self.threshold)
-        self.cubeVtxArray = v['position']
-        self.vertVBO = vbo.VBO(np.reshape(self.cubeVtxArray,
+        self.vertices = v['position']
+        self.vertVBO = vbo.VBO(np.reshape(self.vertices,
                                           (1, -1)).astype(np.float32))
         self.vertVBO.bind()
 
-        self.cubeClrArray = v['color']
-        self.colorVBO = vbo.VBO(np.reshape(self.cubeClrArray,
+        self.color = v['color']
+        self.colorVBO = vbo.VBO(np.reshape(self.color,
                                            (1, -1)).astype(np.float32))
         self.colorVBO.bind()
 
-        self.cubeIdxArray = np.array(range(len(self.cubeVtxArray)))
+        self.indexArray = np.array(range(len(self.vertices)))
 
     def setRotX(self, val):
         self.rotX = np.pi * val
