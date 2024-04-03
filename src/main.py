@@ -23,11 +23,18 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
+        
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
         self.initGL()
+        #! add item to drop down 3d
+        self.addItemRadar()
+        self.addItemFile()
+        self.addItemDate()
+        self.addItemMode()
+
+
         timer = QtCore.QTimer(self)
         timer.setInterval(20)   # period, in milliseconds
         timer.timeout.connect(self.glWidget.updateGL)
@@ -40,8 +47,8 @@ class MainWindow(QMainWindow):
             self.ui.label_9.setText(search_text)
 
     ## Function for changing page to user page
-    def on_user_btn_clicked(self):
-        self.ui.stackedWidget.setCurrentIndex(6)
+    # def on_user_btn_clicked(self):
+    #     self.ui.stackedWidget.setCurrentIndex(6)
 
     ## Change QPushButton Checkable status when stackedWidget index changed
     def on_stackedWidget_currentChanged(self, index):
@@ -62,41 +69,90 @@ class MainWindow(QMainWindow):
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 
-    def on_dashborad_btn_1_toggled(self):
+    def on_view3d_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
-    def on_dashborad_btn_2_toggled(self):
+    def on_view3d_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
 
-    def on_orders_btn_1_toggled(self):
+    def on_view2d_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(2)
 
-    def on_orders_btn_2_toggled(self):
+    def on_view2d_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(2)
 
-    def on_products_btn_1_toggled(self):
+    def on_other_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(3)
 
-    def on_products_btn_2_toggled(self, ):
+    def on_other_2_toggled(self, ):
         self.ui.stackedWidget.setCurrentIndex(3)
+# 
+#     def on_customers_btn_1_toggled(self):
+#         self.ui.stackedWidget.setCurrentIndex(4)
+# 
+#     def on_customers_btn_2_toggled(self):
+#         self.ui.stackedWidget.setCurrentIndex(4)
 
-    def on_customers_btn_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(4)
+    def addItemRadar(self):
+        self.ui.radarBox.clear()
+        for i in range(0,10):
+            opt = "test add item file " + str(i)
+            self.ui.radarBox.addItem(opt)
+        # self.ui.radarBox.setCurrentIndex(-1)
 
-    def on_customers_btn_2_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(4)
+    def addItemDate(self):
+        self.ui.dateBox.clear()
+        for i in range(0,10):
+            opt = "test add item date " + str(i)
+            self.ui.dateBox.addItem(opt)
+
+    def addItemFile(self):
+        self.ui.fileBox.clear()
+        self.ui.fileBox.addItem("All files") # option select all files
+        for i in range(0,10):
+            opt = "test add item  file" + str(i)
+            self.ui.fileBox.addItem(opt)
+
+    def addItemMode(self):
+        self.ui.modeBox.clear()
+        for i in range(0,10):
+            opt = "test add item mode " + str(i)
+            self.ui.modeBox.addItem(opt)
+
+    def getRadar(self):
+        #! get value of radar
+        self.radar_index = self.ui.radarBox.currentText()
+        self.ui.radarBox.itemData(self.radar_index)
+    def getDate(self):
+        #! get value of date
+        self.date_index = self.ui.dateBox.currentText()
+        self.ui.dateBox.itemData(self.date_index)
+    def getFile(self):
+        #! get value of file
+        self.file_index = self.ui.fileBox.currentText()
+        self.ui.fileBox.itemData(self.file_index)
+    def getMode(self):
+        #! get value of mode
+        self.mode_index = self.ui.modeBox.currentText()
+        self.ui.modeBox.itemData(self.mode_index)
+    def getIsGrid(self):
+        self.isGrid = self.ui.IsGrid.isChecked()  # -> bool
+    def getThreshHold(self):
+        self.threshHold = self.ui.threshHold.text() 
+    # write a function get value of file
 
     def initGL(self):
         self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
         # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
         self.glWidget = GLWidget(self)
-        self.ui.verticalLayout_6.insertWidget(0, self.glWidget)
+        self.ui.verticalLayout_6.insertWidget(1, self.glWidget)
 
-        self.ui.horizontalSlider.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+        self.ui.slider_3d_x.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
 
-        self.ui.horizontalSlider_2.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+        self.ui.slider_3d_y.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
 
-        self.ui.horizontalSlider_3.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+        self.ui.slider_3d_z.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+
 
 
 def loadStyle(QApplication):
