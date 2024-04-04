@@ -27,13 +27,17 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
         self.radar = Radar(index, filePath, radarName, date, mode)
 
+    def resetRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+        del self.radar
+        self.radar = Radar(index, filePath, radarName, date, mode)
+
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
 
     def update(self, index=None, threshold=None):
-        if index:
+        if index is not None:
             self.radar.update(index)
-        if threshold:
+        if threshold is not None:
             self.threshold = threshold
 
         self.setUpVBO()

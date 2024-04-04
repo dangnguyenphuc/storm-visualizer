@@ -1,2 +1,2 @@
-FPS = 60
+FPS = 10
 TICK = 1000/FPS
