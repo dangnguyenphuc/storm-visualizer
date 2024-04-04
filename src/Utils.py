@@ -4,6 +4,50 @@ from OpenGL.GLU import *
 from OpenGL.GL.shaders import compileProgram,compileShader
 import numpy as np
 from matplotlib import cm
+import calendar
+
+IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
+
+def listDirInDir(filePath):
+    d = [
+      dir for dir in os.listdir(filePath)
+      if  not dir.startswith('.') and
+          os.path.isdir(os.path.join(filePath, dir)) and
+          dir not in IGNOR_DIR
+    ]
+    d.sort()
+    return d
+
+def is_valid_day_for_month_year(day, month_year):
+    # Split the month_year into year and month
+    year, month = month_year.split('/')
+
+    # Check if the month is valid (1 to 12)
+    if not (1 <= int(month) <= 12):
+        return False
+
+    # Get the maximum day for the given month and year
+    max_day = calendar.monthrange(int(year), int(month))[1]
+
+    # Check if the day is valid (1 to max_day for the month)
+    return 1 <= int(day) <= max_day
+
+def is_safe_file(filename):
+    # List of unsafe file extensions
+    unsafe_extensions = ['.exe', '.bat', '.sh', '.py']
+
+    # Check if the file's extension is in the unsafe list
+    _, file_extension = os.path.splitext(filename)
+    return file_extension.lower() not in unsafe_extensions
+
+def listFile(folderPath):
+    f = [
+        file for file in os.listdir(folderPath)
+        if  os.path.isfile(folderPath + file) and
+            not file.startswith('.') and
+            is_safe_file(file)
+    ]
+    return f
 
 def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     """

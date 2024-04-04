@@ -24,7 +24,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpScale(self, val=1.0):
         self.scale = val
 
-    def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+    def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
         self.radar = Radar(index, filePath, radarName, date, mode)
 
     def setUpThreshold(self, threshold = 0):

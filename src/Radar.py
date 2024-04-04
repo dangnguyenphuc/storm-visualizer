@@ -3,11 +3,13 @@ import pyart
 import cartopy.crs as ccrs
 import os
 from sklearn.preprocessing import MinMaxScaler
-from Utils import color
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color
 
 class DIRECTORY:
   FILE_PATH = "../Data/"
   RADAR_NAME = "NHB/"
+  YEAR = "2023/"
+  MONTH = "06/"
   DATE = "01/"
   MODE = "1_prt/"
 
@@ -19,7 +21,7 @@ class DataManager:
   NUM_OF_GRID_FILES = 0
 
   @staticmethod
-  def getAllDataFilePaths(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+  def getAllDataFilePaths(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     filePaths = [
         fileName for fileName in os.listdir(
         filePath +
@@ -45,7 +47,7 @@ class DataManager:
     return filePaths
 
   @staticmethod
-  def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+  def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     print("Run splitData")
     if radarName == "NHB/" and mode == "raw/":
       data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
@@ -53,9 +55,10 @@ class DataManager:
       two_prt = []
 
       for i in range(len(data)):
-          if pyart.io.read(data[i]).instrument_parameters['prt_mode']['data'][0].decode() == 'fixed':
-            one_prt.append(data[i])
-          else: two_prt.append(data[i])
+        radar = pyart.io.read(data[i])
+        if radar.instrument_parameters['prt_mode']['data'][0].decode() == 'fixed' or radar.instrument_parameters['prt_mode']['data'] == []:
+          one_prt.append(data[i])
+        else: two_prt.append(data[i])
 
       firstDir = filePath + radarName + date + '1_prt/'
       secondDir = filePath + radarName + date + '2_prt/'
@@ -71,34 +74,61 @@ class DataManager:
       for i in two_prt:
           os.rename(i, secondDir + i.split('/')[-1])
 
-    @staticmethod
-    def genGrid(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-      def get_grid(radar):
-        """ Returns grid object from radar object. """
-        grid = pyart.map.grid_from_radars(
-            radar, grid_shape=(5, 1000, 1000),
-            grid_limits=((0, 25000), (-330000,330000), (-330000, 330000)),
-            fields=['reflectivity'], gridding_algo='map_gates_to_grid',
-            h_factor=0., nb=0.6, bsp=1., min_radius=200.)
-        return grid
+  @staticmethod
+  def genGrid(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+    def get_grid(radar):
+      """ Returns grid object from radar object. """
+      grid = pyart.map.grid_from_radars(
+          radar, grid_shape=(5, 1000, 1000),
+          grid_limits=((0, 25000), (-330000,330000), (-330000, 330000)),
+          fields=['reflectivity'], gridding_algo='map_gates_to_grid',
+          h_factor=0., nb=0.6, bsp=1., min_radius=200.)
+      return grid
 
-      def write_grid():
-          tmp_dir = filePath + radarName + date + "grid/" + mode
-          if not os.path.exists(tmp_dir):
-            os.makedirs(tmp_dir)
+    def write_grid():
+        tmp_dir = filePath + radarName + date + "grid/" + mode
+        if not os.path.exists(tmp_dir):
+          os.makedirs(tmp_dir)
 
-          keys = DataManager.getAllDataFilePaths(filePath=filePath, radarName=radarName, date=date, mode=mode)
-          for key in keys:
-              radar = pyart.io.read(key)
-              grid = get_grid(radar)
-              pyart.io.write_grid(tmp_dir + 'grid_' + key.split("/")[-1].split(".")[0] + '.nc', grid)
-              del radar, grid
+        keys = DataManager.getAllDataFilePaths(filePath=filePath, radarName=radarName, date=date, mode=mode)
+        for key in keys:
+            radar = pyart.io.read(key)
+            grid = get_grid(radar)
+            pyart.io.write_grid(tmp_dir + 'grid_' + key.split("/")[-1].split(".")[0] + '.nc', grid)
+            del radar, grid
 
-      write_grid()
+    write_grid()
+
+  @staticmethod
+  def listAllRadar(filePath=DIRECTORY.FILE_PATH):
+    return listDirInDir(filePath)
+
+  @staticmethod
+  def listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME):
+
+    years = [year for year in listDirInDir(filePath+radar) if year.isdigit()]
+
+    months = []
+    for year in years:
+      months += [year + "/" + month for month in listDirInDir(filePath + radar + year) if month.isdigit() and int(month) <= 12 and int(month) > 0]
+
+    dates = []
+    for month in months:
+      dates += [month + "/" + date for date in listDirInDir(filePath + radar + month) if date.isdigit() and is_valid_day_for_month_year(date, month)]
+
+    return dates
+
+  @staticmethod
+  def listAllModeOnDate(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE):
+    return listDirInDir(filePath+radar+date)
+
+  @staticmethod
+  def listAllFile(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, mode=DIRECTORY.MODE):
+    return listFile(filePath + radar + date + mode)
 
 class Radar:
 
-  def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+  def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     if not DataManager.RAW_DATA:
       DataManager.RAW_DATA = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
 
@@ -168,7 +198,7 @@ class Radar:
 
 class Grid:
 
-  def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+  def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     if not DataManager.GRID_DATA:
       DataManager.GRID_DATA = DataManager.getAllDataFilePaths(filePath, radarName, date, "grid/" + mode)
 
