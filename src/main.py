@@ -10,6 +10,7 @@ from sidebar_ui import Ui_MainWindow
 import sys
 from Radar import DataManager, DIRECTORY
 from Config import *
+from Utils import folderEmpty
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -137,6 +138,7 @@ class MainWindow(QMainWindow):
             self.ui.fileBox.addItem(file)
         self.ui.fileBox.setCurrentIndex(0)
 
+
     def addItemMode(self):
         self.ui.modeBox.clear()
         for mode in DataManager.listAllModeOnDate():
@@ -151,19 +153,25 @@ class MainWindow(QMainWindow):
 
     def getDate(self):
         #! get value of date
-        self.date_index = self.ui.dateBox.currentText()
-        self.ui.dateBox.itemData(self.date_index)
+        DIRECTORY.YEAR, DIRECTORY.MONTH, DIRECTORY.DATE = self.ui.dateBox.currentText().split("/")
 
-    def getFile(self, index):
+        DIRECTORY.YEAR += "/"
+        DIRECTORY.MONTH += "/"
+        DIRECTORY.DATE += "/"
+
+    def getFile(self, index=0):
         self.glWidget.update(index=index)
         self.glWidget.updateGL()
 
-    def getMode(self, index):
+    def getMode(self, index=0):
         #! get value of mode
-        DIRECTORY.MODE = self.ui.modeBox.currentText() + "/"
-        self.addItemFile()
-        self.glWidget.resetRadar(mode=DIRECTORY.MODE)
-        self.getFile()
+        if not folderEmpty(DIRECTORY.getCurrentPath(date=True)+self.ui.modeBox.currentText()):
+            DIRECTORY.MODE = self.ui.modeBox.currentText() + "/"
+            self.addItemFile()
+            self.glWidget.resetRadar(mode=DIRECTORY.MODE)
+            self.getFile()
+        else:
+            print("This mode is empty")
 
     def getIsGrid(self):
         self.isGrid = self.ui.IsGrid.isChecked()  # -> bool
