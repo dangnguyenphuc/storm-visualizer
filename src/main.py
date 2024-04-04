@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets
 from sidebar_ui import Ui_MainWindow
 import sys
 from Radar import DataManager, DIRECTORY
+from Config import *
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -41,17 +42,21 @@ class MainWindow(QMainWindow):
 
         # validator
         thresholdValidator = QIntValidator()
-        thresholdValidator.setRange(0, 80)  # For example, allow numbers from -1000 to 1000
+        thresholdValidator.setRange(0, 100)  # For example, allow numbers from -1000 to 1000
         self.ui.threshold.setValidator(thresholdValidator)
 
         # timers
         mainTimer = QtCore.QTimer(self)
-        mainTimer.setInterval(10)   # period, in milliseconds
+        mainTimer.setInterval(int(TICK))   # period, in milliseconds
         mainTimer.timeout.connect(self.glWidget.updateGL)
         mainTimer.start()
 
         # just change when threshold change
         self.ui.threshold.textChanged.connect(self.getThreshold)
+
+        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+
+
 
     ## Function for searching
     def on_search_btn_clicked(self):
@@ -116,46 +121,48 @@ class MainWindow(QMainWindow):
 
     def addItemDate(self):
         self.ui.dateBox.clear()
-        for i in range(0,10):
-            opt = "test add item date " + str(i)
-            self.ui.dateBox.addItem(opt)
+        for date in DataManager.listAllDateOfRadar():
+            self.ui.dateBox.addItem(date)
+        self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar().index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
 
     def addItemFile(self):
         self.ui.fileBox.clear()
-        self.ui.fileBox.addItem("All files") # option select all files
-        for i in range(0,10):
-            opt = "test add item  file" + str(i)
-            self.ui.fileBox.addItem(opt)
+        for file in DataManager.listAllFile():
+            self.ui.fileBox.addItem(file)
+        self.ui.fileBox.setCurrentIndex(0)
 
     def addItemMode(self):
         self.ui.modeBox.clear()
-        for i in range(0,10):
-            opt = "test add item mode " + str(i)
-            self.ui.modeBox.addItem(opt)
+        for mode in DataManager.listAllModeOnDate():
+            self.ui.modeBox.addItem(mode)
+        self.ui.modeBox.setCurrentIndex(DataManager.listAllModeOnDate().index(DIRECTORY.MODE[:-1]))
 
     def getRadar(self):
         #! get value of radar
         self.radar_index = self.ui.radarBox.currentText()
         self.ui.radarBox.itemData(self.radar_index)
+
     def getDate(self):
         #! get value of date
         self.date_index = self.ui.dateBox.currentText()
         self.ui.dateBox.itemData(self.date_index)
-    def getFile(self):
-        #! get value of file
-        self.file_index = self.ui.fileBox.currentText()
-        self.ui.fileBox.itemData(self.file_index)
+
+    def getFile(self, index):
+        self.glWidget.update(index=index)
+
     def getMode(self):
         #! get value of mode
         self.mode_index = self.ui.modeBox.currentText()
         self.ui.modeBox.itemData(self.mode_index)
+
     def getIsGrid(self):
         self.isGrid = self.ui.IsGrid.isChecked()  # -> bool
+
     def getThreshold(self):
         if self.ui.threshold.text():
-            self.glWidget.setUpThreshold(threshold=int(self.ui.threshold.text()))
+            self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
-            self.glWidget.setUpThreshold(threshold=0)
+            self.glWidget.update(threshold=0)
     # write a function get value of file
 
     def initGL(self):

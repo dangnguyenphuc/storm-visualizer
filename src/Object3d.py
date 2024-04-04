@@ -29,6 +29,13 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
+
+    def update(self, index=None, threshold=None):
+        if index:
+            self.radar.update(index)
+        if threshold:
+            self.threshold = threshold
+
         self.setUpVBO()
 
     def initializeGL(self):
