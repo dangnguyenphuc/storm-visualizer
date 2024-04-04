@@ -34,3 +34,4 @@
 *Data*
 
 *.pyc
+*__pycache__*

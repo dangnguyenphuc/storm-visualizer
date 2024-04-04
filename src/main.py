@@ -1,15 +1,18 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from sidebar_ui import Ui_MainWindow
 import sys
+from Radar import DataManager, DIRECTORY
 
-
-
+# Set high DPI scaling attributes
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
 class MainWindow(QMainWindow):
     """
@@ -24,6 +27,7 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.setContentsMargins(0, 0, 0, 0)
 
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -38,14 +42,13 @@ class MainWindow(QMainWindow):
         # validator
         thresholdValidator = QIntValidator()
         thresholdValidator.setRange(0, 80)  # For example, allow numbers from -1000 to 1000
-
         self.ui.threshold.setValidator(thresholdValidator)
 
-
-        timer = QtCore.QTimer(self)
-        timer.setInterval(10)   # period, in milliseconds
-        timer.timeout.connect(self.glWidget.updateGL)
-        timer.start()
+        # timers
+        mainTimer = QtCore.QTimer(self)
+        mainTimer.setInterval(10)   # period, in milliseconds
+        mainTimer.timeout.connect(self.glWidget.updateGL)
+        mainTimer.start()
 
         # just change when threshold change
         self.ui.threshold.textChanged.connect(self.getThreshold)
@@ -106,10 +109,10 @@ class MainWindow(QMainWindow):
 
     def addItemRadar(self):
         self.ui.radarBox.clear()
-        for i in range(0,10):
-            opt = "test add item file " + str(i)
-            self.ui.radarBox.addItem(opt)
-        # self.ui.radarBox.setCurrentIndex(-1)
+
+        for radar in DataManager.listAllRadar():
+            self.ui.radarBox.addItem(radar)
+        self.ui.radarBox.setCurrentIndex(DataManager.listAllRadar().index(DIRECTORY.RADAR_NAME[:-1]))
 
     def addItemDate(self):
         self.ui.dateBox.clear()
@@ -183,7 +186,15 @@ def loadStyle(QApplication):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    # Load style
     loadStyle(app)
+
+    # Window Constructor
     window = MainWindow()
+
+    # Window run
     window.show()
+
+    # Exit
     sys.exit(app.exec())
