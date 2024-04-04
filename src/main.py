@@ -1,13 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
+# from object3dBK import GLWidget
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from sidebar_ui import Ui_MainWindow
 import sys
+import numpy as np
 from Radar import DataManager, DIRECTORY
 from Config import *
 from Utils import folderEmpty
@@ -34,7 +36,9 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
+
         self.initGL()
+        self.initHomePage()
         #! add item to drop down 3d
         self.addItemRadar()
         self.addItemDate()
@@ -52,9 +56,8 @@ class MainWindow(QMainWindow):
         mainTimer.timeout.connect(self.glWidget.updateGL)
         mainTimer.start()
 
-        # just change when threshold change
+        # just change when value change
         self.ui.threshold.textChanged.connect(self.getThreshold)
-
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
@@ -177,7 +180,7 @@ class MainWindow(QMainWindow):
 
     def getFile(self, index=0):
         self.glWidget.update(index=index)
-        # self.glWidget.updateGL()
+        self.glWidget.updateGL()
 
     def getMode(self, index=0):
         #! get value of mode
@@ -198,20 +201,73 @@ class MainWindow(QMainWindow):
         else:
             self.glWidget.update(threshold=0)
 
-        # self.glWidget.updateGL()
+        self.glWidget.updateGL()
 
     def initGL(self):
-        self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
-        # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
+        # if not bool(glGenBuffers):
+        #     print("glGenBuffers not available")
+        #     return
         self.glWidget = GLWidget(self)
-        self.ui.threshold.setText(str(self.glWidget.threshold))
-        self.ui.verticalLayout_6.insertWidget(1, self.glWidget)
+        self.ui.verticalLayout_6.replaceWidget(self.ui.openGLWidget, self.glWidget)
+
+        # self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
+        # self.ui.slider_3d_x.setMaximum(115)
+
+        # self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
+        # self.ui.slider_3d_y.setMaximum(115)
+
+        # self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
+        # self.ui.slider_3d_z.setMaximum(115)
 
         self.ui.slider_3d_x.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+        self.ui.slider_3d_x.setMaximum(115)
 
         self.ui.slider_3d_y.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+        self.ui.slider_3d_y.setMaximum(115)
 
         self.ui.slider_3d_z.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+        self.ui.slider_3d_z.setMaximum(115)
+
+        self.ui.preFile.clicked.connect(lambda: self.goPrevFile())
+        self.ui.nextFile.clicked.connect(lambda: self.goNextFile())
+
+    def goPrevFile(self):
+        index = max(0, self.ui.fileBox.currentIndex()-1)
+        self.ui.fileBox.setCurrentIndex(index)
+        self.getFile(index=index)
+
+
+    def goNextFile(self):
+        index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
+        self.ui.fileBox.setCurrentIndex(index)
+        self.getFile(index=index)
+
+    def updateSliderX(self, val):
+        self.glWidget.setRotX(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.x_value.setText(str(int(tmp_value)) + "°")
+
+
+    def updateSliderY(self, val):
+        self.glWidget.setRotY(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.y_value.setText(str(int(tmp_value)) + "°")
+
+
+    def updateSliderZ(self, val):
+        self.glWidget.setRotZ(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.z_value.setText(str(int(tmp_value)) + "°")
+
+    def initHomePage(self):
+        self.ui.changeDirData.clicked.connect(lambda: self.chooseDir())
+
+    def chooseDir(self):
+        self.dataDir = QFileDialog.getExistingDirectory()
+        self.ui.curData.setText(self.dataDir)
 
 
 
