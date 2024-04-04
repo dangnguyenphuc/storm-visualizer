@@ -1,15 +1,17 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-from Object3d import GLWidget
+from object3dBK import GLWidget 
+# from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from sidebar_ui import Ui_MainWindow
 import sys
+import numpy as np
 from Radar import DataManager, DIRECTORY
-
+from OpenGL.GL import glGenBuffers  # Import glGenBuffers from PyOpenGL
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -32,7 +34,9 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
+        
         self.initGL()
+        self.initHomePage()
         #! add item to drop down 3d
         self.addItemRadar()
         self.addItemFile()
@@ -159,17 +163,49 @@ class MainWindow(QMainWindow):
     # write a function get value of file
 
     def initGL(self):
-        self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
-        # self.ui.gridLayout_3.removeWidget(self.ui.label_5)
+        # if not bool(glGenBuffers):
+        #     print("glGenBuffers not available")
+        #     return
         self.glWidget = GLWidget(self)
-        self.ui.threshold.setText(str(self.glWidget.threshold))
-        self.ui.verticalLayout_6.insertWidget(1, self.glWidget)
-
+        self.ui.verticalLayout_6.replaceWidget(self.ui.openGLWidget, self.glWidget)
         self.ui.slider_3d_x.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
+        self.ui.slider_3d_x.valueChanged.connect(lambda : self.updateSlider())
+        self.ui.slider_3d_x.setMaximum(115)
 
         self.ui.slider_3d_y.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
+        self.ui.slider_3d_y.valueChanged.connect(lambda : self.updateSlider())
+        self.ui.slider_3d_y.setMaximum(115)
 
         self.ui.slider_3d_z.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
+        self.ui.slider_3d_z.valueChanged.connect(lambda : self.updateSlider())
+        self.ui.slider_3d_z.setMaximum(115)
+
+        self.ui.preFile.clicked.connect(lambda: self.goFreFile())
+        self.ui.nextFile.clicked.connect(lambda: self.goNextFile())
+
+    def goFreFile(self):
+        self.ui.fileBox.setCurrentIndex(self.ui.fileBox.currentIndex()-1)
+
+    def goNextFile(self):
+        self.ui.fileBox.setCurrentIndex(self.ui.fileBox.currentIndex()+1)
+
+    def updateSlider(self):
+        tmp_value = [self.ui.slider_3d_x.value() * np.pi, 
+                     self.ui.slider_3d_y.value() * np.pi,
+                     self.ui.slider_3d_z.value() * np.pi]
+        for i in range(0,3):
+            if tmp_value[i] >= 360:
+                tmp_value[i] = 360 - tmp_value[i]
+        self.ui.x_value.setText(str(int(tmp_value[0])) + "°")
+        self.ui.y_value.setText(str(int(tmp_value[1])) + "°")
+        self.ui.z_value.setText(str(int(tmp_value[2])) + "°")
+
+    def initHomePage(self):
+        self.ui.changeDirData.clicked.connect(lambda: self.chooseDir())
+
+    def chooseDir(self):
+        self.dataDir = QFileDialog.getExistingDirectory()
+        self.ui.curData.setText(self.dataDir)
 
 
 

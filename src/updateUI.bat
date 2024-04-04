@@ -9,3 +9,7 @@ echo - PyQt Designer exec: Update UI
 pyuic5 -o sidebar_ui.py .\sidebar.ui
 echo - Done!
 echo -----------------------------------------
+
+pushd ..
+python3 ./src/main.py
+popd
