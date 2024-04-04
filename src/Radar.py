@@ -13,6 +13,26 @@ class DIRECTORY:
   DATE = "01/"
   MODE = "1_prt/"
 
+  @staticmethod
+  def getCurrentPath(filename = False, radar = False, year = False, month = False, date = False, mode = False):
+    if filename:
+      return DIRECTORY.FILE_PATH
+
+    if radar:
+      return DIRECTORY.FILE_PATH + DIRECTORY.RADAR_NAME
+
+    if year:
+      return DIRECTORY.FILE_PATH + DIRECTORY.RADAR_NAME + DIRECTORY.YEAR
+
+    if month:
+      return DIRECTORY.FILE_PATH + DIRECTORY.RADAR_NAME + DIRECTORY.YEAR + DIRECTORY.MONTH
+
+    if date:
+      return DIRECTORY.FILE_PATH + DIRECTORY.RADAR_NAME + DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE
+
+    if mode:
+      return DIRECTORY.FILE_PATH + DIRECTORY.RADAR_NAME + DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE + DIRECTORY.MODE
+
 class DataManager:
 
   RAW_DATA = None

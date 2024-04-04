@@ -18,6 +18,9 @@ def listDirInDir(filePath):
     d.sort()
     return d
 
+def folderEmpty(filePath):
+    return len(os.listdir(filePath)) == 0
+
 def is_valid_day_for_month_year(day, month_year):
     year, month = month_year.split('/')
     if not (1 <= int(month) <= 12):
