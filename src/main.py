@@ -56,8 +56,9 @@ class MainWindow(QMainWindow):
         self.ui.threshold.textChanged.connect(self.getThreshold)
 
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
-        self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
+        self.ui.modeBox.currentIndexChanged.connect(self.getMode)
+        self.ui.dateBox.currentIndexChanged.connect(self.getDate)
 
 
 
@@ -145,30 +146,45 @@ class MainWindow(QMainWindow):
             self.ui.modeBox.addItem(mode)
         self.ui.modeBox.setCurrentIndex(DataManager.listAllModeOnDate().index(DIRECTORY.MODE[:-1]))
 
-    def getRadar(self, index):
+    def getRadar(self, index = 0):
         #! get value of radar
-        DIRECTORY.RADAR_NAME = self.ui.radarBox.currentText() + "/"
-        self.addItemDate()
+        radar = self.ui.radarBox.currentText()
+        if not folderEmpty(DIRECTORY.getCurrentPath(filename=True) + radar):
+            DIRECTORY.RADAR_NAME = radar + "/"
+            self.getDate()
+        else:
+            print(f"Radar {radar} is empty")
+            self.ui.radarBox.setCurrentIndex(DataManager.listAllRadar().index(DIRECTORY.RADAR_NAME[:-1]))
 
-
-    def getDate(self):
+    def getDate(self, index=0):
         #! get value of date
-        DIRECTORY.YEAR, DIRECTORY.MONTH, DIRECTORY.DATE = self.ui.dateBox.currentText().split("/")
+        year, month, date = self.ui.dateBox.currentText().split("/")
 
-        DIRECTORY.YEAR += "/"
-        DIRECTORY.MONTH += "/"
-        DIRECTORY.DATE += "/"
+        if not folderEmpty(DIRECTORY.getCurrentPath(radar=True) + year):
+            DIRECTORY.YEAR = year + "/"
+            if not folderEmpty(DIRECTORY.getCurrentPath(year=True) + month):
+                DIRECTORY.MONTH = month + "/"
+                if not folderEmpty(DIRECTORY.getCurrentPath(month=True) + date):
+                    DIRECTORY.DATE = date + "/"
+                    self.getMode()
+                else:
+                    print(f"{DIRECTORY.RADAR_NAME} does not have {year}/{month}/{date}")
+            else:
+                print(f"{DIRECTORY.RADAR_NAME} does not have {month} in this {year}")
+        else:
+            print(f"{DIRECTORY.RADAR_NAME} does not have {year}")
+
 
     def getFile(self, index=0):
         self.glWidget.update(index=index)
-        self.glWidget.updateGL()
+        # self.glWidget.updateGL()
 
     def getMode(self, index=0):
         #! get value of mode
         if not folderEmpty(DIRECTORY.getCurrentPath(date=True)+self.ui.modeBox.currentText()):
             DIRECTORY.MODE = self.ui.modeBox.currentText() + "/"
             self.addItemFile()
-            self.glWidget.resetRadar(mode=DIRECTORY.MODE)
+            self.glWidget.resetRadar(filePath=DIRECTORY.FILE_PATH, radarName=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, mode=DIRECTORY.MODE)
             self.getFile()
         else:
             print("This mode is empty")
@@ -182,7 +198,7 @@ class MainWindow(QMainWindow):
         else:
             self.glWidget.update(threshold=0)
 
-        self.glWidget.updateGL()
+        # self.glWidget.updateGL()
 
     def initGL(self):
         self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)
