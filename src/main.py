@@ -36,9 +36,9 @@ class MainWindow(QMainWindow):
         self.initGL()
         #! add item to drop down 3d
         self.addItemRadar()
-        self.addItemFile()
         self.addItemDate()
         self.addItemMode()
+        self.addItemFile()
 
         # validator
         thresholdValidator = QIntValidator()
@@ -55,6 +55,8 @@ class MainWindow(QMainWindow):
         self.ui.threshold.textChanged.connect(self.getThreshold)
 
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+        self.ui.modeBox.currentIndexChanged.connect(self.getMode)
+        self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
 
 
 
@@ -121,13 +123,17 @@ class MainWindow(QMainWindow):
 
     def addItemDate(self):
         self.ui.dateBox.clear()
-        for date in DataManager.listAllDateOfRadar():
-            self.ui.dateBox.addItem(date)
-        self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar().index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
+        try:
+            for date in DataManager.listAllDateOfRadar(radar=DIRECTORY.RADAR_NAME):
+                self.ui.dateBox.addItem(date)
+            self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar().index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
+        except Exception as ex:
+            print(f"An error occurred: {ex}")
+
 
     def addItemFile(self):
         self.ui.fileBox.clear()
-        for file in DataManager.listAllFile():
+        for file in DataManager.listAllFile(DIRECTORY.FILE_PATH, DIRECTORY.RADAR_NAME, DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, DIRECTORY.MODE):
             self.ui.fileBox.addItem(file)
         self.ui.fileBox.setCurrentIndex(0)
 
@@ -137,10 +143,11 @@ class MainWindow(QMainWindow):
             self.ui.modeBox.addItem(mode)
         self.ui.modeBox.setCurrentIndex(DataManager.listAllModeOnDate().index(DIRECTORY.MODE[:-1]))
 
-    def getRadar(self):
+    def getRadar(self, index):
         #! get value of radar
-        self.radar_index = self.ui.radarBox.currentText()
-        self.ui.radarBox.itemData(self.radar_index)
+        DIRECTORY.RADAR_NAME = self.ui.radarBox.currentText() + "/"
+        self.addItemDate()
+
 
     def getDate(self):
         #! get value of date
@@ -149,11 +156,14 @@ class MainWindow(QMainWindow):
 
     def getFile(self, index):
         self.glWidget.update(index=index)
+        self.glWidget.updateGL()
 
-    def getMode(self):
+    def getMode(self, index):
         #! get value of mode
-        self.mode_index = self.ui.modeBox.currentText()
-        self.ui.modeBox.itemData(self.mode_index)
+        DIRECTORY.MODE = self.ui.modeBox.currentText() + "/"
+        self.addItemFile()
+        self.glWidget.resetRadar(mode=DIRECTORY.MODE)
+        self.getFile()
 
     def getIsGrid(self):
         self.isGrid = self.ui.IsGrid.isChecked()  # -> bool
@@ -163,7 +173,8 @@ class MainWindow(QMainWindow):
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
-    # write a function get value of file
+
+        self.glWidget.updateGL()
 
     def initGL(self):
         self.ui.verticalLayout_6.removeWidget(self.ui.openGLWidget)

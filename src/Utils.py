@@ -19,24 +19,14 @@ def listDirInDir(filePath):
     return d
 
 def is_valid_day_for_month_year(day, month_year):
-    # Split the month_year into year and month
     year, month = month_year.split('/')
-
-    # Check if the month is valid (1 to 12)
     if not (1 <= int(month) <= 12):
         return False
-
-    # Get the maximum day for the given month and year
     max_day = calendar.monthrange(int(year), int(month))[1]
-
-    # Check if the day is valid (1 to max_day for the month)
     return 1 <= int(day) <= max_day
 
 def is_safe_file(filename):
-    # List of unsafe file extensions
     unsafe_extensions = ['.exe', '.bat', '.sh', '.py']
-
-    # Check if the file's extension is in the unsafe list
     _, file_extension = os.path.splitext(filename)
     return file_extension.lower() not in unsafe_extensions
 
@@ -47,25 +37,10 @@ def listFile(folderPath):
             not file.startswith('.') and
             is_safe_file(file)
     ]
+    f.sort(key=lambda e: e.split('.')[0])
     return f
 
 def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
-    """
-        Compile and link shader modules to make a shader program.
-
-        Parameters:
-
-            vertex_filepath: path to the text file storing the vertex
-                            source code
-
-            fragment_filepath: path to the text file storing the
-                                fragment source code
-
-        Returns:
-
-            A handle to the created shader program
-    """
-
     with open(vertex_filepath,'r') as f:
         vertex_src = f.readlines()
 
@@ -78,21 +53,7 @@ def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     return shader
 
 def color(value):
-    """
-    Generate colors based on input values.
-
-    Args:
-        value: Array of values.
-
-    Returns:
-        colors: Array of RGB colors corresponding to input values.
-    """
-    # Normalize values to range [0, 1]
-
     normalized_values = (value - 0) / (65 - 0)
-
-    # Map normalized values to RGB colors
-    # Here is a simple example, you can modify this for your specific color scheme
     colors = np.zeros((len(value), 3))
     colors[:, 0] = 0.2 + normalized_values # Red channel
     colors[:, 1] = normalized_values        # Green channel

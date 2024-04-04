@@ -105,7 +105,6 @@ class DataManager:
 
   @staticmethod
   def listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME):
-
     years = [year for year in listDirInDir(filePath+radar) if year.isdigit()]
 
     months = []
@@ -131,8 +130,7 @@ class DataManager:
 class Radar:
 
   def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-    if not DataManager.RAW_DATA:
-      DataManager.RAW_DATA = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
+    DataManager.RAW_DATA = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
 
     self.currentIndex = fileIndex
     self.getRadar()
@@ -158,24 +156,26 @@ class Radar:
     self.data = pyart.io.read(data[fileIndex])
 
   def update(self, index = None):
-    if index:
+    if index is not None:
       self.currentIndex = index
     else:
       self.increaseIndex()
+
     self.getRadar()
 
+
   def get_vertices_positionX(self, indices=None):
-        if indices:
+        if indices is not None:
             return self.data.gate_x["data"][indices]
         else:  return self.data.gate_x["data"]
 
   def get_vertices_positionY(self, indices=None):
-      if indices:
+      if indices is not None:
           return self.data.gate_y["data"][indices]
       else:  return self.data.gate_y["data"]
 
   def get_vertices_positionZ(self, indices=None):
-      if indices:
+      if indices is not None:
           return self.data.gate_z["data"][indices]
       else:  return self.data.gate_z["data"]
 
