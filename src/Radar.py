@@ -120,7 +120,9 @@ class DataManager:
 
   @staticmethod
   def listAllModeOnDate(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE):
-    return listDirInDir(filePath+radar+date)
+    mode = listDirInDir(filePath+radar+date)
+    mode.remove("grid")
+    return mode
 
   @staticmethod
   def listAllFile(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, mode=DIRECTORY.MODE):
@@ -155,8 +157,11 @@ class Radar:
     data = DataManager.getAllDataFilePaths(date = date, mode=mode)
     self.data = pyart.io.read(data[fileIndex])
 
-  def update(self):
-    self.increaseIndex()
+  def update(self, index = None):
+    if index:
+      self.currentIndex = index
+    else:
+      self.increaseIndex()
     self.getRadar()
 
   def get_vertices_positionX(self, indices=None):
