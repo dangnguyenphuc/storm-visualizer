@@ -126,14 +126,20 @@ class DataManager:
   @staticmethod
   def listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME):
     years = [year for year in listDirInDir(filePath+radar) if year.isdigit()]
+    if len(years) == 0:
+      return None
 
     months = []
     for year in years:
       months += [year + "/" + month for month in listDirInDir(filePath + radar + year) if month.isdigit() and int(month) <= 12 and int(month) > 0]
+    if len(months) == 0:
+      return None
 
     dates = []
     for month in months:
       dates += [month + "/" + date for date in listDirInDir(filePath + radar + month) if date.isdigit() and is_valid_day_for_month_year(date, month)]
+    if len(dates) == 0:
+      return None
 
     return dates
 
