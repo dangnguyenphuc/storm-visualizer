@@ -146,7 +146,8 @@ class DataManager:
   @staticmethod
   def listAllModeOnDate(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE):
     mode = listDirInDir(filePath+radar+date)
-    mode.remove("grid")
+    if "grid" in mode:
+      mode.remove("grid")
     return mode
 
   @staticmethod
