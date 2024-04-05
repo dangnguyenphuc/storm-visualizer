@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-# from object3dBK import GLWidget
+# from object3dBK import GLWidget 
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
