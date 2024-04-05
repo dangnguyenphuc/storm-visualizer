@@ -3,7 +3,7 @@ import pyart
 import cartopy.crs as ccrs
 import os
 from sklearn.preprocessing import MinMaxScaler
-from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
 
 class DIRECTORY:
   FILE_PATH = "../Data/"
@@ -43,20 +43,11 @@ class DataManager:
   @staticmethod
   def getAllDataFilePaths(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     filePaths = [
-        fileName for fileName in os.listdir(
-        filePath +
-        radarName +
-        date +
+        filePath + radarName + date + mode + fileName for fileName in DataManager.listAllFile(
+        filePath,
+        radarName,
+        date,
         mode)
-        ]
-
-    filePaths.sort()
-    filePaths = [
-        filePath +
-        radarName +
-        date +
-        mode
-        + fileName for fileName in filePaths
         ]
 
     if "grid" not in mode:
@@ -67,32 +58,63 @@ class DataManager:
     return filePaths
 
   @staticmethod
+  def reconstructData(filePath: str = DIRECTORY.FILE_PATH):
+    # files = listFile(filePath)
+    # if len(files):
+    #   radar = pyart.io.read(filePath + files[0])
+    #   DIRECTORY.RADAR_NAME = radar.metadata["instrument_name"].decode()
+    #   os.mkdir(filePath + DIRECTORY.RADAR_NAME)
+
+    #   for file in files
+
+    # else:
+      pass
+
+  @staticmethod
   def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
     print("Run splitData")
-    if radarName == "NHB/" and mode == "raw/":
+    if mode == "raw/" or not mode or mode == "":
       data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
-      one_prt = []
-      two_prt = []
+      fixed = []
+      dual = []
+      staggered = []
+      other = []
 
       for i in range(len(data)):
         radar = pyart.io.read(data[i])
-        if radar.instrument_parameters['prt_mode']['data'][0].decode() == 'fixed' or radar.instrument_parameters['prt_mode']['data'] == []:
-          one_prt.append(data[i])
-        else: two_prt.append(data[i])
+        if radar.instrument_parameters['prt_mode']['data'][0].decode() == 'fixed' or len(radar.instrument_parameters['prt_mode']['data']) == 0:
+          fixed.append(data[i])
+        elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'dual' : dual.append(data[i])
+        elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'staggered' : staggered.append(data[i])
+        else: other.append(data[i])
 
-      firstDir = filePath + radarName + date + '1_prt/'
-      secondDir = filePath + radarName + date + '2_prt/'
+      if len(fixed) > 0:
+        firstDir = filePath + radarName + date + 'fixed/'
+        if not os.path.exists(firstDir):
+          os.mkdir(firstDir)
+      if len(dual) > 0:
+        secondDir = filePath + radarName + date + 'dual/'
+        if not os.path.exists(secondDir):
+          os.mkdir(secondDir)
+      if len(staggered) > 0:
+        thirdDir = filePath + radarName + date + 'staggered/'
+        if not os.path.exists(thirdDir):
+          os.mkdir(thirdDir)
+      if len(other) > 0:
+        fourthDir = filePath + radarName + date + 'staggered/'
+        if not os.path.exists(fourthDir):
+          os.mkdir(fourthDir)
 
-      print("Creating firstDir at: ", firstDir)
-      print("Creating secondDir at: ", secondDir)
+      for i in fixed:
+        os.rename(i, firstDir + i.split('/')[-1])
+      for i in dual:
+        os.rename(i, secondDir + i.split('/')[-1])
+      for i in staggered:
+        os.rename(i, thirdDir + i.split('/')[-1])
+      for i in other:
+        os.rename(i, fourthDir + i.split('/')[-1])
 
-      os.mkdir(firstDir)
-      os.mkdir(secondDir)
-
-      for i in one_prt:
-          os.rename(i, firstDir + i.split('/')[-1])
-      for i in two_prt:
-          os.rename(i, secondDir + i.split('/')[-1])
+      if mode: os.rmdir(filePath + radarName + date + mode)
 
   @staticmethod
   def genGrid(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
