@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-# from object3dBK import GLWidget 
+# from object3dBK import GLWidget
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
         #     return
         self.glWidget = GLWidget(self)
         self.ui.horizontalLayout_8.insertWidget(0,self.glWidget)
-  
+
 
         self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
         # self.ui.slider_3d_x.setMaximum(115)
@@ -220,13 +220,8 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
         # self.ui.slider_3d_z.setMaximum(115)
 
-        self.ui.slider_3d_x.valueChanged.connect(lambda val: self.glWidget.setRotX(val))
         self.ui.slider_3d_x.setMaximum(115)
-
-        self.ui.slider_3d_y.valueChanged.connect(lambda val: self.glWidget.setRotY(val))
         self.ui.slider_3d_y.setMaximum(115)
-
-        self.ui.slider_3d_z.valueChanged.connect(lambda val: self.glWidget.setRotZ(val))
         self.ui.slider_3d_z.setMaximum(115)
 
         self.ui.preFile.clicked.connect(lambda: self.goPrevFile())
