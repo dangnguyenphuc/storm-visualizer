@@ -45,10 +45,10 @@ def listFile(folderPath):
     return f
 
 def getYearMonthDate(radar):
-    date_string = radar1.time['units'].split(" ")[-1]
-    dt = datetime.fromisoformat(date_string)
+    date_string = radar.time['units'].split(" ")[-1]
+    dt = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%SZ")
 
-    return (dt.year, dt.month, dt.date)
+    return (dt.year, dt.strftime("%m"), dt.strftime("%d"))
 
 def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     with open(vertex_filepath,'r') as f:

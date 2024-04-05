@@ -59,15 +59,33 @@ class DataManager:
 
   @staticmethod
   def reconstructData(filePath: str = DIRECTORY.FILE_PATH):
-    # files = listFile(filePath)
-    # if len(files):
-    #   radar = pyart.io.read(filePath + files[0])
-    #   DIRECTORY.RADAR_NAME = radar.metadata["instrument_name"].decode()
-    #   os.mkdir(filePath + DIRECTORY.RADAR_NAME)
+    files = listFile(filePath)
+    if len(files):
+      loopPath = []
+      for file in files:
 
-    #   for file in files
+        radar = pyart.io.read(filePath + file)
+        radarName = radar.metadata["instrument_name"].decode() + '/'
+        if not os.path.exists(filePath + radarName):
+          os.makedirs(filePath + radarName)
 
-    # else:
+        year, month, date = getYearMonthDate(radar)
+        path = filePath + radarName + str(year) + "/" + str(month) + "/" + str(date) + "/"
+        if not os.path.exists(path):
+          os.makedirs(path)
+          loopPath.append({
+            "filePath": filePath,
+            "radarName": radarName,
+            "date": str(year) + "/" + str(month) + "/" + str(date) + "/"
+          })
+
+        # mv filePath+file path+file
+        os.rename(filePath + file, path + file)
+
+      for path in loopPath:
+        DataManager.splitData(filePath=path["filePath"], radarName=path["radarName"], date=path["date"], mode="")
+
+    else:
       pass
 
   @staticmethod
@@ -282,3 +300,5 @@ class Grid:
   def update(self):
     self.increaseIndex()
     self.getGrid()
+
+DataManager.reconstructData("../TestData/")
