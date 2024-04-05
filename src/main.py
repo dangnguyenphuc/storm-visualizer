@@ -208,15 +208,16 @@ class MainWindow(QMainWindow):
         #     print("glGenBuffers not available")
         #     return
         self.glWidget = GLWidget(self)
-        self.ui.verticalLayout_6.replaceWidget(self.ui.openGLWidget, self.glWidget)
+        self.ui.horizontalLayout_8.insertWidget(0,self.glWidget)
+  
 
-        # self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
+        self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
         # self.ui.slider_3d_x.setMaximum(115)
 
-        # self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
+        self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
         # self.ui.slider_3d_y.setMaximum(115)
 
-        # self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
+        self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
         # self.ui.slider_3d_z.setMaximum(115)
 
         self.ui.slider_3d_x.valueChanged.connect(lambda val: self.glWidget.setRotX(val))

@@ -34,7 +34,6 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
 
-<<<<<<< HEAD
     def update(self, index=None, threshold=None):
         if index is not None:
             self.radar.update(index)
@@ -42,8 +41,6 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.threshold = threshold
 
         self.setUpVBO()
-=======
->>>>>>> eea9e99 (devH - update)
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))    # initialize the screen to blue
