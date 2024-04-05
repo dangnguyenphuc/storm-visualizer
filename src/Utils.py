@@ -5,6 +5,7 @@ from OpenGL.GL.shaders import compileProgram,compileShader
 import numpy as np
 from matplotlib import cm
 import calendar
+from datetime import datetime
 
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
@@ -42,6 +43,12 @@ def listFile(folderPath):
     ]
     f.sort(key=lambda e: e.split('.')[0])
     return f
+
+def getYearMonthDate(radar):
+    date_string = radar1.time['units'].split(" ")[-1]
+    dt = datetime.fromisoformat(date_string)
+
+    return (dt.year, dt.month, dt.date)
 
 def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     with open(vertex_filepath,'r') as f:

@@ -584,7 +584,7 @@ class Ui_MainWindow(object):
         self.view2d_2.setText(_translate("MainWindow", "2D View"))
         self.other_2.setText(_translate("MainWindow", "Others"))
         self.exit_btn_2.setText(_translate("MainWindow", "Exit"))
-        self.labelPage.setText(_translate("MainWindow", "Home Page"))
+        self.labelPage.setText(_translate("MainWindow", "RADAR VISUALIZATION"))
         self.label_21.setText(_translate("MainWindow", "Current Data Directory:"))
         self.curData.setText(_translate("MainWindow", "../Data"))
         self.defaultDirData.setText(_translate("MainWindow", "../Data"))
