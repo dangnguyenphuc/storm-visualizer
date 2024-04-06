@@ -58,39 +58,60 @@ class DataManager:
     return filePaths
 
   @staticmethod
-  def reconstructData(filePath: str = DIRECTORY.FILE_PATH):
-    files = listFile(filePath)
-    if len(files):
+  def reconstructFile(filePath: str = DIRECTORY.FILE_PATH):
+
+    def loopThroughFiles(files):
       loopPath = []
       for file in files:
+        try:
+          radar = pyart.io.read(filePath + file)
+          radarName = radar.metadata["instrument_name"].decode() + '/'
+          if not os.path.exists(filePath + radarName):
+            os.makedirs(filePath + radarName)
 
-        radar = pyart.io.read(filePath + file)
-        radarName = radar.metadata["instrument_name"].decode() + '/'
-        if not os.path.exists(filePath + radarName):
-          os.makedirs(filePath + radarName)
+          year, month, date = getYearMonthDate(radar)
+          path = filePath + radarName + str(year) + "/" + str(month) + "/" + str(date) + "/"
+          if not os.path.exists(path):
+            os.makedirs(path)
+            loopPath.append({
+              "filePath": filePath,
+              "radarName": radarName,
+              "date": str(year) + "/" + str(month) + "/" + str(date) + "/"
+            })
 
-        year, month, date = getYearMonthDate(radar)
-        path = filePath + radarName + str(year) + "/" + str(month) + "/" + str(date) + "/"
-        if not os.path.exists(path):
-          os.makedirs(path)
-          loopPath.append({
-            "filePath": filePath,
-            "radarName": radarName,
-            "date": str(year) + "/" + str(month) + "/" + str(date) + "/"
-          })
+          # mv filePath+file path+file
+          os.rename(filePath + file, path + file)
+        except:
+          continue
 
-        # mv filePath+file path+file
-        os.rename(filePath + file, path + file)
 
       for path in loopPath:
         DataManager.splitData(filePath=path["filePath"], radarName=path["radarName"], date=path["date"], mode="")
 
-    else:
-      pass
+    try:
+      folder = listDirInDir(filePath)
+      if len(folder) > 0:
+        currentFolder = folder[0]
+        while len(folder):
+          for item in os.listdir(filePath + currentFolder):
+            os.rename(filePath + currentFolder + "/" + item, filePath + item)
+
+          os.rmdir(filePath + currentFolder)
+          folder = listDirInDir(filePath)
+          if len(folder) > 0:
+            currentFolder = folder[0]
+          else: break
+
+      files = listFile(filePath)
+      if len(files):
+        loopThroughFiles(files=files)
+    except Exception as e:
+      print(e)
+
+
 
   @staticmethod
   def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-    print("Run splitData")
     if mode == "raw/" or not mode or mode == "":
       data = DataManager.getAllDataFilePaths(filePath, radarName, date, mode)
       fixed = []
@@ -301,4 +322,4 @@ class Grid:
     self.increaseIndex()
     self.getGrid()
 
-DataManager.reconstructData("../TestData/")
+DataManager.reconstructFile("../Data nha be(2,3)/")
