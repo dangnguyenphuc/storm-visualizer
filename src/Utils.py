@@ -6,6 +6,7 @@ import numpy as np
 from matplotlib import cm
 import calendar
 from datetime import datetime
+from Config import TICK
 
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
@@ -72,8 +73,8 @@ def color(value):
 
 class Timer:
     def __init__(self, time):
-        self.time = time
-        self.currentTime = time
+        self.time = time*1000//TICK
+        self.currentTime = time*1000//TICK
         self.flag = False
 
     def run(self):
@@ -87,8 +88,8 @@ class Timer:
         self.currentTime = self.time
 
     def removeAndSetOtherTime(self, time):
-        self.time = time
-        self.currentTime = time
+        self.time = time*1000//TICK
+        self.currentTime = time*1000//TICK
         self.flag = False
 
 
