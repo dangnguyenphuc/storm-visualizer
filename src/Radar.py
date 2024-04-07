@@ -4,7 +4,7 @@ import cartopy.crs as ccrs
 import os
 from sklearn.preprocessing import MinMaxScaler
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
-import wradlib
+import wradlib as wrl
 import xarray
 
 class DIRECTORY:
@@ -317,6 +317,8 @@ class Radar:
         masked_array = np.ma.masked_array(data_no_clutter, mask=data_no_clutter < -100, fill_value=None)
 
         self.currentReflectivity = np.ma.concatenate((self.currentReflectivity, masked_array), axis=0)
+
+      self.currentReflectivity = self.currentReflectivity.flatten()
 
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()

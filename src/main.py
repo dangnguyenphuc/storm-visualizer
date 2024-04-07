@@ -62,6 +62,7 @@ class MainWindow(QMainWindow):
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
+        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
 
 
 
@@ -179,7 +180,7 @@ class MainWindow(QMainWindow):
 
 
     def getFile(self, index=0):
-        self.glWidget.update(index=index)
+        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.glWidget.updateGL()
 
     def getMode(self, index=0):
@@ -192,8 +193,12 @@ class MainWindow(QMainWindow):
         else:
             print("This mode is empty")
 
-    def getIsGrid(self):
-        self.isGrid = self.ui.IsGrid.isChecked()  # -> bool
+    def getClutterFilter(self, state):
+        if state:
+            self.glWidget.update(clutterFilter=True)
+        else:
+            self.glWidget.update(clutterFilter=False)
+        self.glWidget.updateGL()
 
     def getThreshold(self):
         if self.ui.threshold.text():
