@@ -47,8 +47,9 @@ class MainWindow(QMainWindow):
 
         # validator
         thresholdValidator = QIntValidator()
-        thresholdValidator.setRange(0, 100)  # For example, allow numbers from -1000 to 1000
+        thresholdValidator.setRange(0, 100)
         self.ui.threshold.setValidator(thresholdValidator)
+        self.ui.threshold.setText(str(self.glWidget.threshold))
 
         # timers
         mainTimer = QtCore.QTimer(self)

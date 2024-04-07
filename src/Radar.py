@@ -290,15 +290,14 @@ class Radar:
       }
 
   def isFilterClutter(self, isFilter = False):
-    def get_DBZ_from_sweep(radar, sweep = 1):
-      try:
-        return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]
-      except Exception as e:
-        return radar["data"][sweep]["sweep_data"]["DB_DBZ"]
-
+    # def get_DBZ_from_sweep(radar, sweep = 1):
+    #   try:
+    #     return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]
+    #   except Exception as e:
+    #     return radar["data"][sweep]["sweep_data"]["DB_DBZ"]
 
     if isFilter:
-      data = wrl.io.read_iris(DataManager.RAW_DATA[self.currentIndex])
+      data = np.ma.filled(self.data.fields['reflectivity']['data'], fill_value=-327)
       site = (self.data.longitude['data'][0], self.data.latitude['data'][0], self.data.altitude['data'][0])
       r = self.data.range['data']
 
@@ -306,7 +305,7 @@ class Radar:
       for sweep in range(self.data.nsweeps):
 
         da = wrl.georef.create_xarray_dataarray(
-            get_DBZ_from_sweep(data, sweep = sweep+1),
+            data[self.data.get_start(sweep) : self.data.get_end(sweep) + 1],
             phi=self.data.get_azimuth(sweep),
             theta=self.data.get_elevation(sweep),
             r=r,
@@ -314,7 +313,7 @@ class Radar:
         ).wrl.georef.georeference()
         clutter = da.wrl.classify.filter_gabella(tr1=12, n_p=6, tr2=1.1)
         data_no_clutter = da.wrl.ipol.interpolate_polar(clutter)
-        masked_array = np.ma.masked_array(data_no_clutter, mask=data_no_clutter < -100, fill_value=None)
+        masked_array = np.ma.masked_array(data_no_clutter, mask=data_no_clutter < -327, fill_value=None)
 
         self.currentReflectivity = np.ma.concatenate((self.currentReflectivity, masked_array), axis=0)
 
