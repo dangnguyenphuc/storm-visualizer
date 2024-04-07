@@ -11,8 +11,8 @@ from sidebar_ui import Ui_MainWindow
 import sys
 import numpy as np
 from Radar import DataManager, DIRECTORY
-from Config import *
-from Utils import folderEmpty
+from Config import SECOND, TICK
+from Utils import folderEmpty, Timer
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -48,8 +48,12 @@ class MainWindow(QMainWindow):
         # validator
         thresholdValidator = QIntValidator()
         thresholdValidator.setRange(0, 100)
+        timerValidator = QIntValidator()
+        timerValidator.setRange(0, 3600)
         self.ui.threshold.setValidator(thresholdValidator)
         self.ui.threshold.setText(str(self.glWidget.threshold))
+        self.ui.timerInput.setValidator(timerValidator)
+        self.ui.timerInput.setText("0")
 
         # timers
         mainTimer = QtCore.QTimer(self)
@@ -57,15 +61,20 @@ class MainWindow(QMainWindow):
         mainTimer.timeout.connect(self.glWidget.updateGL)
         mainTimer.start()
 
+
+        self.switchFrameTimer = QtCore.QTimer(self)
+        self.switchFrameTimer.timeout.connect(self.goNextFile)
+        self.switchFrameTimer.stop()
+
+
         # just change when value change
         self.ui.threshold.textChanged.connect(self.getThreshold)
+        self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
-
-
 
     ## Function for searching
     def on_search_btn_clicked(self):
@@ -203,16 +212,23 @@ class MainWindow(QMainWindow):
 
     def getThreshold(self):
         if self.ui.threshold.text():
+            print("Filter threshold with value: " + self.ui.threshold.text())
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
 
         self.glWidget.updateGL()
 
+    def getSwichFrameTimer(self):
+        if self.ui.timerInput.text():
+            if int(self.ui.timerInput.text()) > 0:
+                self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
+                self.switchFrameTimer.start()
+            else: self.switchFrameTimer.stop()
+        else: self.switchFrameTimer.stop()
+
     def initGL(self):
-        # if not bool(glGenBuffers):
-        #     print("glGenBuffers not available")
-        #     return
+
         self.glWidget = GLWidget(self)
         self.ui.horizontalLayout_8.insertWidget(0,self.glWidget)
 
@@ -230,8 +246,8 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setMaximum(115)
         self.ui.slider_3d_z.setMaximum(115)
 
-        self.ui.preFile.clicked.connect(lambda: self.goPrevFile())
-        self.ui.nextFile.clicked.connect(lambda: self.goNextFile())
+        self.ui.preFile.clicked.connect(self.goPrevFile)
+        self.ui.nextFile.clicked.connect(self.goNextFile)
 
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
