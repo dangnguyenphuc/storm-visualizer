@@ -4,6 +4,8 @@ import cartopy.crs as ccrs
 import os
 from sklearn.preprocessing import MinMaxScaler
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
+import wradlib
+import xarray
 
 class DIRECTORY:
   FILE_PATH = "../Data/"
@@ -107,8 +109,6 @@ class DataManager:
         loopThroughFiles(files=files)
     except Exception as e:
       print(e)
-
-
 
   @staticmethod
   def splitData(filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
@@ -225,6 +225,7 @@ class Radar:
 
   def getRadar(self):
     self.data = pyart.io.read(DataManager.RAW_DATA[self.currentIndex])
+    self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
 
   def increaseIndex(self):
     self.currentIndex += 1
@@ -279,16 +280,46 @@ class Radar:
       )
 
   def get_all_vertices_by_threshold(self, threshold = 0):
-      reflectivity = self.data.fields['reflectivity']['data'].flatten()
 
-      indices = np.where(np.logical_and(np.logical_not(reflectivity.mask), reflectivity.data >= threshold))
+      indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
       scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
       vertices = self.get_vertices_position(scaler)
       return {
           'position': vertices[indices],
-          'color': color(reflectivity[indices])
+          'color': color(self.currentReflectivity[indices])
       }
 
+  def isFilterClutter(self, isFilter = False):
+    def get_DBZ_from_sweep(radar, sweep = 1):
+      try:
+        return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]
+      except Exception as e:
+        return radar["data"][sweep]["sweep_data"]["DB_DBZ"]
+
+
+    if isFilter:
+      data = wrl.io.read_iris(DataManager.RAW_DATA[self.currentIndex])
+      site = (self.data.longitude['data'][0], self.data.latitude['data'][0], self.data.altitude['data'][0])
+      r = self.data.range['data']
+
+      self.currentReflectivity = np.ma.masked_array(np.empty((0, self.data.ngates)), mask=np.empty((0, self.data.ngates), dtype=bool))
+      for sweep in range(self.data.nsweeps):
+
+        da = wrl.georef.create_xarray_dataarray(
+            get_DBZ_from_sweep(data, sweep = sweep+1),
+            phi=self.data.get_azimuth(sweep),
+            theta=self.data.get_elevation(sweep),
+            r=r,
+            site=site
+        ).wrl.georef.georeference()
+        clutter = da.wrl.classify.filter_gabella(tr1=12, n_p=6, tr2=1.1)
+        data_no_clutter = da.wrl.ipol.interpolate_polar(clutter)
+        masked_array = np.ma.masked_array(data_no_clutter, mask=data_no_clutter < -100, fill_value=None)
+
+        self.currentReflectivity = np.ma.concatenate((self.currentReflectivity, masked_array), axis=0)
+
+    else:
+      self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
 class Grid:
 
   def __init__(self, fileIndex = 0, filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str =DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
@@ -321,5 +352,3 @@ class Grid:
   def update(self):
     self.increaseIndex()
     self.getGrid()
-
-DataManager.reconstructFile("../Data nha be(2,3)/")
