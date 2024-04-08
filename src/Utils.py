@@ -2,8 +2,9 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL.shaders import compileProgram,compileShader
+import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import cm
+from matplotlib.colors import ListedColormap
 import calendar
 from datetime import datetime
 from Config import TICK
@@ -70,6 +71,19 @@ def color(value):
     colors[:, 1] = normalized_values        # Green channel
     colors[:, 2] = 0.6-normalized_values     # Blue channel
     return colors
+
+def get_unique_color(value, total_values=100, colormap='jet'):
+    value = np.clip(value, 1, total_values)
+
+    cmap = plt.get_cmap(colormap, total_values)
+
+    color_index = value - 1
+    
+    rgba = cmap(color_index)
+    
+    rgb = rgba[:3]
+    
+    return rgb
 
 class Timer:
     def __init__(self, time):

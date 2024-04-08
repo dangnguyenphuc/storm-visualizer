@@ -25,11 +25,11 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.scale = val
 
     def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-        self.radar = Radar(index, filePath, radarName, date, mode)
+        self.radar = Grid(index, filePath, radarName, date, mode)
 
     def resetRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
         del self.radar
-        self.radar = Radar(index, filePath, radarName, date, mode)
+        self.radar = Grid(index, filePath, radarName, date, mode)
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
@@ -40,7 +40,8 @@ class GLWidget(QtOpenGL.QGLWidget):
         if threshold is not None:
             self.threshold = threshold
         if clutterFilter is not None:
-            self.radar.isFilterClutter(clutterFilter)
+            # self.radar.isFilterClutter(clutterFilter)
+            pass
 
         self.setUpVBO()
 

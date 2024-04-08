@@ -30,15 +30,15 @@ class App:
 
   def createAsset(self):
     self.entity = Entity(
-                  position = [0,0,-3],
+                  position = [0,0,-20],
                   eulers = [0,-90,0]
                 )
 
     self.vertex = VertexPoint()
 
     self.shader = create_shader(
-                    vertex_filepath = "../shaders/vertex.txt",
-                    fragment_filepath = "../shaders/fragment.txt"
+                    vertex_filepath = "shaders/vertex.txt",
+                    fragment_filepath = "shaders/fragment.txt"
                   )
 
   def setOnetimeUniforms(self) -> None:
@@ -51,7 +51,7 @@ class App:
     # Use orthographic projection
     projection_transform = pyrr.matrix44.create_perspective_projection(
         fovy = 45, aspect = WINDOW_PROPERTIES.SCREEN_WIDTH/WINDOW_PROPERTIES.SCREEN_HEIGHT,
-        near = 1.0, far = 10, dtype=np.float32
+        near = 1.0, far = 20, dtype=np.float32
     )
 
     # assign projection_transform to SHADER SCRIPT
@@ -100,9 +100,9 @@ class App:
 
     self.runTimers()
 
-    if self.switchFrameTimer.flag:
-      self.vertex.update()
-      self.switchFrameTimer.reset()
+    # if self.switchFrameTimer.flag:
+    #   self.vertex.update()
+      # self.switchFrameTimer.reset()
 
   def runTimers(self):
     self.switchFrameTimer.run()
