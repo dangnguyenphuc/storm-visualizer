@@ -112,8 +112,8 @@ class VertexPoint:
     self.setUpThreshold(threshold)
     self.getVertices()
 
-  def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-    self.radar = Radar(index, filePath, radarName, date, mode)
+  def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+    self.radar = Grid(index, filePath, radarName, date, mode)
 
   def setUpThreshold(self, threshold = 0):
     self.threshold = threshold
@@ -132,7 +132,7 @@ class VertexPoint:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12, ctypes.c_void_p(0))
 
   def update(self):
-    self.radar.update()
+    # self.radar.update()
     self.getVertices()
 
   def draw(self):
@@ -148,42 +148,22 @@ class VertexPoint:
     glDeleteVertexArrays(1, (self.vao,))
     glDeleteBuffers(1, (self.vbo,))
 
-  def get_gate_reflectivity(self, sweep_num):
-    start_ray_index = self.radar.data.sweep_start_ray_index['data'][sweep_num]
-    end_ray_index = self.radar.data.sweep_end_ray_index['data'][sweep_num]
-
-    return self.radar.data.fields['reflectivity']['data'][start_ray_index : end_ray_index+1].flatten()
-
-  def get_vertices_positionX(self, indices=None):
-    if indices:
-      return self.radar.data.gate_x["data"][indices]
-    else:  return self.radar.data.gate_x["data"]
-
-  def get_vertices_positionY(self, indices=None):
-    if indices:
-      return self.radar.data.gate_y["data"][indices]
-    else:  return self.radar.data.gate_y["data"]
-
-  def get_vertices_positionZ(self, indices=None):
-    if indices:
-      return self.radar.data.gate_z["data"][indices]
-    else:  return self.radar.data.gate_z["data"]
-
   def get_vertices_position(self, scaler):
+    a = self.radar.data.z['data']
+    b = self.radar.data.y['data']
+    c = self.radar.data.x['data']
+
+    # Create all combinations of indices
+    idx_a, idx_b, idx_c = np.meshgrid(np.arange(len(a)), np.arange(len(b)), np.arange(len(c)), indexing='ij')
+    combinations = np.array([c[idx_c.ravel()], b[idx_b.ravel()], a[idx_a.ravel()]]).T
     return scaler.fit_transform(
-      np.column_stack(
-        (
-          self.radar.data.gate_x["data"].flatten(),
-          self.radar.data.gate_y["data"].flatten(),
-          self.radar.data.gate_z["data"].flatten()
-        )
-      )
+        combinations
     )
 
-  def get_all_vertices_by_threshold(self):
-    reflectivity = self.radar.data.fields['reflectivity']['data'].flatten()
+  def get_all_vertices_by_threshold(self, threshold = -20):
+      reflectivity = self.radar.data.fields['reflectivity']['data'].flatten()
 
-    indices = np.where(np.logical_and(np.logical_not(reflectivity.mask), reflectivity.data >= self.threshold))
-    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-    vertices = self.get_vertices_position(scaler)
-    return vertices[indices].flatten()
+      indices = np.where(np.logical_and(np.logical_not(reflectivity.mask),reflectivity.data >= threshold))
+      scaler = MinMaxScaler(feature_range=(-0.5, 0.5))
+      vertices = self.get_vertices_position(scaler)
+      return vertices[indices].flatten()
