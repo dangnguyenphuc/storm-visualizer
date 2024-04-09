@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\sidebar.ui'
+# Form implementation generated from reading ui file '.\src\sidebar.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -159,7 +159,7 @@ class Ui_MainWindow(object):
         self.view3d_1 = QtWidgets.QPushButton(self.icon_only_widget)
         self.view3d_1.setText("")
         icon6 = QtGui.QIcon()
-        icon6.addPixmap(QtGui.QPixmap(".\\icon/3d-cube.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon6.addPixmap(QtGui.QPixmap(".\\src\\icon/3d-cube.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon6.addPixmap(QtGui.QPixmap(":/icon/icon/3d-cube.ico"), QtGui.QIcon.Normal, QtGui.QIcon.On)
         icon6.addPixmap(QtGui.QPixmap(":/icon/icon/3d-cube.ico"), QtGui.QIcon.Disabled, QtGui.QIcon.Off)
         icon6.addPixmap(QtGui.QPixmap(":/icon/icon/3d-cube.ico"), QtGui.QIcon.Disabled, QtGui.QIcon.On)
@@ -325,7 +325,6 @@ class Ui_MainWindow(object):
         self.dateBox.setTabletTracking(False)
         self.dateBox.setFocusPolicy(QtCore.Qt.WheelFocus)
         self.dateBox.setInputMethodHints(QtCore.Qt.ImhNone)
-        self.dateBox.setPlaceholderText("yyyy/MM/dd")
         self.dateBox.setEditable(True)
         self.dateBox.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
         self.dateBox.setObjectName("dateBox")
@@ -585,7 +584,7 @@ class Ui_MainWindow(object):
         self.view2d_2.setText(_translate("MainWindow", "2D View"))
         self.other_2.setText(_translate("MainWindow", "Others"))
         self.exit_btn_2.setText(_translate("MainWindow", "Exit"))
-        self.labelPage.setText(_translate("MainWindow", "RADAR VISUALIZATION"))
+        self.labelPage.setText(_translate("MainWindow", "Home Page"))
         self.label_21.setText(_translate("MainWindow", "Current Data Directory:"))
         self.curData.setText(_translate("MainWindow", "../Data"))
         self.defaultDirData.setText(_translate("MainWindow", "../Data"))
