@@ -17,7 +17,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None, index = 0, threshold = 0):
         self.parent = parent
         super().__init__(parent)
-        self.setUpRadar(index=index)
+        self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
         self.setUpScale()
 
@@ -25,11 +25,11 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.scale = val
 
     def setUpRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
-        self.radar = Grid(index, filePath, radarName, date, mode)
+        self.radar = Radar(index, filePath, radarName, date, mode)
 
     def resetRadar(self, index = 0,filePath: str = DIRECTORY.FILE_PATH, radarName: str = DIRECTORY.RADAR_NAME, date: str = DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
         del self.radar
-        self.radar = Grid(index, filePath, radarName, date, mode)
+        self.radar = Radar(index, filePath, radarName, date, mode)
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
@@ -40,8 +40,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         if threshold is not None:
             self.threshold = threshold
         if clutterFilter is not None:
-            # self.radar.isFilterClutter(clutterFilter)
-            pass
+            self.radar.isFilterClutter(clutterFilter)
 
         self.setUpVBO()
 
@@ -96,17 +95,18 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpVBO(self):
 
         v = self.radar.get_all_vertices_by_threshold(self.threshold)
-        self.vertices = v['position']
-        self.vertVBO = vbo.VBO(np.reshape(self.vertices,
-                                          (1, -1)).astype(np.float32))
-        self.vertVBO.bind()
+        if v:
+          self.vertices = v['position']
+          self.vertVBO = vbo.VBO(np.reshape(self.vertices,
+                                            (1, -1)).astype(np.float32))
+          self.vertVBO.bind()
 
-        self.color = v['color']
-        self.colorVBO = vbo.VBO(np.reshape(self.color,
-                                           (1, -1)).astype(np.float32))
-        self.colorVBO.bind()
+          self.color = v['color']
+          self.colorVBO = vbo.VBO(np.reshape(self.color,
+                                            (1, -1)).astype(np.float32))
+          self.colorVBO.bind()
 
-        self.indexArray = np.array(range(len(self.vertices)))
+          self.indexArray = np.array(range(len(self.vertices)))
 
     def setRotX(self, val):
         self.rotX = np.pi * val

@@ -12,7 +12,7 @@ import sys
 import numpy as np
 from Radar import DataManager, DIRECTORY
 from Config import SECOND, TICK
-from Utils import folderEmpty, Timer
+from Utils import folderEmpty
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
