@@ -65,45 +65,9 @@ def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
     return shader
 
 def color(value):
-    normalized_values = (value - 0) / (65 - 0)
+    normalized_values = (value + 20) / (65 + 20)
     colors = np.zeros((len(value), 3))
     colors[:, 0] = 0.2 + normalized_values # Red channel
     colors[:, 1] = normalized_values        # Green channel
     colors[:, 2] = 0.6-normalized_values     # Blue channel
     return colors
-
-def get_unique_color(value, total_values=100, colormap='jet'):
-    value = np.clip(value, 1, total_values)
-
-    cmap = plt.get_cmap(colormap, total_values)
-
-    color_index = value - 1
-    
-    rgba = cmap(color_index)
-    
-    rgb = rgba[:3]
-    
-    return rgb
-
-class Timer:
-    def __init__(self, time):
-        self.time = time*1000//TICK
-        self.currentTime = time*1000//TICK
-        self.flag = False
-
-    def run(self):
-        self.currentTime -= 1
-
-        if self.currentTime <= 0:
-            self.flag = True
-
-    def reset(self):
-        self.flag = False
-        self.currentTime = self.time
-
-    def removeAndSetOtherTime(self, time):
-        self.time = time*1000//TICK
-        self.currentTime = time*1000//TICK
-        self.flag = False
-
-

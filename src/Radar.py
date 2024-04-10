@@ -6,63 +6,8 @@ from sklearn.preprocessing import MinMaxScaler
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
 import wradlib as wrl
 import xarray
-from scipy import ndimage
 import pandas as pd
-
-def get_grid_size(grid_obj):
-    """ Calculates grid size per dimension given a grid object. """
-    z_len = grid_obj.z['data'][-1] - grid_obj.z['data'][0]
-    x_len = grid_obj.x['data'][-1] - grid_obj.x['data'][0]
-    y_len = grid_obj.y['data'][-1] - grid_obj.y['data'][0]
-    z_size = z_len / (grid_obj.z['data'].shape[0] - 1)
-    x_size = x_len / (grid_obj.x['data'].shape[0] - 1)
-    y_size = y_len / (grid_obj.y['data'].shape[0] - 1)
-    return np.array([z_size, y_size, x_size])
-
-def get_grid_alt(grid_size, alt_meters=1500):
-    """ Returns z-index closest to alt_meters. """
-    return int(np.round(alt_meters//grid_size[0]))
-
-def get_vert_projection(grid, thresh=40):
-    """ Returns boolean vertical projection from grid. """
-    return np.any(grid > thresh, axis=0)
-
-def get_filtered_frame(grid, min_size, thresh):
-    """ Returns a labeled frame from gridded radar data. Smaller objects
-    are removed and the rest are labeled. """
-    echo_height = get_vert_projection(grid, thresh)
-    labeled_echo = ndimage.label(echo_height)[0]
-    frame = clear_small_echoes(labeled_echo, min_size)
-    return frame
-
-
-def clear_small_echoes(label_image, min_size):
-    """ Takes in binary image and clears objects less than min_size. """
-    flat_image = pd.Series(label_image.flatten())
-    flat_image = flat_image[flat_image > 0]
-    size_table = flat_image.value_counts(sort=False)
-    small_objects = size_table.keys()[size_table < min_size]
-
-    for obj in small_objects:
-        label_image[label_image == obj] = 0
-    label_image = ndimage.label(label_image)
-    return label_image[0]
-
-
-def extract_grid_data(grid_obj, field, grid_size, params, all=False):
-    """ Returns filtered grid frame and raw grid slice at global shift
-    altitude. """
-    min_size = params['MIN_SIZE'] / np.prod(grid_size[1:]/1000)
-    masked = grid_obj.fields[field]['data']
-    masked.data[masked.data == masked.fill_value] = 0
-    if all:
-      raw = masked.data
-    else:
-      gs_alt = params['GS_ALT']
-      raw = masked.data[get_grid_alt(grid_size, gs_alt), :, :]
-    frame = get_filtered_frame(masked.data, min_size,
-                               params['FIELD_THRESH'])
-    return raw, frame
+from tint.grid_utils import *
 
 class DIRECTORY:
   FILE_PATH = "../Data/"
@@ -347,11 +292,11 @@ class Radar:
       }
 
   def isFilterClutter(self, isFilter = False):
-    # def get_DBZ_from_sweep(radar, sweep = 1):
-    #   try:
-    #     return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]
-    #   except Exception as e:
-    #     return radar["data"][sweep]["sweep_data"]["DB_DBZ"]
+    def get_DBZ_from_sweep(radar, sweep = 1):
+      try:
+        return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]
+      except Exception as e:
+        return radar["data"][sweep]["sweep_data"]["DB_DBZ"]
 
     if isFilter:
       data = np.ma.filled(self.data.fields['reflectivity']['data'], fill_value=-327)
@@ -389,17 +334,7 @@ class Grid:
 
   def getGrid(self):
     self.data = pyart.io.read_grid(DataManager.GRID_DATA[self.currentIndex])
-    # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
-
-    # storm Identification testing
-    grid_size = get_grid_size(self.data)
-    min_size = 20 / np.prod(grid_size[1:]/1000)
-    masked = self.data.fields['reflectivity']['data']
-    masked.data[masked.data == masked.fill_value] = 0
-    masked.data[masked.data > 35] == 1
-
-    labeled_echo = ndimage.label(masked.data)[0]
-    self.currentReflectivity = clear_small_echoes(labeled_echo, min_size).flatten()
+    self.currentReflectivity = self.data.fields['reflectivity']['data']          
 
   def increaseIndex(self):
     self.currentIndex += 1
@@ -442,7 +377,15 @@ class Grid:
 
     # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
 
-    indices = np.where(self.currentReflectivity > threshold)
+    # storm Identification testing
+    # grid_size = get_grid_size(self.data)
+    # min_size = 4 / np.prod(grid_size[1:]/1000)
+    # masked = self.data.fields['reflectivity']['data']
+    # masked.data[masked.data == masked.fill_value] = 0
+    # frame = get_filtered_frame(masked.data, min_size,
+    #                            32)
+    # indices = np.where(self.currentReflectivity > threshold)
+
     scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     vertices = self.get_vertices_position(scaler)
     return {
