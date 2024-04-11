@@ -933,7 +933,7 @@
                     <x>0</x>
                     <y>0</y>
                     <width>843</width>
-                    <height>393</height>
+                    <height>391</height>
                    </rect>
                   </property>
                  </widget>
@@ -1088,9 +1088,9 @@
                   </widget>
                  </item>
                  <item row="2" column="5">
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="resetView">
                    <property name="text">
-                    <string>PushButton</string>
+                    <string>ResetView</string>
                    </property>
                   </widget>
                  </item>

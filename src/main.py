@@ -317,6 +317,24 @@ class MainWindow(QMainWindow):
         self.ui.preFile.clicked.connect(self.goPrevFile)
         self.ui.nextFile.clicked.connect(self.goNextFile)
 
+        self.ui.resetView.clicked.connect(self.reset3DView)
+
+
+    def reset3DView(self):
+        """
+        Reset 3D view
+        """
+        #reset zoome view
+        self.glWidget.zoom_center[0] = 0
+        self.glWidget.zoom_center[1] = 0
+        
+        # reset position
+        self.glWidget.teapot_pos[0] = 0
+        self.glWidget.teapot_pos[1] = 0
+
+        # seset scale
+        self.update()
+        self.glWidget.setUpScale(1)
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
         self.ui.fileBox.setCurrentIndex(index)

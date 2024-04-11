@@ -20,7 +20,9 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
         self.setUpScale()
-
+        self.teapot_pos = [0, 0] 
+        self.zoom_center = [0, 0] 
+        self.scale = 1.0
     def setUpScale(self, val=1.0):
         self.scale = val
 
@@ -68,8 +70,10 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         gl.glPushMatrix()    # push the current matrix to the current stack
 
-        gl.glTranslate(0.0, 0.0, -5.0)    # third, translate cube to specified depth
+        gl.glTranslate(self.teapot_pos[0], self.teapot_pos[1], -5.0)    # third, translate cube to specified depth
+        gl.glTranslatef(self.zoom_center[0], self.zoom_center[1],  0)  # zoom in mouse position demo
         gl.glScale(self.scale, self.scale, self.scale)       # second, scale cube
+        gl.glTranslatef(-self.zoom_center[0], -self.zoom_center[1], 0) # zoom in mouse position demo
         gl.glRotate(self.rotX, 1.0, 0.0, 0.0)
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)

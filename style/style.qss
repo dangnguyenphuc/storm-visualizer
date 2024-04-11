@@ -6,6 +6,11 @@
 /*= END
   ==================================================== */
 
+	#errorBox{
+		background-color: #fff;
+		color:#E72929;
+		border: none;
+	}
 /*= Style for button to change menu style START
   ==================================================== */
 	#change_btn {
