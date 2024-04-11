@@ -36,9 +36,9 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
-
+        self.timeWheel = 0
         self.initGL()
-        self.initHomePage()
+        self.initHomePage() 
         #! add item to drop down 3d
         self.addItemRadar()
         self.addItemDate()
@@ -287,7 +287,25 @@ class MainWindow(QMainWindow):
         self.dataDir = QFileDialog.getExistingDirectory()
         self.ui.curData.setText(self.dataDir)
 
-
+    def wheelEvent(self,event):
+        """
+        wheel event
+        Args:
+            event (QtGui.QWheelEvent): wheel event
+        for user:
+            ctrl or control + mouse wheel clockwise (counter-clockwise) to zoom in (zoom out)
+            scale ability: 0.25 -> 10
+        """
+        if event.modifiers() & Qt.ControlModifier and self.ui.stackedWidget.currentIndex() == 1:
+            delta = event.angleDelta().y()
+            self.timeWheel += (delta and delta // abs(delta))
+            if self.timeWheel >= 36 :
+                self.timeWheel = 36
+            elif self.timeWheel <= -3:
+                self.timeWheel = -3
+            scaleWheel = 1 +  self.timeWheel * 0.25
+            self.glWidget.setUpScale(scaleWheel)
+            print(scaleWheel)
 
 def loadStyle(QApplication):
     """
