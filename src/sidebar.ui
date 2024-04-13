@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1028</width>
-    <height>613</height>
+    <width>1036</width>
+    <height>631</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -849,7 +849,7 @@
                   </widget>
                  </item>
                  <item row="0" column="6">
-                  <widget class="QCheckBox" name="IsGrid">
+                  <widget class="QCheckBox" name="clutterFilterToggle">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                      <horstretch>0</horstretch>
@@ -863,7 +863,7 @@
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>IS GRID FILE</string>
+                    <string>Clutter Filter</string>
                    </property>
                   </widget>
                  </item>
@@ -885,51 +885,66 @@
                    </item>
                   </layout>
                  </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="errorBox">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
+                   <property name="contextMenuPolicy">
+                    <enum>Qt::DefaultContextMenu</enum>
+                   </property>
+                   <property name="echoMode">
+                    <enum>QLineEdit::Normal</enum>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_8"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QScrollArea" name="scrollArea">
+                 <property name="mouseTracking">
+                  <bool>true</bool>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAsNeeded</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAsNeeded</enum>
+                 </property>
+                 <property name="widgetResizable">
+                  <bool>true</bool>
+                 </property>
+                 <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                  <property name="geometry">
+                   <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>843</width>
+                    <height>391</height>
+                   </rect>
+                  </property>
+                 </widget>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <layout class="QGridLayout" name="gridLayout_11">
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_11">
-                   <property name="text">
-                    <string>Z aixs</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QSlider" name="slider_3d_y">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QSlider" name="slider_3d_x">
-                   <property name="styleSheet">
-                    <string notr="true">border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(245, 224, 176, 255), stop:0.09 rgba(246, 189, 237, 255), stop:0.14 rgba(194, 207, 246, 255), stop:0.19 rgba(184, 160, 168, 255), stop:0.25 rgba(171, 186, 248, 255), stop:0.32 rgba(243, 248, 224, 255), stop:0.385 rgba(249, 162, 183, 255), stop:0.47 rgba(100, 115, 124, 255), stop:0.58 rgba(251, 205, 202, 255), stop:0.65 rgba(170, 128, 185, 255), stop:0.75 rgba(252, 222, 204, 255), stop:0.805 rgba(206, 122, 218, 255), stop:0.86 rgba(254, 223, 175, 255), stop:0.91 rgba(254, 236, 244, 255), stop:1 rgba(255, 191, 221, 255));</string>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="5">
-                  <widget class="QLineEdit" name="lineEdit_2">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="1">
                   <widget class="QLabel" name="x_value">
                    <property name="sizePolicy">
@@ -958,6 +973,13 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="1" column="4">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>Switch Frame Timer</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="1" column="1">
                   <widget class="QLabel" name="y_value">
                    <property name="minimumSize">
@@ -971,27 +993,6 @@
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="4">
-                  <widget class="QLabel" name="label_5">
-                   <property name="text">
-                    <string>Threshold</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <widget class="QSlider" name="slider_3d_z">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_2">
-                   <property name="text">
-                    <string>X axis</string>
                    </property>
                   </widget>
                  </item>
@@ -1011,6 +1012,37 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="2" column="2">
+                  <widget class="QSlider" name="slider_3d_z">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Z aixs</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QSlider" name="slider_3d_x">
+                   <property name="styleSheet">
+                    <string notr="true">border-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(245, 224, 176, 255), stop:0.09 rgba(246, 189, 237, 255), stop:0.14 rgba(194, 207, 246, 255), stop:0.19 rgba(184, 160, 168, 255), stop:0.25 rgba(171, 186, 248, 255), stop:0.32 rgba(243, 248, 224, 255), stop:0.385 rgba(249, 162, 183, 255), stop:0.47 rgba(100, 115, 124, 255), stop:0.58 rgba(251, 205, 202, 255), stop:0.65 rgba(170, 128, 185, 255), stop:0.75 rgba(252, 222, 204, 255), stop:0.805 rgba(206, 122, 218, 255), stop:0.86 rgba(254, 223, 175, 255), stop:0.91 rgba(254, 236, 244, 255), stop:1 rgba(255, 191, 221, 255));</string>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Y axis</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="0" column="5">
                   <widget class="QLineEdit" name="threshold">
                    <property name="sizePolicy">
@@ -1024,17 +1056,41 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_3">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string>Y axis</string>
+                    <string>X axis</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="4">
-                  <widget class="QLabel" name="label_12">
+                 <item row="1" column="2">
+                  <widget class="QSlider" name="slider_3d_y">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="4">
+                  <widget class="QLabel" name="label_5">
                    <property name="text">
-                    <string>Others opt</string>
+                    <string>Threshold</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="5">
+                  <widget class="QLineEdit" name="timerInput">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="5">
+                  <widget class="QPushButton" name="resetView">
+                   <property name="text">
+                    <string>ResetView</string>
                    </property>
                   </widget>
                  </item>
@@ -1054,76 +1110,206 @@
               <layout class="QHBoxLayout" name="horizontalLayout_9">
                <item>
                 <layout class="QGridLayout" name="gridLayout_17">
-                 <item row="0" column="5">
-                  <widget class="QComboBox" name="comboBox_2">
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="radarBox_2d">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="0">
-                  <widget class="QLabel" name="label_18">
-                   <property name="text">
-                    <string>TextLabel</string>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="3">
-                  <widget class="QLineEdit" name="lineEdit_4"/>
-                 </item>
                  <item row="0" column="6">
-                  <widget class="QCheckBox" name="checkBox_2">
+                  <widget class="QCheckBox" name="clutterFilterToggle_2d">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="layoutDirection">
                     <enum>Qt::RightToLeft</enum>
                    </property>
                    <property name="text">
-                    <string>CheckBox</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_15">
-                   <property name="text">
-                    <string>TextLabel</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QComboBox" name="radarBox_2">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                    <string>Clutter Filter</string>
                    </property>
                   </widget>
                  </item>
                  <item row="0" column="4">
-                  <widget class="QLabel" name="label_6">
+                  <widget class="QLabel" name="mode_2d">
                    <property name="text">
-                    <string>TextLabel</string>
+                    <string>MODE</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="4">
                   <widget class="QLabel" name="label_19">
                    <property name="text">
-                    <string>TextLabel</string>
+                    <string>FILE</string>
                    </property>
                   </widget>
                  </item>
                  <item row="1" column="5">
-                  <widget class="QComboBox" name="comboBox_3"/>
+                  <widget class="QComboBox" name="fileBox_2d">
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QComboBox" name="dateBox_2d">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="modeBox_2d">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QLabel" name="date_2d">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>DATE</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="5">
+                  <layout class="QGridLayout" name="gridLayout_8">
+                   <item row="0" column="0">
+                    <widget class="QPushButton" name="preFile_2d">
+                     <property name="text">
+                      <string>Previous File</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QPushButton" name="nextFile_2d">
+                     <property name="text">
+                      <string>Next File</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="radar_2d">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>RADAR</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="errorBox_2d">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
               </layout>
              </item>
              <item>
-              <widget class="QOpenGLWidget" name="openGLWidget_2"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+             </item>
+            </layout>
+           </item>
+           <item row="1" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Switch Frame Timer</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="threshold_2d_label">
+                 <property name="text">
+                  <string>Threshold</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLineEdit" name="threshold_2d">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QLineEdit" name="timerInput_2d">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
@@ -1171,11 +1357,11 @@
   <tabstop>slider_3d_z</tabstop>
   <tabstop>slider_3d_x</tabstop>
   <tabstop>threshold</tabstop>
-  <tabstop>lineEdit_2</tabstop>
+  <tabstop>timerInput</tabstop>
   <tabstop>radarBox</tabstop>
   <tabstop>modeBox</tabstop>
   <tabstop>fileBox</tabstop>
-  <tabstop>IsGrid</tabstop>
+  <tabstop>clutterFilterToggle</tabstop>
   <tabstop>exit_btn_2</tabstop>
  </tabstops>
  <resources>
