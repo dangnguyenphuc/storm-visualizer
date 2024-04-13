@@ -8,14 +8,15 @@ import wradlib as wrl
 import xarray
 import pandas as pd
 from tint.grid_utils import *
+from Config import *
 
 class DIRECTORY:
-  FILE_PATH = "../Data/"
-  RADAR_NAME = "NHB/"
-  YEAR = "2023/"
-  MONTH = "06/"
-  DATE = "01/"
-  MODE = "1_prt/"
+  FILE_PATH = DEFAULT_FILE_PATH
+  RADAR_NAME = DEFAULT_RADAR_NAME
+  YEAR = DEFAULT_YEAR
+  MONTH = DEFAULT_MONTH
+  DATE = DEFAULT_DATE
+  MODE = DEFAULT_MODE
 
   @staticmethod
   def getCurrentPath(filename = False, radar = False, year = False, month = False, date = False, mode = False):
@@ -64,6 +65,9 @@ class DataManager:
   @staticmethod
   def reconstructFile(filePath: str = DIRECTORY.FILE_PATH):
 
+    if os.path.samefile(filePath, DEFAULT_FILE_PATH):
+      return
+
     def loopThroughFiles(files):
       loopPath = []
       for file in files:
@@ -93,6 +97,7 @@ class DataManager:
         DataManager.splitData(filePath=path["filePath"], radarName=path["radarName"], date=path["date"], mode="")
 
     try:
+      if filePath[-1] != '/': filePath += '/'
       folder = listDirInDir(filePath)
       if len(folder) > 0:
         currentFolder = folder[0]
@@ -104,7 +109,9 @@ class DataManager:
           folder = listDirInDir(filePath)
           if len(folder) > 0:
             currentFolder = folder[0]
-          else: break
+          else: 
+            print(f'{filePath} is empty.')
+            break
 
       files = listFile(filePath)
       if len(files):

@@ -1,2 +1,10 @@
 TICK = 10 # must smaller than 1000
 SECOND = 1000 # in ms
+
+DEFAULT_FILE_PATH = "../Data/"
+DEFAULT_RADAR_NAME = "NHB/"
+DEFAULT_YEAR = "2023/"
+DEFAULT_MONTH = "06/"
+DEFAULT_DATE = "01/"
+DEFAULT_MODE = "1_prt/"
+

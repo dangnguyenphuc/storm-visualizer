@@ -9,6 +9,7 @@ import calendar
 from datetime import datetime
 from Config import TICK
 
+
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
 def listDirInDir(filePath):
@@ -22,7 +23,10 @@ def listDirInDir(filePath):
     return d
 
 def folderEmpty(filePath):
+  if os.path.exists(filePath):
     return len(os.listdir(filePath)) == 0
+  else: 
+    print(f'No such file or dir: {filePath}')
 
 def is_valid_day_for_month_year(day, month_year):
     year, month = month_year.split('/')

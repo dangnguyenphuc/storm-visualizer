@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
-# from object3dBK import GLWidget
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
@@ -133,16 +132,16 @@ class MainWindow(QMainWindow):
     def addItemRadar(self):
         self.ui.radarBox.clear()
 
-        for radar in DataManager.listAllRadar():
+        for radar in DataManager.listAllRadar(DIRECTORY.FILE_PATH):
             self.ui.radarBox.addItem(radar)
         self.ui.radarBox.setCurrentIndex(DataManager.listAllRadar().index(DIRECTORY.RADAR_NAME[:-1]))
 
     def addItemDate(self):
         self.ui.dateBox.clear()
         try:
-            for date in DataManager.listAllDateOfRadar(radar=DIRECTORY.RADAR_NAME):
+            for date in DataManager.listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME):
                 self.ui.dateBox.addItem(date)
-            self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar().index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
+            self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME).index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
         except Exception as ex:
             print(f"An error occurred: {ex}")
 
@@ -173,7 +172,7 @@ class MainWindow(QMainWindow):
     def getDate(self, index=0):
         #! get value of date
         year, month, date = self.ui.dateBox.currentText().split("/")
-
+        print(DIRECTORY.getCurrentPath(radar=True) + year)
         if not folderEmpty(DIRECTORY.getCurrentPath(radar=True) + year):
             DIRECTORY.YEAR = year + "/"
             if not folderEmpty(DIRECTORY.getCurrentPath(year=True) + month):
@@ -281,11 +280,18 @@ class MainWindow(QMainWindow):
         self.ui.z_value.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
-        self.ui.changeDirData.clicked.connect(lambda: self.chooseDir())
+        self.ui.changeDirData.clicked.connect(self.chooseDir)
 
     def chooseDir(self):
-        self.dataDir = QFileDialog.getExistingDirectory()
-        self.ui.curData.setText(self.dataDir)
+        dataDir = QFileDialog.getExistingDirectory()
+        DataManager.reconstructFile(dataDir)
+        self.getRadar()
+        self.ui.curData.setText(dataDir)
+        self.addItemRadar()
+        self.addItemDate()
+        self.addItemMode()
+        self.addItemFile()
+
 
 
 
