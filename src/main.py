@@ -35,9 +35,12 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
-
+        self.zoom_factor = 0
+        self.last_pos = None
+        self.mouse_x = 0
+        self.mouse_y = 0 
         self.initGL()
-        self.initHomePage()
+        self.initHomePage() 
         #! add item to drop down 3d
         self.addItemRadar()
         self.addItemDate()
@@ -60,12 +63,14 @@ class MainWindow(QMainWindow):
         mainTimer.timeout.connect(self.glWidget.updateGL)
         mainTimer.start()
 
-
         self.switchFrameTimer = QtCore.QTimer(self)
         self.switchFrameTimer.timeout.connect(self.goNextFile)
         self.switchFrameTimer.stop()
 
-
+        self.errorTimer = QtCore.QTimer(self)
+        self.errorTimer.setInterval(5 * SECOND) 
+        self.errorTimer.timeout.connect(self.clearError)
+        self.errorTimer.stop()
         # just change when value change
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
@@ -74,6 +79,62 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        self.last_pos = None
+        self.mouse_x = 0
+        self.mouse_y = 0
+        
+        
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.last_pos = event.pos()
+
+    def mouseMoveEvent(self, event):
+        if self.last_pos is not None:
+          dx = event.x() - self.last_pos.x()
+          dy = event.y() - self.last_pos.y()
+          if event.buttons() & Qt.LeftButton:
+              self.glWidget.mousePos[0] += dx / self.width() * 10 # Convert to OpenGL coordinate
+              self.glWidget.mousePos[1] -= dy / self.height() * 10 
+              self.update()
+          self.last_pos = event.pos()
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.last_pos = None 
+    def wheelEvent(self,event):
+        """
+        wheel event
+        Args:
+            event (QtGui.QWheelEvent): wheel event
+        for user:
+            mouse wheel clockwise (counter-clockwise) to zoom in (zoom out)
+                scale ability: 0.25 -> 25
+            held left mouse button to move object
+        """
+        if self.ui.stackedWidget.currentIndex() == 1:
+            try:
+                delta = event.angleDelta().y()
+                self.zoom_factor += (delta and delta // abs(delta))
+                if self.zoom_factor >= 96:
+                    self.zoom_factor = 96
+                elif self.zoom_factor <= -3:
+                    self.zoom_factor = -3
+                zoom = 1 + self.zoom_factor * 0.25
+                if event.modifiers() & Qt.ControlModifier:
+                    self.glWidget.zoom_center[0] += 0
+                    self.glWidget.zoom_center[1] += 0
+                else:
+                    mouse_x = (event.x()   - 150) / self.glWidget.width() * 2 -  1
+                    mouse_y = (event.y()   - 140 )/ self.glWidget.height()* 2 - 1
+                    if event.angleDelta().y() > 0:
+                        self.glWidget.zoom_center[0] += mouse_x/10
+                        self.glWidget.zoom_center[1] += mouse_y/10
+                    else: 
+                        self.glWidget.zoom_center[0] -= mouse_x/10
+                        self.glWidget.zoom_center[1] -= mouse_y/10
+                self.update()
+                self.glWidget.setUpScale(zoom)
+            except:
+                print("error")
 
     ## Function for searching
     def on_search_btn_clicked(self):
@@ -215,7 +276,6 @@ class MainWindow(QMainWindow):
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
-
         self.glWidget.updateGL()
 
     def getSwichFrameTimer(self):
@@ -224,22 +284,25 @@ class MainWindow(QMainWindow):
                 self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
                 self.switchFrameTimer.start()
             else: self.switchFrameTimer.stop()
-        else: self.switchFrameTimer.stop()
+        else:
+          self.ui.timerInput.setText("0")
+          self.switchFrameTimer.stop()
 
     def initGL(self):
 
-        self.glWidget = GLWidget(self)
-        self.ui.horizontalLayout_8.insertWidget(0,self.glWidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
+        self.glWidget = GLWidget(self)
+        self.glWidget.setSizePolicy(sizePolicy)
+        self.ui.scrollArea.setWidget(self.glWidget)
+        
+        self.ui.scrollArea.setWidgetResizable(True)
+        self.ui.scrollArea.setAlignment(Qt.AlignHCenter)
+        self.ui.scrollArea.setAlignment( Qt.AlignVCenter)
 
         self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
-        # self.ui.slider_3d_x.setMaximum(115)
-
         self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
-        # self.ui.slider_3d_y.setMaximum(115)
-
         self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
-        # self.ui.slider_3d_z.setMaximum(115)
 
         self.ui.slider_3d_x.setMaximum(115)
         self.ui.slider_3d_y.setMaximum(115)
@@ -248,6 +311,23 @@ class MainWindow(QMainWindow):
         self.ui.preFile.clicked.connect(self.goPrevFile)
         self.ui.nextFile.clicked.connect(self.goNextFile)
 
+        self.ui.resetView.clicked.connect(self.reset3DView)
+
+    def reset3DView(self):
+        """
+        Reset 3D view
+        """
+        #reset zoome view
+        self.glWidget.zoom_center[0] = 0
+        self.glWidget.zoom_center[1] = 0
+        
+        # reset position
+        self.glWidget.mousePos[0] = 0
+        self.glWidget.mousePos[1] = 0
+
+        # seset scale
+        self.update()
+        self.glWidget.setUpScale(1)
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
         self.ui.fileBox.setCurrentIndex(index)
@@ -292,9 +372,26 @@ class MainWindow(QMainWindow):
         self.addItemMode()
         self.addItemFile()
 
+    def getError(self, err):
+        """
+        show error message
+        call this function when error occurs to display error message
+        Args:
+            err (str): error message"""
+        self.ui.errorBox.setText(err)
+        self.errorTimer.start()
 
+    def clearError(self):
+        self.ui.errorBox.clear()
+        self.errorTimer.stop()
 
-
+    def getSwichFrameTimer(self):
+        if self.ui.timerInput.text():
+            if int(self.ui.timerInput.text()) > 0:
+                self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
+                self.switchFrameTimer.start()
+            else: self.switchFrameTimer.stop()
+        else: self.switchFrameTimer.stop()
 def loadStyle(QApplication):
     """
     load style file for application
