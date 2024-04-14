@@ -6,10 +6,10 @@ from PyQt5.QtGui import QIntValidator
 from Object3d import GLWidget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from sidebar_ui import Ui_MainWindow
+from Frontend import Ui_MainWindow
 import sys
 import numpy as np
-from Radar import DataManager, DIRECTORY
+from Radar import DataManager
 from Config import SECOND, TICK
 from Utils import folderEmpty
 
@@ -28,6 +28,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
+        self.DataManager = DataManager()
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setContentsMargins(0, 0, 0, 0)
@@ -41,6 +43,7 @@ class MainWindow(QMainWindow):
         self.mouse_y = 0 
         self.initGL()
         self.initHomePage() 
+
         #! add item to drop down 3d
         self.addItemRadar()
         self.addItemDate()
@@ -143,11 +146,11 @@ class MainWindow(QMainWindow):
         if search_text:
             self.ui.label_9.setText(search_text)
 
-    ## Function for changing page to user page
+    # Function for changing page to user page
     # def on_user_btn_clicked(self):
     #     self.ui.stackedWidget.setCurrentIndex(6)
 
-    ## Change QPushButton Checkable status when stackedWidget index changed
+    # Change QPushButton Checkable status when stackedWidget index changed
     def on_stackedWidget_currentChanged(self, index):
         btn_list = self.ui.icon_only_widget.findChildren(QPushButton) \
                     + self.ui.full_menu_widget.findChildren(QPushButton)
@@ -192,76 +195,90 @@ class MainWindow(QMainWindow):
 
     def addItemRadar(self):
         self.ui.radarBox.clear()
-
-        for radar in DataManager.listAllRadar(DIRECTORY.FILE_PATH):
+        radars = self.DataManager.listAllRadar()
+        for radar in radars:
             self.ui.radarBox.addItem(radar)
-        self.ui.radarBox.setCurrentIndex(DataManager.listAllRadar().index(DIRECTORY.RADAR_NAME[:-1]))
+        if len(radars) > 0:
+          self.DataManager.radarName = radars[0] + "/"
+          self.ui.radarBox.setCurrentIndex(0)
 
     def addItemDate(self):
         self.ui.dateBox.clear()
         try:
-            for date in DataManager.listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME):
+            dates =  self.DataManager.listAllDateOfRadar()
+            for date in dates:
                 self.ui.dateBox.addItem(date)
-            self.ui.dateBox.setCurrentIndex(DataManager.listAllDateOfRadar(filePath=DIRECTORY.FILE_PATH, radar=DIRECTORY.RADAR_NAME).index(DIRECTORY.YEAR + DIRECTORY.MONTH + DIRECTORY.DATE[:-1]))
+            if len(dates) > 0:
+              self.DataManager.date = dates[0] + "/"
+              self.DataManager.year, self.DataManager.month, self.DataManager.day = dates[0].split("/")
+              self.DataManager.year += "/"
+              self.DataManager.month += "/"
+              self.DataManager.day += "/"
+
+              self.ui.dateBox.setCurrentIndex(0)
         except Exception as ex:
             print(f"An error occurred: {ex}")
 
+    def addItemMode(self):
+        self.ui.modeBox.clear()
+
+        modes = self.DataManager.listAllModeOnDate()
+        for mode in modes:
+            self.ui.modeBox.addItem(mode)
+        if len(modes) > 0:
+          self.DataManager.mode = modes[0] + "/"
+          self.ui.modeBox.setCurrentIndex(0)
 
     def addItemFile(self):
         self.ui.fileBox.clear()
-        for file in DataManager.listAllFile(DIRECTORY.FILE_PATH, DIRECTORY.RADAR_NAME, DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, DIRECTORY.MODE):
+        files = self.DataManager.listAllFile()
+        for file in files:
             self.ui.fileBox.addItem(file)
-        self.ui.fileBox.setCurrentIndex(0)
-
-
-    def addItemMode(self):
-        self.ui.modeBox.clear()
-        for mode in DataManager.listAllModeOnDate():
-            self.ui.modeBox.addItem(mode)
-        self.ui.modeBox.setCurrentIndex(DataManager.listAllModeOnDate().index(DIRECTORY.MODE[:-1]))
+        if len(files) > 0:
+          self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
+          self.ui.fileBox.setCurrentIndex(0)
 
     def getRadar(self, index = 0):
         #! get value of radar
         radar = self.ui.radarBox.currentText()
-        if not folderEmpty(DIRECTORY.getCurrentPath(filename=True) + radar):
-            DIRECTORY.RADAR_NAME = radar + "/"
+        if not folderEmpty(self.DataManager.getCurrentPath(filename=True) + radar):
+            self.DataManager.radarName = radar + "/"
             self.getDate()
         else:
             print(f"Radar {radar} is empty")
-            self.ui.radarBox.setCurrentIndex(DataManager.listAllRadar().index(DIRECTORY.RADAR_NAME[:-1]))
+            self.ui.radarBox.setCurrentIndex(0)
 
     def getDate(self, index=0):
         #! get value of date
-        year, month, date = self.ui.dateBox.currentText().split("/")
-        print(DIRECTORY.getCurrentPath(radar=True) + year)
-        if not folderEmpty(DIRECTORY.getCurrentPath(radar=True) + year):
-            DIRECTORY.YEAR = year + "/"
-            if not folderEmpty(DIRECTORY.getCurrentPath(year=True) + month):
-                DIRECTORY.MONTH = month + "/"
-                if not folderEmpty(DIRECTORY.getCurrentPath(month=True) + date):
-                    DIRECTORY.DATE = date + "/"
+        year, month, day = self.ui.dateBox.currentText().split("/")
+        if not folderEmpty(self.DataManager.getCurrentPath(radar=True) + year):
+            self.DataManager.year = year + "/"
+            if not folderEmpty(self.DataManager.getCurrentPath(year=True) + month):
+                self.DataManager.month = month + "/"
+                if not folderEmpty(self.DataManager.getCurrentPath(month=True) + day):
+                    self.DataManager.day = day + "/"
+                    self.DataManager.setDate()
                     self.getMode()
                 else:
-                    print(f"{DIRECTORY.RADAR_NAME} does not have {year}/{month}/{date}")
+                    print(f"{self.DataManager.radarName} does not have {year}/{month}/{day}")
             else:
-                print(f"{DIRECTORY.RADAR_NAME} does not have {month} in this {year}")
+                print(f"{self.DataManager.radarName} does not have {month} in this {year}")
         else:
-            print(f"{DIRECTORY.RADAR_NAME} does not have {year}")
+            print(f"{self.DataManager.radarName} does not have {year}")
 
+    def getMode(self, index=0):
+        #! get value of mode
+        mode = self.ui.modeBox.currentText()
+        if not folderEmpty(self.DataManager.getCurrentPath(date=True) + mode):
+            self.DataManager.mode = mode + "/"
+            self.glWidget.resetRadar(DataManager=self.DataManager)
+            self.getFile()
+        else:
+            print("This mode is empty")
 
     def getFile(self, index=0):
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.glWidget.updateGL()
-
-    def getMode(self, index=0):
-        #! get value of mode
-        if not folderEmpty(DIRECTORY.getCurrentPath(date=True)+self.ui.modeBox.currentText()):
-            DIRECTORY.MODE = self.ui.modeBox.currentText() + "/"
-            self.addItemFile()
-            self.glWidget.resetRadar(filePath=DIRECTORY.FILE_PATH, radarName=DIRECTORY.RADAR_NAME, date=DIRECTORY.YEAR+DIRECTORY.MONTH+DIRECTORY.DATE, mode=DIRECTORY.MODE)
-            self.getFile()
-        else:
-            print("This mode is empty")
 
     def getClutterFilter(self, state):
         if state:
@@ -364,13 +381,14 @@ class MainWindow(QMainWindow):
 
     def chooseDir(self):
         dataDir = QFileDialog.getExistingDirectory()
-        DataManager.reconstructFile(dataDir)
-        self.getRadar()
+        self.DataManager.reconstructFile(dataDir)
+        self.DataManager.filePath = dataDir
         self.ui.curData.setText(dataDir)
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
         self.addItemFile()
+        # pass
 
     def getError(self, err):
         """
