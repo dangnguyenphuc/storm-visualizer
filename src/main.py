@@ -74,7 +74,17 @@ class MainWindow(QMainWindow):
         self.errorTimer.setInterval(5 * SECOND) 
         self.errorTimer.timeout.connect(self.clearError)
         self.errorTimer.stop()
+
+
         # just change when value change
+        self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
+        self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
+
+        self.last_pos = None
+        self.mouse_x = 0
+        self.mouse_y = 0
+    
+    def page2Connect(self, event):
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
@@ -82,10 +92,15 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
-        self.last_pos = None
-        self.mouse_x = 0
-        self.mouse_y = 0
-        
+      
+    def page2Disconnect(self, event):
+        self.ui.threshold.textChanged.disconnect(self.getThreshold)
+        self.ui.timerInput.textChanged.disconnect(self.getSwichFrameTimer)
+        self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
+        self.ui.radarBox.currentIndexChanged.disconnect(self.getRadar)
+        self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
+        self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
+        self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -100,10 +115,12 @@ class MainWindow(QMainWindow):
               self.glWidget.mousePos[1] -= dy / self.height() * 10 
               self.update()
           self.last_pos = event.pos()
+
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.last_pos = None 
-    def wheelEvent(self,event):
+
+    def wheelEvent(self, event):
         """
         wheel event
         Args:
@@ -139,7 +156,7 @@ class MainWindow(QMainWindow):
             except:
                 print("error")
 
-    ## Function for searching
+    ##Function for searching
     def on_search_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(5)
         search_text = self.ui.search_input.text().strip()
@@ -194,8 +211,8 @@ class MainWindow(QMainWindow):
 #         self.ui.stackedWidget.setCurrentIndex(4)
 
     def addItemRadar(self):
-        self.ui.radarBox.clear()
         radars = self.DataManager.listAllRadar()
+        self.ui.radarBox.clear()
         for radar in radars:
             self.ui.radarBox.addItem(radar)
         if len(radars) > 0:
@@ -380,15 +397,17 @@ class MainWindow(QMainWindow):
         self.ui.changeDirData.clicked.connect(self.chooseDir)
 
     def chooseDir(self):
-        dataDir = QFileDialog.getExistingDirectory()
+      dataDir = QFileDialog.getExistingDirectory()
+      if dataDir is not None and dataDir != "":
         self.DataManager.reconstructFile(dataDir)
-        self.DataManager.filePath = dataDir
+        self.DataManager.clearAll()
         self.ui.curData.setText(dataDir)
+        self.DataManager.filePath = dataDir
+        if self.DataManager.filePath[-1] != "/": self.DataManager.filePath += "/"
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
         self.addItemFile()
-        # pass
 
     def getError(self, err):
         """
