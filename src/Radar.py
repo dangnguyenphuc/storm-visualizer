@@ -11,13 +11,13 @@ from tint.grid_utils import *
 from Config import *
 class DataManager:
 
-  def __init__(self, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DIRECTORY.YEAR, month: str = DIRECTORY.MONTH, day: str = DIRECTORY.DATE, mode: str = DIRECTORY.MODE):
+  def __init__(self, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
     if filePath is not None and filePath[-1] != "/": filePath += "/"
     if radarName is not None and radarName[-1] != "/": radarName += "/"
     if year is not None and year[-1] != "/": year += "/"
     if month is not None and month[-1] != "/": month += "/"
-    if day is not None and date[-1] != "/": date += "/"
-    if filePath is not None and mode[-1] != "/": mode += "/"
+    if day is not None and day[-1] != "/": day += "/"
+    if mode is not None and mode[-1] != "/": mode += "/"
     
     self.filePath = filePath
     self.radarName = radarName
@@ -26,16 +26,19 @@ class DataManager:
     self.month = month
     self.day = day
 
-    if self.year is None or self.month is None or self.day is None:
-      self.date = None
-    else:
-      self.date = self.year + self.month + self.day
+    self.setDate()
     self.mode = mode
 
     if self.filePath is None or self.radarName is None or self.date is None or self.mode is None:
       self.raw_data = None
     else: self.raw_data = self.getAllDataFilePaths()
-    
+  
+  def setDate(self):
+    if self.year is None or self.month is None or self.day is None:
+      self.date = None
+    else:
+      self.date = self.year + self.month + self.day
+
   def clearAll(self):
     self.filePath = None
     self.radarName = None
@@ -46,17 +49,22 @@ class DataManager:
     self.mode = None
     self.raw_data = None
 
-  def getAllDataFilePaths(self):
+  def getAllDataFilePaths(self, filePath = None, radarName = None, date = None, mode = None):
+
+    if filePath is None and radarName is None and date is None and mode is None:
+      filePath = self.filePath
+      radarName = self.radarName
+      date = self.date
+      mode = self.mode
+
     filePaths = [
-        self.filePath + self.radarName + self.date + self.mode + fileName for fileName in self.listAllFile(
-        self.filePath,
-        self.radarName,
-        self.date,
-        self.mode)
-        ]
+        filePath + radarName + date + mode + fileName for fileName in self.listAllFile(filePath, radarName, date, mode)
+    ]
     return filePaths
 
-  def reconstructFile(self):
+  def reconstructFile(self, filePath = None):
+    if filePath is None:
+      filePath = self.filePath
 
     def loopThroughFiles(files):
       loopPath = []
@@ -81,36 +89,43 @@ class DataManager:
           os.rename(filePath + file, path + file)
         except:
           continue
-
       for path in loopPath:
         self.splitData(filePath=path["filePath"], radarName=path["radarName"], date=path["date"], mode="")
 
     try:
-      if self.filePath[-1] != '/': self.filePath += '/'
-      folder = listDirInDir(self.filePath)
+      if filePath[-1] != '/': filePath += '/'
+      folder = listDirInDir(filePath)
       if len(folder) > 0:
         currentFolder = folder[0]
         while len(folder):
-          for item in os.listdir(self.filePath + currentFolder):
-            os.rename(self.filePath + currentFolder + "/" + item, self.filePath + item)
+          for item in os.listdir(filePath + currentFolder):
+            os.rename(filePath + currentFolder + "/" + item, filePath + item)
 
-          os.rmdir(self.filePath + currentFolder)
-          folder = listDirInDir(self.filePath)
+          os.rmdir(filePath + currentFolder)
+          folder = listDirInDir(filePath)
           if len(folder) > 0:
             currentFolder = folder[0]
           else: 
-            print(f'{self.filePath} is empty.')
+            print(f'{filePath} is empty.')
             break
 
-      files = listFile(self.filePath)
+      files = listFile(filePath)
       if len(files):
         loopThroughFiles(files=files)
     except Exception as e:
       print(e)
 
-  def splitData(self):
-    if self.mode == "raw/" or not self.mode or self.mode == "":
-      data = self.getAllDataFilePaths()
+  def splitData(self, filePath = None, radarName = None, date = None, mode = None):
+
+    if filePath is None and radarName is None and date is None and mode is None:
+      filePath = self.filePath
+      radarName = self.radarName
+      date = self.date
+      mode = self.mode
+      
+
+    if mode == "raw/" or not mode or mode == "":
+      data = self.getAllDataFilePaths(filePath, radarName, date, mode)
       fixed = []
       dual = []
       staggered = []
@@ -125,19 +140,19 @@ class DataManager:
         else: other.append(data[i])
 
       if len(fixed) > 0:
-        firstDir = self.filePath + self.radarName + self.date + 'fixed/'
+        firstDir = filePath + radarName + date + 'fixed/'
         if not os.path.exists(firstDir):
           os.mkdir(firstDir)
       if len(dual) > 0:
-        secondDir = self.filePath + self.radarName + self.date + 'dual/'
+        secondDir = filePath + radarName + date + 'dual/'
         if not os.path.exists(secondDir):
           os.mkdir(secondDir)
       if len(staggered) > 0:
-        thirdDir = self.filePath + self.radarName + self.date + 'staggered/'
+        thirdDir = filePath + radarName + date + 'staggered/'
         if not os.path.exists(thirdDir):
           os.mkdir(thirdDir)
       if len(other) > 0:
-        fourthDir = self.filePath + self.radarName + self.date + 'staggered/'
+        fourthDir = filePath + radarName + date + 'staggered/'
         if not os.path.exists(fourthDir):
           os.mkdir(fourthDir)
 
@@ -150,7 +165,7 @@ class DataManager:
       for i in other:
         os.rename(i, fourthDir + i.split('/')[-1])
 
-      if self.mode: os.rmdir(self.filePath + self.radarName + self.date + self.mode)
+      if mode: os.rmdir(filePath + radarName + date + mode)
 
   def genNhaBeRadarGrid(self):
     def get_grid(radar):
@@ -205,8 +220,15 @@ class DataManager:
       mode.remove("grid")
     return mode
 
-  def listAllFile(self):
-    return listFile(self.filePath + self.radarName + self.date + self.mode)
+  def listAllFile(self, filePath = None, radarName = None, date = None, mode = None):
+
+    if filePath is None and radarName is None and date is None and mode is None:
+      filePath = self.filePath
+      radarName = self.radarName
+      date = self.date
+      mode = self.mode
+
+    return listFile(filePath + radarName + date + mode)
 
   def getCurrentPath(self, filename = False, radar = False, year = False, month = False, date = False, mode = False):
     if filename:
@@ -230,13 +252,16 @@ class DataManager:
 class Radar:
 
   def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
-    self.setDataManger()
+    self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
 
     self.currentIndex = fileIndex
     self.getRadar()
 
-  def setDataManger(self, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
+  def setDataMangerWithParam(self, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
     self.DataManager = DataManager(filePath=filePath, radarName=radarName, year=year, month=month, day=day, mode=mode)
+  
+  def setDataManger(self, DataManager: DataManager):
+    self.DataManager = DataManager
 
   def getRadar(self):
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
