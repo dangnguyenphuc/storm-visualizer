@@ -6,7 +6,7 @@ pyrcc5 .\src\resource.qrc -o .\src\resource_rc.py
 echo - Done!
 echo -----------------------------------------
 echo - PyQt Designer exec: Update UI
-pyuic5 -o .\src\sidebar_ui.py .\src\sidebar.ui
+pyuic5 -o .\src\Frontend.py .\src\Frontend.ui
 echo - Done!
 echo -----------------------------------------
 

@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
@@ -12,7 +12,7 @@ import numpy as np
 from Radar import DataManager
 from Config import SECOND, TICK
 from Utils import folderEmpty
-
+from messageBox import quitQuestionBox, errorBox
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -37,6 +37,10 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
+        self.ui.exit_btn_1.disconnect()
+        self.ui.exit_btn_2.disconnect()
+        self.ui.exit_btn_2.clicked.connect(quitQuestionBox)
+        self.ui.exit_btn_1.clicked.connect(quitQuestionBox)
         self.zoom_factor = 0
         self.last_pos = None
         self.mouse_x = 0
@@ -84,7 +88,12 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-    
+    def closeEvent(self, event):
+        if quitQuestionBox() == QMessageBox.Cancel:
+            event.ignore()
+        else:
+            event.accept()
+
     def page2Connect(self, event):
       if not self.page_2Connected:
         self.ui.threshold.textChanged.connect(self.getThreshold)
@@ -437,13 +446,6 @@ class MainWindow(QMainWindow):
         self.ui.errorBox.clear()
         self.errorTimer.stop()
 
-    def getSwichFrameTimer(self):
-        if self.ui.timerInput.text():
-            if int(self.ui.timerInput.text()) > 0:
-                self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
-                self.switchFrameTimer.start()
-            else: self.switchFrameTimer.stop()
-        else: self.switchFrameTimer.stop()
 
     def clearPage2Box(self, radarName = False, date = False, mode = False, files = False):
       if radarName:
