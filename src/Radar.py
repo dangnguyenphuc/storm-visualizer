@@ -68,9 +68,9 @@ class DataManager:
 
     def loopThroughFiles(files):
       loopPath = []
-      for file in files:
+      for f in files:
         try:
-          radar = pyart.io.read(filePath + file)
+          radar = pyart.io.read(filePath + f)
           radarName = radar.metadata["instrument_name"].decode() + '/'
           if not os.path.exists(filePath + radarName):
             os.makedirs(filePath + radarName)
@@ -86,7 +86,7 @@ class DataManager:
             })
 
           # mv filePath+file path+file
-          os.rename(filePath + file, path + file)
+          os.rename(filePath + f, path + f)
         except:
           continue
       for path in loopPath:
@@ -97,12 +97,14 @@ class DataManager:
       folder = listDirInDir(filePath)
       if len(folder) > 0:
         currentFolder = folder[0]
+        i = 0
         while len(folder):
           for item in os.listdir(filePath + currentFolder):
-            os.rename(filePath + currentFolder + "/" + item, filePath + item)
+            os.rename(filePath + currentFolder + "/" + item, filePath + item + str(i))
 
           os.rmdir(filePath + currentFolder)
           folder = listDirInDir(filePath)
+          i += 1
           if len(folder) > 0:
             currentFolder = folder[0]
           else: 

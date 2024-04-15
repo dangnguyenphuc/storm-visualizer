@@ -79,12 +79,14 @@ class MainWindow(QMainWindow):
         # just change when value change
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
+        self.page_2Connected = False
 
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
     
     def page2Connect(self, event):
+      if not self.page_2Connected:
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
@@ -92,8 +94,10 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        self.page_2Connected = True
       
     def page2Disconnect(self, event):
+      if self.page_2Connected:
         self.ui.threshold.textChanged.disconnect(self.getThreshold)
         self.ui.timerInput.textChanged.disconnect(self.getSwichFrameTimer)
         self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
@@ -101,6 +105,7 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
+        self.page_2Connected = False
         
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -143,8 +148,8 @@ class MainWindow(QMainWindow):
                     self.glWidget.zoom_center[0] += 0
                     self.glWidget.zoom_center[1] += 0
                 else:
-                    mouse_x = (event.x()   - 150) / self.glWidget.width() * 2 -  1
-                    mouse_y = (event.y()   - 140 )/ self.glWidget.height()* 2 - 1
+                    mouse_x = (event.x() - 150) / self.glWidget.width() * 2 -  1
+                    mouse_y = (event.y() - 140 )/ self.glWidget.height()* 2 - 1
                     if event.angleDelta().y() > 0:
                         self.glWidget.zoom_center[0] += mouse_x/10
                         self.glWidget.zoom_center[1] += mouse_y/10
@@ -258,8 +263,10 @@ class MainWindow(QMainWindow):
     def getRadar(self, index = 0):
         #! get value of radar
         radar = self.ui.radarBox.currentText()
-        if not folderEmpty(self.DataManager.getCurrentPath(filename=True) + radar):
+        if radar != "" and not folderEmpty(self.DataManager.getCurrentPath(filename=True) + radar):
             self.DataManager.radarName = radar + "/"
+            self.clearPage2Box(date = True)
+            self.addItemDate()
             self.getDate()
         else:
             print(f"Radar {radar} is empty")
@@ -267,33 +274,41 @@ class MainWindow(QMainWindow):
 
     def getDate(self, index=0):
         #! get value of date
-        year, month, day = self.ui.dateBox.currentText().split("/")
-        if not folderEmpty(self.DataManager.getCurrentPath(radar=True) + year):
-            self.DataManager.year = year + "/"
-            if not folderEmpty(self.DataManager.getCurrentPath(year=True) + month):
-                self.DataManager.month = month + "/"
-                if not folderEmpty(self.DataManager.getCurrentPath(month=True) + day):
-                    self.DataManager.day = day + "/"
-                    self.DataManager.setDate()
-                    self.getMode()
-                else:
-                    print(f"{self.DataManager.radarName} does not have {year}/{month}/{day}")
-            else:
-                print(f"{self.DataManager.radarName} does not have {month} in this {year}")
-        else:
-            print(f"{self.DataManager.radarName} does not have {year}")
+        date = self.ui.dateBox.currentText()
+        if date != "":
+          year, month, day = date.split("/")
+          if not folderEmpty(self.DataManager.getCurrentPath(radar=True) + year):
+              self.DataManager.year = year + "/"
+              if not folderEmpty(self.DataManager.getCurrentPath(year=True) + month):
+                  self.DataManager.month = month + "/"
+                  if not folderEmpty(self.DataManager.getCurrentPath(month=True) + day):
+                      self.DataManager.day = day + "/"
+                      self.clearPage2Box(mode = True)
+                      self.DataManager.setDate()
+                      self.addItemMode()
+                      self.getMode()
+                  else:
+                      print(f"{self.DataManager.radarName} does not have {year}/{month}/{day}")
+              else:
+                  print(f"{self.DataManager.radarName} does not have {month} in this {year}")
+          else:
+              print(f"{self.DataManager.radarName} does not have {year}")
 
     def getMode(self, index=0):
         #! get value of mode
         mode = self.ui.modeBox.currentText()
-        if not folderEmpty(self.DataManager.getCurrentPath(date=True) + mode):
+        if mode != "" and not folderEmpty(self.DataManager.getCurrentPath(date=True) + mode):
             self.DataManager.mode = mode + "/"
+            self.clearPage2Box(files = True)
+            self.addItemFile()
             self.glWidget.resetRadar(DataManager=self.DataManager)
             self.getFile()
         else:
-            print("This mode is empty")
+            print(f"{mode} mode is empty")
 
     def getFile(self, index=0):
+      f = self.ui.fileBox.currentText()
+      if f != "":
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.glWidget.updateGL()
 
@@ -429,6 +444,19 @@ class MainWindow(QMainWindow):
                 self.switchFrameTimer.start()
             else: self.switchFrameTimer.stop()
         else: self.switchFrameTimer.stop()
+
+    def clearPage2Box(self, radarName = False, date = False, mode = False, files = False):
+      if radarName:
+        self.ui.radarBox.clear()
+      elif date:
+        self.ui.dateBox.clear()
+        self.ui.modeBox.clear()
+        self.ui.fileBox.clear()
+      elif mode:
+        self.ui.modeBox.clear()
+        self.ui.fileBox.clear()
+      elif files:
+        self.ui.fileBox.clear()
 def loadStyle(QApplication):
     """
     load style file for application
