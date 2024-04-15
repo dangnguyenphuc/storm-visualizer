@@ -25,7 +25,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.scale = val
 
     def setUpRadar(self, index = 0, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
-        self.radar = Radar(index, filePath, radarName, year, month, day, mode)
+        self.radar = Grid(index, filePath, radarName, year, month, day, mode)
 
     def resetRadar(self, DataManager: DataManager, index = 0):
         # del self.radar
