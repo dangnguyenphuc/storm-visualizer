@@ -115,7 +115,20 @@ class MainWindow(QMainWindow):
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
-        
+    def keyPressEvent(self, event):
+        if event.key()== QtCore.Qt.Key_3:
+            self.ui.view3d_1.setChecked(True)
+            self.ui.view3d_2.setChecked(True)
+        elif event.key()== QtCore.Qt.Key_2:
+            self.ui.view2d_1.setChecked(True)
+            self.ui.view2d_2.setChecked(True)
+        elif event.key()== QtCore.Qt.Key_1:
+            self.ui.home_btn_1.setChecked(True)
+            self.ui.home_btn_1.setChecked(True)
+        elif event.key()== QtCore.Qt.Key_Escape:
+            quitQuestionBox()
+        else:
+            event.ignore()
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.last_pos = event.pos()
@@ -196,27 +209,52 @@ class MainWindow(QMainWindow):
     ## functions for changing menu page
     def on_home_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
+
 
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
+
 
     def on_view3d_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
 
     def on_view3d_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
-
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
     def on_view2d_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
+
+        self.ui.slider_3d_x.setDisabled(True)
+        self.ui.slider_3d_y.setDisabled(True)
 
     def on_view2d_2_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
+
+        self.ui.slider_3d_x.setDisabled(True)
+        self.ui.slider_3d_y.setDisabled(True)
 
     def on_other_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(3)
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
+
 
     def on_other_2_toggled(self, ):
-        self.ui.stackedWidget.setCurrentIndex(3)
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
+
 #
 #     def on_customers_btn_1_toggled(self):
 #         self.ui.stackedWidget.setCurrentIndex(4)
@@ -331,6 +369,7 @@ class MainWindow(QMainWindow):
     def getThreshold(self):
         if self.ui.threshold.text():
             print("Filter threshold with value: " + self.ui.threshold.text())
+            errorBox(self.ui.threshold.text())
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
@@ -419,6 +458,7 @@ class MainWindow(QMainWindow):
 
     def initHomePage(self):
         self.ui.changeDirData.clicked.connect(self.chooseDir)
+        self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
 
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
@@ -459,6 +499,8 @@ class MainWindow(QMainWindow):
         self.ui.fileBox.clear()
       elif files:
         self.ui.fileBox.clear()
+    
+    
 def loadStyle(QApplication):
     """
     load style file for application
