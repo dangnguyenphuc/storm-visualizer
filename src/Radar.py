@@ -173,8 +173,8 @@ class DataManager:
     def get_grid(radar):
       """ Returns grid object from radar object. """
       grid = pyart.map.grid_from_radars(
-          radar, grid_shape=(50, 1000, 1000),
-          grid_limits=((0, 25000), (-300000,300000), (-300000, 300000)),
+          radar, grid_shape=(41, 801, 801),
+          grid_limits=((0, 20000), (-200000,200000), (-200000, 200000)),
           fields=['reflectivity'], gridding_algo='map_gates_to_grid',
           h_factor=0., nb=0.6, bsp=1., min_radius=200.)
       return grid
@@ -372,7 +372,7 @@ class Grid:
 
   def getGrid(self):
     self.data = pyart.io.read_grid(self.DataManager.raw_data[self.currentIndex])
-    self.currentReflectivity = self.data.fields['reflectivity']['data']   
+    self.currentReflectivity = self.data.fields['reflectivity']['data']
 
   def increaseIndex(self):
     self.currentIndex += 1
@@ -408,15 +408,15 @@ class Grid:
     # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
 
     # storm Identification testing
-    grid_size = get_grid_size(self.data)
-    min_size = 8 / np.prod(grid_size[1:]/1000)
-    masked = self.data.fields['reflectivity']['data']
-    masked.data[masked.data == masked.fill_value] = 0
+    # grid_size = get_grid_size(self.data)
+    # min_size = 4 / np.prod(grid_size[1:]/1000)
+    # masked = self.data.fields['reflectivity']['data']
+    # masked.data[masked.data == masked.fill_value] = 0
     # frame = get_filtered_frame(masked.data, min_size, 32)
-    labeled_echo = ndimage.label(masked.data)
-    self.currentReflectivity = clear_small_echoes(labeled_echo[0], min_size).flatten()
-    indices = np.where(self.currentReflectivity > threshold)
+    # self.currentReflectivity = frame.flatten()
 
+    self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+    indices = np.where(self.currentReflectivity > threshold)
     scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     vertices = self.get_vertices_position(scaler)
     return {

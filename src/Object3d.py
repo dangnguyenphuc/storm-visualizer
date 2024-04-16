@@ -42,8 +42,8 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
-        if clutterFilter is not None:
-            self.radar.isFilterClutter(clutterFilter)
+        # if clutterFilter is not None:
+        #     self.radar.isFilterClutter(clutterFilter)
 
         self.setUpVBO()
 
