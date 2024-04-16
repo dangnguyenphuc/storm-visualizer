@@ -5,7 +5,10 @@
 	}
 /*= END
   ==================================================== */
-
+	#toggle1 {
+		background: none;
+		border: none;
+	}
 	#errorBox{
 		background-color: #fff;
 		color:#E72929;
@@ -29,29 +32,43 @@
 	}
 /*= END
   ==================================================== */
-
+	
 /*= Style for menu with icon only START
   ==================================================== */
   	/* style for widget */
 	#icon_only_widget {
 		background-color: #344955;
-		width:50px;
+		width:60px;
 	}
+    /* style for QPushButton and QLabel */ 
 
-    /* style for QPushButton and QLabel */
-	#icon_only_widget QPushButton, QLabel {
-		height:50px;
+	#icon_only_widget QPushButton {
+		height: 40px;
+		width:40px;
 		border:none;
-		/* border-bottom: 1px solid #b0b0b0; */
+		border-radius: 6px;
+		text-align: center;
+		padding: 0px 0px 0px 0px;
+
+
 	}
 
 	#icon_only_widget QPushButton:hover {
 		background-color: rgba( 86, 101, 115, 0.5);
 	}
+	#icon_only_widget QPushButton:checked {
+		color: #00224D;
+		background-color:#f2f5f7;
+		/* border-top-left-radius: 25%;
+		border-bottom-left-radius: 25%; */
+
+	}
 
 	/* style for logo image */
 	#logo_label_1 {
-		padding: 5px
+		padding: 5px;
+
+		/* margin: 5px; */
 	}
 /*= END
   ==================================================== */
@@ -62,13 +79,17 @@
 	#full_menu_widget {
 		background-color: #344955;
 	}
-
+	/* #change_button{
+		background: none;
+		border:none;
+	} */
 	/* style for QPushButton */
 	#full_menu_widget QPushButton {
 		border:none;
-		border-radius: 3px;
+		border-radius: 6px;
 		text-align: left;
 		padding: 8px 0 8px 15px;
+		/* margin: 3px 6px 3px 6px; */
 		color: #fff;
 	}
 
