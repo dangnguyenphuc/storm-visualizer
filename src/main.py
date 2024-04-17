@@ -1,17 +1,16 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog
-from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIntValidator
+
+import PyQt5
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
+from PyQt5.QtCore import pyqtSlot, QFile, QTextStream, Qt
+from PyQt5.QtGui import QIntValidator, QSurfaceFormat
+
 from Object3d import GLWidget
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
 from Frontend import Ui_MainWindow
-import sys
-import numpy as np
 from Radar import DataManager
-from Config import SECOND, TICK
 from Utils import folderEmpty
+from Config import SECOND, TICK
+from messageBox import quitQuestionBox, errorBox
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -37,6 +36,10 @@ class MainWindow(QMainWindow):
         self.ui.icon_only_widget.hide()
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.home_btn_2.setChecked(True)
+        self.ui.exit_btn_1.disconnect()
+        self.ui.exit_btn_2.disconnect()
+        self.ui.exit_btn_2.clicked.connect(quitQuestionBox)
+        self.ui.exit_btn_1.clicked.connect(quitQuestionBox)
         self.zoom_factor = 0
         self.last_pos = None
         self.mouse_x = 0
@@ -61,16 +64,16 @@ class MainWindow(QMainWindow):
         self.ui.timerInput.setText("0")
 
         # timers
-        mainTimer = QtCore.QTimer(self)
+        mainTimer = PyQt5.QtCore.QTimer(self)
         mainTimer.setInterval(int(TICK))   # period, in milliseconds
         mainTimer.timeout.connect(self.glWidget.updateGL)
         mainTimer.start()
 
-        self.switchFrameTimer = QtCore.QTimer(self)
+        self.switchFrameTimer = PyQt5.QtCore.QTimer(self)
         self.switchFrameTimer.timeout.connect(self.goNextFile)
         self.switchFrameTimer.stop()
 
-        self.errorTimer = QtCore.QTimer(self)
+        self.errorTimer = PyQt5.QtCore.QTimer(self)
         self.errorTimer.setInterval(5 * SECOND) 
         self.errorTimer.timeout.connect(self.clearError)
         self.errorTimer.stop()
@@ -84,7 +87,12 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-    
+    def closeEvent(self, event):
+        if quitQuestionBox() == QMessageBox.Cancel:
+            event.ignore()
+        else:
+            event.accept()
+
     def page2Connect(self, event):
       if not self.page_2Connected:
         self.ui.threshold.textChanged.connect(self.getThreshold)
@@ -106,7 +114,20 @@ class MainWindow(QMainWindow):
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
-        
+    def keyPressEvent(self, event):
+        if event.key()== PyQt5.QtCore.Qt.Key_3:
+            self.ui.view3d_1.setChecked(True)
+            self.ui.view3d_2.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_2:
+            self.ui.view2d_1.setChecked(True)
+            self.ui.view2d_2.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_1:
+            self.ui.home_btn_1.setChecked(True)
+            self.ui.home_btn_1.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_Escape:
+            quitQuestionBox()
+        else:
+            event.ignore()
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.last_pos = event.pos()
@@ -187,27 +208,52 @@ class MainWindow(QMainWindow):
     ## functions for changing menu page
     def on_home_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
+
 
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
+
 
     def on_view3d_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
 
     def on_view3d_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
-
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
     def on_view2d_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
+
+        self.ui.slider_3d_x.setDisabled(True)
+        self.ui.slider_3d_y.setDisabled(True)
 
     def on_view2d_2_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
+
+        self.ui.slider_3d_x.setDisabled(True)
+        self.ui.slider_3d_y.setDisabled(True)
 
     def on_other_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(3)
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
+
 
     def on_other_2_toggled(self, ):
-        self.ui.stackedWidget.setCurrentIndex(3)
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
+
 #
 #     def on_customers_btn_1_toggled(self):
 #         self.ui.stackedWidget.setCurrentIndex(4)
@@ -322,6 +368,7 @@ class MainWindow(QMainWindow):
     def getThreshold(self):
         if self.ui.threshold.text():
             print("Filter threshold with value: " + self.ui.threshold.text())
+            errorBox(self.ui.threshold.text())
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
@@ -339,9 +386,16 @@ class MainWindow(QMainWindow):
 
     def initGL(self):
 
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+
+        # ''' specified GL version: core 330 '''
+        # glformat = PyQt5.QtOpenGL.QGLFormat()
+        # glformat.setVersion(3, 3)
+        # glformat.setProfile(PyQt5.QtOpenGL.QGLFormat.CoreProfile)
 
         self.glWidget = GLWidget(self)
+        
+
         self.glWidget.setSizePolicy(sizePolicy)
         self.ui.scrollArea.setWidget(self.glWidget)
         
@@ -401,7 +455,6 @@ class MainWindow(QMainWindow):
         tmp_value = min(tmp_value, 360)
         self.ui.y_value.setText(str(int(tmp_value)) + "°")
 
-
     def updateSliderZ(self, val):
         self.glWidget.setRotZ(val)
         tmp_value = val * np.pi
@@ -410,6 +463,7 @@ class MainWindow(QMainWindow):
 
     def initHomePage(self):
         self.ui.changeDirData.clicked.connect(self.chooseDir)
+        self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
 
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
@@ -437,14 +491,6 @@ class MainWindow(QMainWindow):
         self.ui.errorBox.clear()
         self.errorTimer.stop()
 
-    def getSwichFrameTimer(self):
-        if self.ui.timerInput.text():
-            if int(self.ui.timerInput.text()) > 0:
-                self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
-                self.switchFrameTimer.start()
-            else: self.switchFrameTimer.stop()
-        else: self.switchFrameTimer.stop()
-
     def clearPage2Box(self, radarName = False, date = False, mode = False, files = False):
       if radarName:
         self.ui.radarBox.clear()
@@ -457,6 +503,7 @@ class MainWindow(QMainWindow):
         self.ui.fileBox.clear()
       elif files:
         self.ui.fileBox.clear()
+    
 def loadStyle(QApplication):
     """
     load style file for application

@@ -1,20 +1,24 @@
-from PyQt5 import QtCore      # core Qt functionality
-from PyQt5 import QtWidgets       # extends QtCore with GUI functionality
-from PyQt5 import QtOpenGL    # provides QGLWidget, a special OpenGL QWidget
+import sys 
+import numpy as np
+
+from PyQt5 import QtCore, QtWidgets, QtOpenGL
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QAction, QMenu, QPushButton
-import OpenGL.GL as gl        # python wrapping of OpenGL
-from OpenGL import GLU        # OpenGL Utility Library, extends OpenGL functionality
-import sys 
+
+from OpenGL import GLU
+import OpenGL.GL as gl
 from OpenGL.arrays import vbo
-import numpy as np
+
 from Radar import *
 
 
 class GLWidget(QtOpenGL.QGLWidget):
-    def __init__(self, parent=None, index = 0, threshold = 0):
+    def __init__(self, parent=None, index = 0, threshold = 0, format = None):
         self.parent = parent
-        super().__init__(parent)
+        if format:
+          super().__init__(format, parent)
+        else:
+          super().__init__(parent)
         self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
         self.setUpScale()
@@ -25,7 +29,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.scale = val
 
     def setUpRadar(self, index = 0, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
-        self.radar = Grid(index, filePath, radarName, year, month, day, mode)
+        self.radar = Radar(index, filePath, radarName, year, month, day, mode)
 
     def resetRadar(self, DataManager: DataManager, index = 0):
         # del self.radar
@@ -42,8 +46,8 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
-        # if clutterFilter is not None:
-        #     self.radar.isFilterClutter(clutterFilter)
+        if clutterFilter is not None:
+            self.radar.isFilterClutter(clutterFilter)
 
         self.setUpVBO()
 
