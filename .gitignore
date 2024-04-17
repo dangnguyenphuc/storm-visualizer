@@ -35,4 +35,5 @@
 
 *.pyc
 *__pycache__*
+*pysteps_data*
 *.DS_Store*
