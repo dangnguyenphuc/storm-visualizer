@@ -1,14 +1,19 @@
 import numpy as np
+import os
+from matplotlib import pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+import pandas as pd
+
 import pyart
 import cartopy.crs as ccrs
-import os
-from sklearn.preprocessing import MinMaxScaler
-from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
 import wradlib as wrl
 import xarray
-import pandas as pd
+
+
 from tint.grid_utils import *
 from Config import *
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
+
 class DataManager:
 
   def __init__(self, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
@@ -268,6 +273,46 @@ class Radar:
   def getRadar(self):
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
     self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+  
+  def plot_ppi(self, key = None, sweep = 0):
+      fig = plt.figure(figsize=(10, 7))
+      plt.clf()
+      if key is not None:
+          radar = pyart.io.read(key)
+          display = pyart.graph.RadarMapDisplay(radar)
+          display.plot_ppi_map('reflectivity',
+                          resolution='50m',
+                          sweep=sweep,
+                          fig=fig,
+                          lat_lines=np.arange(radar.latitude['data'][0]-1.5, radar.latitude['data'][0]+1.5, 1),
+                          lon_lines=np.arange(radar.longitude['data'][0]-1.5, radar.longitude['data'][0]+1.5, 1),
+                          min_lon=radar.longitude['data'][0]-2.5,
+                          max_lon=radar.longitude['data'][0]+2.5,
+                          min_lat=radar.latitude['data'][0]-2.5,
+                          max_lat=radar.latitude['data'][0]+2.5,
+                          lon_0=radar.longitude['data'][0],
+                          lat_0=radar.latitude['data'][0])
+          plt.savefig('cat.jpg', bbox_inches='tight', pad_inches=0)
+          plt.close()
+          del display, radar
+      else:
+          display = pyart.graph.RadarMapDisplay(self.data)
+          display.plot_ppi_map('reflectivity',
+                          resolution='50m',
+                          sweep=sweep,
+                          fig=fig,
+                          lat_lines=np.arange(self.data.latitude['data'][0]-1.5, self.data.latitude['data'][0]+1.5, 1),
+                          lon_lines=np.arange(self.data.longitude['data'][0]-1.5, self.data.longitude['data'][0]+1.5, 1),
+                          min_lon=self.data.longitude['data'][0]-2.5,
+                          max_lon=self.data.longitude['data'][0]+2.5,
+                          min_lat=self.data.latitude['data'][0]-2.5,
+                          max_lat=self.data.latitude['data'][0]+2.5,
+                          lon_0=self.data.longitude['data'][0],
+                          lat_0=self.data.latitude['data'][0])
+
+          plt.savefig('cat.jpg', bbox_inches='tight', pad_inches=0)
+          plt.close()
+          del display
 
   def increaseIndex(self):
     self.currentIndex += 1

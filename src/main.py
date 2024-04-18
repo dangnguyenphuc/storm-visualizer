@@ -45,11 +45,17 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-        self.init2DView() 
+
+        # init OpenGL Widget
         self.initGL()
+
+        # init HomePage
         self.initHomePage() 
 
-        #! add item to drop down 3d
+        # init 2D Page
+        self.init2DView() 
+
+        # add item for drop down 3d
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
@@ -387,11 +393,11 @@ class MainWindow(QMainWindow):
           self.switchFrameTimer.stop()
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
-    def init2DView(self):
-        source = 'cat.jpg'
-        pixmap = QPixmap(source)
-        self.ui.view_2d_label.setPixmap(pixmap)
-        self.ui.view_2d_label.setScaledContents(True)
+    def init2DView(self): 
+      self.glWidget.radar.plot_ppi(sweep=1)
+      pixmap = QPixmap('cat.jpg')
+      self.ui.view_2d_label.setPixmap(pixmap)
+      self.ui.view_2d_label.setScaledContents(True)
     
 
     def initGL(self):
