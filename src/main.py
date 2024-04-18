@@ -4,7 +4,7 @@ import numpy as np
 import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream, Qt
-from PyQt5.QtGui import QIntValidator, QSurfaceFormat
+from PyQt5.QtGui import QIntValidator, QSurfaceFormat, QPixmap
 
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
@@ -44,7 +44,8 @@ class MainWindow(QMainWindow):
         self.zoom_factor = 0
         self.last_pos = None
         self.mouse_x = 0
-        self.mouse_y = 0 
+        self.mouse_y = 0
+        self.init2DView() 
         self.initGL()
         self.initHomePage() 
 
@@ -157,7 +158,7 @@ class MainWindow(QMainWindow):
                 scale ability: 0.25 -> 25
             held left mouse button to move object
         """
-        if self.ui.stackedWidget.currentIndex() == 1:
+        if self.ui.stackedWidget_2.currentIndex() == 0:
             try:
                 delta = event.angleDelta().y()
                 self.zoom_factor += (delta and delta // abs(delta))
@@ -235,8 +236,8 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget_2.setCurrentIndex(1)
         self.ui.labelPage.setText("2D View")
 
-        self.ui.slider_3d_x.setDisabled(True)
-        self.ui.slider_3d_y.setDisabled(True)
+        # self.ui.slider_3d_x.setDisabled(True)
+        # self.ui.slider_3d_y.setDisabled(True)
 
     def on_view2d_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
@@ -384,6 +385,14 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput.setText("0")
           self.switchFrameTimer.stop()
+
+    #write a fuction init 2d view add image to label: ui.view_2d_label
+    def init2DView(self):
+        source = 'cat.jpg'
+        pixmap = QPixmap(source)
+        self.ui.view_2d_label.setPixmap(pixmap)
+        self.ui.view_2d_label.setScaledContents(True)
+    
 
     def initGL(self):
 

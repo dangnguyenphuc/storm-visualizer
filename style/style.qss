@@ -144,3 +144,20 @@
 	}
 /*= END
   ==================================================== */
+
+  /*= Style for 2d page
+  ==================================================== */
+	#page_6 {
+		border: none;
+		background : #fff;
+	}
+	#scrollArea_3{
+		border: none;
+		background : #fff;
+	}
+	#scrollAreaWidgetContents {
+		border: none;
+		background : #000;
+	}
+/*= END
+  ==================================================== */
