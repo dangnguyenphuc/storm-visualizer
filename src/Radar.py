@@ -9,7 +9,6 @@ import cartopy.crs as ccrs
 import wradlib as wrl
 import xarray
 
-
 from tint.grid_utils import *
 from Config import *
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
@@ -274,45 +273,52 @@ class Radar:
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
     self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
   
-  def plot_ppi(self, key = None, sweep = 0):
+  def plot(self, mode = "pyart_ppi", sweep = 0):
       fig = plt.figure(figsize=(10, 7))
       plt.clf()
-      if key is not None:
-          radar = pyart.io.read(key)
-          display = pyart.graph.RadarMapDisplay(radar)
-          display.plot_ppi_map('reflectivity',
-                          resolution='50m',
-                          sweep=sweep,
-                          fig=fig,
-                          lat_lines=np.arange(radar.latitude['data'][0]-1.5, radar.latitude['data'][0]+1.5, 1),
-                          lon_lines=np.arange(radar.longitude['data'][0]-1.5, radar.longitude['data'][0]+1.5, 1),
-                          min_lon=radar.longitude['data'][0]-2.5,
-                          max_lon=radar.longitude['data'][0]+2.5,
-                          min_lat=radar.latitude['data'][0]-2.5,
-                          max_lat=radar.latitude['data'][0]+2.5,
-                          lon_0=radar.longitude['data'][0],
-                          lat_0=radar.latitude['data'][0])
-          plt.savefig('cat.jpg', bbox_inches='tight', pad_inches=0)
-          plt.close()
-          del display, radar
-      else:
-          display = pyart.graph.RadarMapDisplay(self.data)
-          display.plot_ppi_map('reflectivity',
-                          resolution='50m',
-                          sweep=sweep,
-                          fig=fig,
-                          lat_lines=np.arange(self.data.latitude['data'][0]-1.5, self.data.latitude['data'][0]+1.5, 1),
-                          lon_lines=np.arange(self.data.longitude['data'][0]-1.5, self.data.longitude['data'][0]+1.5, 1),
-                          min_lon=self.data.longitude['data'][0]-2.5,
-                          max_lon=self.data.longitude['data'][0]+2.5,
-                          min_lat=self.data.latitude['data'][0]-2.5,
-                          max_lat=self.data.latitude['data'][0]+2.5,
-                          lon_0=self.data.longitude['data'][0],
-                          lat_0=self.data.latitude['data'][0])
 
-          plt.savefig('cat.jpg', bbox_inches='tight', pad_inches=0)
-          plt.close()
-          del display
+
+      data = np.ma.filled(self.data.fields['reflectivity']['data'], fill_value=-327)
+      data = data[self.data.get_start(sweep) : self.data.get_end(sweep) + 1]
+      phi = self.data.get_azimuth(sweep)
+      theta = self.data.get_elevation(sweep)
+      site = (self.data.longitude['data'][0], self.data.latitude['data'][0], self.data.altitude['data'][0])
+      r = self.data.range['data']
+
+      da = wrl.georef.create_xarray_dataarray(
+            data = data,
+            phi = phi,
+            theta = theta,
+            r=r,
+            sweep_mode="azimuth_surveillance",
+            site=site
+      )
+
+      if mode == "pyart_ppi":
+        display = pyart.graph.RadarMapDisplay(self.data)
+        display.plot_ppi_map('reflectivity',
+                        resolution='50m',
+                        sweep=sweep,
+                        fig=fig,
+                        lat_lines=np.arange(self.data.latitude['data'][0]-1.5, self.data.latitude['data'][0]+1.5, 1),
+                        lon_lines=np.arange(self.data.longitude['data'][0]-1.5, self.data.longitude['data'][0]+1.5, 1),
+                        min_lon=self.data.longitude['data'][0]-2.5,
+                        max_lon=self.data.longitude['data'][0]+2.5,
+                        min_lat=self.data.latitude['data'][0]-2.5,
+                        max_lat=self.data.latitude['data'][0]+2.5,
+                        lon_0=self.data.longitude['data'][0],
+                        lat_0=self.data.latitude['data'][0])
+
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del display
+      elif mode == "wrl_polar":
+        da.plot()
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del da
+        
+      
 
   def increaseIndex(self):
     self.currentIndex += 1
