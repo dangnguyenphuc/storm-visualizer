@@ -394,7 +394,7 @@ class MainWindow(QMainWindow):
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
-      self.glWidget.radar.plot(mode="wrl_ppi_no_clutter", sweep=1)
+      self.glWidget.radar.plot(mode="wrl_plot_rain", sweep=1)
       pixmap = QPixmap('temp.jpg')
       self.ui.view_2d_label.setPixmap(pixmap)
       self.ui.view_2d_label.setScaledContents(True)
