@@ -368,6 +368,11 @@ class Radar:
         plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
+      elif mode == "wrl_plot_scan_strategy":
+        wrl.vis.plot_scan_strategy(r, self.data.fixed_angle['data'], site)
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
 
 
 
