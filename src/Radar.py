@@ -294,6 +294,10 @@ class Radar:
             site=site
       )
 
+      da_geo = da.wrl.georef.georeference()
+      clutter = da_geo.wrl.classify.filter_gabella(tr1=12, n_p=6, tr2=1.1)
+      data_no_clutter = da_geo.wrl.ipol.interpolate_polar(clutter)
+
       if mode == "pyart_ppi":
         display = pyart.graph.RadarMapDisplay(self.data)
         display.plot_ppi_map('reflectivity',
@@ -316,7 +320,25 @@ class Radar:
         da.plot()
         plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
         plt.close()
-        del da
+        del da, da_geo, clutter
+      elif mode == "wrl_ppi":
+        da_geo.wrl.vis.plot(add_colorbar=True)
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del da, da_geo, clutter
+      elif mode == "wrl_clutter":
+        clutter.wrl.vis.plot(cmap=plt.cm.gray)
+        plt.title("Clutter Map")
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del da, da_geo, clutter
+      elif mode == "wrl_ppi_no_clutter":
+        data_no_clutter.wrl.vis.plot(add_colorbar=True, vmin = 0)
+        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.close()
+        del da, da_geo, clutter
+
+
         
       
 
