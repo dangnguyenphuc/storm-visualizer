@@ -91,7 +91,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glEnableClientState(gl.GL_COLOR_ARRAY)
         gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
 
-        gl.glDrawElements(gl.GL_POINTS, len(self.indexArray), gl.GL_UNSIGNED_INT, self.indexArray)
+        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.indexArray))
 
         # Unbind and disable after drawing
         self.vertVBO.unbind()
