@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QAc
 
 from OpenGL import GLU
 import OpenGL.GL as gl
+from OpenGL.GL import *
 from OpenGL.arrays import vbo
 
 from Radar import *
@@ -54,7 +55,6 @@ class GLWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))    # initialize the screen to blue
         gl.glEnable(gl.GL_DEPTH_TEST)                  # enable depth testing
-
         self.setUpVBO()
 
         self.rotX = 0.0
@@ -91,7 +91,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glEnableClientState(gl.GL_COLOR_ARRAY)
         gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
 
-        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.indexArray))
+        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
 
         # Unbind and disable after drawing
         self.vertVBO.unbind()
@@ -114,8 +114,7 @@ class GLWidget(QtOpenGL.QGLWidget):
           self.colorVBO = vbo.VBO(np.reshape(self.color,
                                             (1, -1)).astype(np.float32))
           self.colorVBO.bind()
-
-          self.indexArray = np.array(range(len(self.vertices)))
+        
 
     def setRotX(self, val):
         self.rotX = np.pi * val
