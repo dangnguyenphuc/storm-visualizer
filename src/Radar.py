@@ -3,9 +3,9 @@ import os
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
+import scipy
 
 import pyart
-import cartopy.crs as ccrs
 import wradlib as wrl
 import xarray
 
@@ -521,16 +521,32 @@ class Grid:
     # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
 
     # storm Identification testing
-    # grid_size = get_grid_size(self.data)
-    # min_size = 4 / np.prod(grid_size[1:]/1000)
-    # masked = self.data.fields['reflectivity']['data']
-    # masked.data[masked.data == masked.fill_value] = 0
-    # frame = get_filtered_frame(masked.data, min_size, 32)
-    # self.currentReflectivity = frame.flatten()
+    def getSizeTable(frame):
+      flat_image = pd.Series(frame.flatten())
+      flat_image = flat_image[flat_image > 0]
+      size_table = flat_image.value_counts(sort=False)
+      return size_table
 
-    self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+    masked = self.data.fields['reflectivity']['data']
+    masked.data[masked.data == masked.fill_value] = 0
+    masked.data[masked.data < 32] = 0
+
+    frame, count = scipy.ndimage.label(masked.data)
+
+    size_table = getSizeTable(frame)
+
+    # determine smallObject 
+    small_objects = size_table.keys()[size_table < 10]
+
+    for obj in small_objects:
+        frame[frame == obj] = 0
+    
+    # get unique value 
+    self.currentReflectivity = frame.flatten()
+
+    # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
     indices = np.where(self.currentReflectivity > threshold)
-    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    scaler = MinMaxScaler(feature_range=(-10.0, 10.0))
     vertices = self.get_vertices_position(scaler)
     return {
         'position': vertices[indices],

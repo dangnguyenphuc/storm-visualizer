@@ -1,7 +1,8 @@
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
-from OpenGL.GL.shaders import compileProgram,compileShader
+# from OpenGL.GL import *
+# from OpenGL.GLUT import *
+# from OpenGL.GLU import *
+# from OpenGL.GL.shaders import compileProgram,compileShader
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
@@ -56,17 +57,17 @@ def getYearMonthDate(radar):
 
     return (dt.year, dt.strftime("%m"), dt.strftime("%d"))
 
-def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
-    with open(vertex_filepath,'r') as f:
-        vertex_src = f.readlines()
+# def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
+#     with open(vertex_filepath,'r') as f:
+#         vertex_src = f.readlines()
 
-    with open(fragment_filepath,'r') as f:
-        fragment_src = f.readlines()
+#     with open(fragment_filepath,'r') as f:
+#         fragment_src = f.readlines()
 
-    shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
-                            compileShader(fragment_src, GL_FRAGMENT_SHADER))
+#     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
+#                             compileShader(fragment_src, GL_FRAGMENT_SHADER))
 
-    return shader
+#     return shader
 
 def color(value):
     normalized_values = (value + 20) / (65 + 20)

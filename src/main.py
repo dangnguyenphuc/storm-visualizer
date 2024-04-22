@@ -3,8 +3,8 @@ import numpy as np
 
 import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import pyqtSlot, QFile, QTextStream, Qt
-from PyQt5.QtGui import QIntValidator, QSurfaceFormat, QPixmap
+from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
@@ -394,12 +394,12 @@ class MainWindow(QMainWindow):
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
+      '''create mode box for user choosing mode'''
       self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
       pixmap = QPixmap('temp.jpg')
       self.ui.view_2d_label.setPixmap(pixmap)
       self.ui.view_2d_label.setScaledContents(True)
     
-
     def initGL(self):
 
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
