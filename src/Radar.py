@@ -3,7 +3,7 @@ import os
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
-import scipy
+from scipy import ndimage
 
 import pyart
 import wradlib as wrl
@@ -531,7 +531,7 @@ class Grid:
     masked.data[masked.data == masked.fill_value] = 0
     masked.data[masked.data < 32] = 0
 
-    frame, count = scipy.ndimage.label(masked.data)
+    frame, count = ndimage.label(masked.data)
 
     size_table = getSizeTable(frame)
 
