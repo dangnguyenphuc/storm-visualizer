@@ -3,8 +3,8 @@ import numpy as np
 
 import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import pyqtSlot, QFile, QTextStream, Qt
-from PyQt5.QtGui import QIntValidator, QSurfaceFormat, QPixmap
+from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
@@ -45,11 +45,19 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-        self.init2DView() 
+
+        # init OpenGL Widget
         self.initGL()
+
+        # init HomePage
         self.initHomePage() 
+
+        # init 2D Page
+        self.init2DView() 
+
+        # init Pro view
         self.initProView()
-        #! add item to drop down 3d
+        # add item for drop down 3d
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
@@ -86,9 +94,7 @@ class MainWindow(QMainWindow):
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
         self.page_2Connected = False
 
-        self.last_pos = None
-        self.mouse_x = 0
-        self.mouse_y = 0
+
     def closeEvent(self, event):
         if quitQuestionBox() == QMessageBox.Cancel:
             event.ignore()
@@ -116,6 +122,7 @@ class MainWindow(QMainWindow):
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
+
     def keyPressEvent(self, event):
         if event.key()== PyQt5.QtCore.Qt.Key_4:
             self.ui.other_1.setChecked(True)
@@ -259,7 +266,6 @@ class MainWindow(QMainWindow):
     def on_other_2_toggled(self, ):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(2)
-        # self.ui.stackedWidget.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
 
 #
@@ -393,13 +399,13 @@ class MainWindow(QMainWindow):
           self.switchFrameTimer.stop()
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
-    def init2DView(self):
-        source = 'temp.jpg'
-        pixmap = QPixmap(source)
-        self.ui.view_2d_label.setPixmap(pixmap)
-        self.ui.view_2d_label.setScaledContents(True)
+    def init2DView(self): 
+      '''create mode box for user choosing mode'''
+      self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
+      pixmap = QPixmap('temp.jpg')
+      self.ui.view_2d_label.setPixmap(pixmap)
+      self.ui.view_2d_label.setScaledContents(True)
     
-
     def initGL(self):
 
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
@@ -431,7 +437,6 @@ class MainWindow(QMainWindow):
         self.ui.nextFile.clicked.connect(self.goNextFile)
 
         self.ui.resetView.clicked.connect(self.reset3DView)
-
     def initProView(self):
         self.ui.scrollArea_4.setMinimumHeight(self.ui.page_3.height())
         self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
