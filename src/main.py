@@ -3,8 +3,8 @@ import numpy as np
 
 import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import QFile, QTextStream, Qt
-from PyQt5.QtGui import QIntValidator, QPixmap
+from PyQt5.QtCore import pyqtSlot, QFile, QTextStream, Qt
+from PyQt5.QtGui import QIntValidator, QSurfaceFormat, QPixmap
 
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
@@ -45,17 +45,11 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-
-        # init OpenGL Widget
-        self.initGL()
-
-        # init HomePage
-        self.initHomePage() 
-
-        # init 2D Page
         self.init2DView() 
-
-        # add item for drop down 3d
+        self.initGL()
+        self.initHomePage() 
+        self.initProView()
+        #! add item to drop down 3d
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
@@ -123,7 +117,10 @@ class MainWindow(QMainWindow):
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
     def keyPressEvent(self, event):
-        if event.key()== PyQt5.QtCore.Qt.Key_3:
+        if event.key()== PyQt5.QtCore.Qt.Key_4:
+            self.ui.other_1.setChecked(True)
+            self.ui.other_2.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_3:
             self.ui.view3d_1.setChecked(True)
             self.ui.view3d_2.setChecked(True)
         elif event.key()== PyQt5.QtCore.Qt.Key_2:
@@ -254,13 +251,16 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setDisabled(True)
 
     def on_other_1_toggled(self):
-        self.ui.stackedWidget.setCurrentIndex(2)
-        self.ui.labelPage.setText("About")
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(2)
+        self.ui.labelPage.setText("Pro View")
 
 
     def on_other_2_toggled(self, ):
-        self.ui.stackedWidget.setCurrentIndex(2)
-        self.ui.labelPage.setText("About")
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(2)
+        # self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("Pro View")
 
 #
 #     def on_customers_btn_1_toggled(self):
@@ -393,13 +393,13 @@ class MainWindow(QMainWindow):
           self.switchFrameTimer.stop()
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
-    def init2DView(self): 
-      '''create mode box for user choosing mode'''
-      self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-      pixmap = QPixmap('temp.jpg')
-      self.ui.view_2d_label.setPixmap(pixmap)
-      self.ui.view_2d_label.setScaledContents(True)
+    def init2DView(self):
+        source = 'temp.jpg'
+        pixmap = QPixmap(source)
+        self.ui.view_2d_label.setPixmap(pixmap)
+        self.ui.view_2d_label.setScaledContents(True)
     
+
     def initGL(self):
 
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
@@ -432,6 +432,32 @@ class MainWindow(QMainWindow):
 
         self.ui.resetView.clicked.connect(self.reset3DView)
 
+    def initProView(self):
+        self.ui.scrollArea_4.setMinimumHeight(self.ui.page_3.height())
+        self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
+        self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
+        # 2D 
+        source = 'temp.jpg'
+        pixmap = QPixmap(source)
+        self.ui.label2d_pro.setPixmap(pixmap)
+        self.ui.label2d_pro.setScaledContents(True)
+        self.addInfor()
+        self.addExtraInfor()
+        self.addStormList()
+        self.ui.lat_pro.setText(f'12.00')
+        self.ui.long_pro.setText(f'24.00')
+    def addInfor(self):
+        radarName = "NhaBe"
+        entries = ['This is other information box',f'Radar: {radarName}', 'two', 'three']
+        self.ui.otherIn4_pro.addItems(entries)
+    def addExtraInfor(self):
+        radarName = "NhaBe"
+        entries = ['This is extra information box',f'Radar: {radarName}', 'two', 'three']
+        self.ui.extraInfo_pro.addItems(entries)
+    def addStormList(self):
+        entries = [f'storm 1: theshold...', 'storm 1: theshold...', 'storm 1: theshold...']
+        self.ui.stromList.addItems(entries)
+        self.ui.stromList.setCurrentIndex(-1)
     def reset3DView(self):
         """
         Reset 3D view

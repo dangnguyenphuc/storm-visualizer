@@ -1,18 +1,14 @@
 import numpy as np
-import os
-from matplotlib import pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
-import pandas as pd
-import scipy
-
 import pyart
+import cartopy.crs as ccrs
+import os
+from sklearn.preprocessing import MinMaxScaler
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
 import wradlib as wrl
 import xarray
-
+import pandas as pd
 from tint.grid_utils import *
 from Config import *
-from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
-
 class DataManager:
 
   def __init__(self, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
@@ -272,115 +268,6 @@ class Radar:
   def getRadar(self):
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
     self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
-  
-  def plot(self, mode = "pyart_ppi", sweep = 0):
-      fig = plt.figure(figsize=(10, 7))
-      plt.clf()
-
-
-      data = np.ma.filled(self.data.fields['reflectivity']['data'], fill_value=-327)
-      data = data[self.data.get_start(sweep) : self.data.get_end(sweep) + 1]
-      phi = self.data.get_azimuth(sweep)
-      theta = self.data.get_elevation(sweep)
-      site = (self.data.longitude['data'][0], self.data.latitude['data'][0], self.data.altitude['data'][0])
-      r = self.data.range['data']
-
-      da = wrl.georef.create_xarray_dataarray(
-            data = data,
-            phi = phi,
-            theta = theta,
-            r=r,
-            sweep_mode="azimuth_surveillance",
-            site=site
-      )
-
-      da_geo = da.wrl.georef.georeference()
-      clutter = da_geo.wrl.classify.filter_gabella(tr1=12, n_p=6, tr2=1.1)
-      data_no_clutter = da_geo.wrl.ipol.interpolate_polar(clutter)
-      pia = data_no_clutter.wrl.atten.correct_attenuation_constrained(
-          a_max=1.67e-4,
-          a_min=2.33e-5,
-          n_a=100,
-          b_max=0.7,
-          b_min=0.65,
-          n_b=6,
-          gate_length=1.0,
-          constraints=[wrl.atten.constraint_dbz, wrl.atten.constraint_pia],
-          constraint_args=[[59.0], [20.0]],
-      )
-      data_attcorr = data_no_clutter + pia
-      z = data_attcorr.wrl.trafo.idecibel()
-      R = z.wrl.zr.z_to_r()
-      depths = R.wrl.trafo.r_to_depth(300)
-      
-
-      if mode == "pyart_ppi":
-        display = pyart.graph.RadarMapDisplay(self.data)
-        display.plot_ppi_map('reflectivity',
-                        resolution='50m',
-                        sweep=sweep,
-                        fig=fig,
-                        lat_lines=np.arange(self.data.latitude['data'][0]-1.5, self.data.latitude['data'][0]+1.5, 1),
-                        lon_lines=np.arange(self.data.longitude['data'][0]-1.5, self.data.longitude['data'][0]+1.5, 1),
-                        min_lon=self.data.longitude['data'][0]-2.5,
-                        max_lon=self.data.longitude['data'][0]+2.5,
-                        min_lat=self.data.latitude['data'][0]-2.5,
-                        max_lat=self.data.latitude['data'][0]+2.5,
-                        lon_0=self.data.longitude['data'][0],
-                        lat_0=self.data.latitude['data'][0])
-
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del display
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_polar":
-        da.plot()
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_ppi":
-        da_geo.wrl.vis.plot(add_colorbar=True)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_clutter":
-        clutter.wrl.vis.plot(cmap=plt.cm.gray)
-        plt.title("Clutter Map")
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_ppi_no_clutter":
-        data_no_clutter.wrl.vis.plot(add_colorbar=True, vmin = 0)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_ppi_no_clutter":
-        data_no_clutter.wrl.vis.plot(add_colorbar=True, vmin = 0)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_attenuation_correction":
-        '''https://docs.wradlib.org/en/latest/notebooks/basics/wradlib_workflow.html'''
-        '''In this mode, we can plot'''
-        pass
-      elif mode == "wrl_plot_rain":
-        depths.wrl.vis.plot()
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_plot_scan_strategy":
-        wrl.vis.plot_scan_strategy(r, self.data.fixed_angle['data'], site)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-
-
-
-
-
-
-        
-      
 
   def increaseIndex(self):
     self.currentIndex += 1
@@ -521,32 +408,16 @@ class Grid:
     # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
 
     # storm Identification testing
-    def getSizeTable(frame):
-      flat_image = pd.Series(frame.flatten())
-      flat_image = flat_image[flat_image > 0]
-      size_table = flat_image.value_counts(sort=False)
-      return size_table
+    # grid_size = get_grid_size(self.data)
+    # min_size = 4 / np.prod(grid_size[1:]/1000)
+    # masked = self.data.fields['reflectivity']['data']
+    # masked.data[masked.data == masked.fill_value] = 0
+    # frame = get_filtered_frame(masked.data, min_size, 32)
+    # self.currentReflectivity = frame.flatten()
 
-    masked = self.data.fields['reflectivity']['data']
-    masked.data[masked.data == masked.fill_value] = 0
-    masked.data[masked.data < 32] = 0
-
-    frame, count = scipy.ndimage.label(masked.data)
-
-    size_table = getSizeTable(frame)
-
-    # determine smallObject 
-    small_objects = size_table.keys()[size_table < 10]
-
-    for obj in small_objects:
-        frame[frame == obj] = 0
-    
-    # get unique value 
-    self.currentReflectivity = frame.flatten()
-
-    # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+    self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
     indices = np.where(self.currentReflectivity > threshold)
-    scaler = MinMaxScaler(feature_range=(-10.0, 10.0))
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     vertices = self.get_vertices_position(scaler)
     return {
         'position': vertices[indices],
