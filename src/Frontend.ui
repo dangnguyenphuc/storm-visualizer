@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1036</width>
-    <height>631</height>
+    <height>704</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -40,475 +40,6 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="0" column="1">
-     <widget class="QWidget" name="full_menu_widget" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="logo_label_2">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap resource="resource.qrc">:/icon/icon/thunderstorm.png</pixmap>
-           </property>
-           <property name="scaledContents">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignLeft">
-          <widget class="QLabel" name="logo_label_3">
-           <property name="font">
-            <font>
-             <family>Arial</family>
-             <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>TITAN</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
-          <widget class="QPushButton" name="home_btn_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Home</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/icon/icon/home_color.ico</normaloff>:/icon/icon/home_color.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-           <property name="default">
-            <bool>false</bool>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignLeft">
-          <widget class="QPushButton" name="view2d_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>2D View</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/icon/icon/2d_color.ico</normaloff>:/icon/icon/2d_color.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="view3d_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>3D View</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/icon/icon/3d-cube.ico</normaloff>:/icon/icon/3d-cube.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="other_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>Arial</family>
-             <pointsize>10</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Pro View</string>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normaloff>icon/eye.ico</normaloff>icon/eye.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>373</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="exit_btn_2">
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Exit</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/icon/icon/switch.ico</normaloff>:/icon/icon/switch.ico</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>25</width>
-           <height>25</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QWidget" name="icon_only_widget" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="spacing">
-        <number>6</number>
-       </property>
-       <property name="leftMargin">
-        <number>9</number>
-       </property>
-       <property name="topMargin">
-        <number>9</number>
-       </property>
-       <property name="rightMargin">
-        <number>9</number>
-       </property>
-       <property name="bottomMargin">
-        <number>9</number>
-       </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <item>
-          <widget class="QLabel" name="logo_label_1">
-           <property name="minimumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap resource="resource.qrc">:/icon/icon/thunderstorm.png</pixmap>
-           </property>
-           <property name="scaledContents">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-          <widget class="QPushButton" name="home_btn_1">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/icon/icon/home_color.ico</normaloff>:/icon/icon/home_color.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-          <widget class="QPushButton" name="view2d_1">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="resource.qrc">
-             <normaloff>:/icon/icon/2d_color.ico</normaloff>:/icon/icon/2d_color.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-          <widget class="QPushButton" name="view3d_1">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normaloff>icon/3d-cube.ico</normaloff>
-             <normalon>:/icon/icon/3d-cube.ico</normalon>
-             <disabledoff>:/icon/icon/3d-cube.ico</disabledoff>
-             <disabledon>:/icon/icon/3d-cube.ico</disabledon>
-             <activeon>:/icon/icon/3d-cube.ico</activeon>
-             <selectedon>:/icon/icon/3d-cube.ico</selectedon>icon/3d-cube.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
-          <widget class="QPushButton" name="other_1">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normaloff>icon/eye.ico</normaloff>icon/eye.ico</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>25</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="autoExclusive">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>375</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="exit_btn_1">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="resource.qrc">
-           <normaloff>:/icon/icon/switch.ico</normaloff>:/icon/icon/switch.ico</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>25</width>
-           <height>25</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
     <item row="0" column="2">
      <widget class="QWidget" name="widget_3" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -986,6 +517,9 @@
                    <property name="mouseTracking">
                     <bool>true</bool>
                    </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
                    <property name="layoutDirection">
                     <enum>Qt::LeftToRight</enum>
                    </property>
@@ -1004,7 +538,7 @@
                       <x>0</x>
                       <y>0</y>
                       <width>796</width>
-                      <height>367</height>
+                      <height>440</height>
                      </rect>
                     </property>
                    </widget>
@@ -1182,14 +716,56 @@
                       <x>0</x>
                       <y>0</y>
                       <width>796</width>
-                      <height>456</height>
+                      <height>529</height>
                      </rect>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_8">
-                     <item>
-                      <widget class="QLabel" name="view_2d_label">
+                    <layout class="QGridLayout" name="gridLayout_16">
+                     <item row="1" column="2">
+                      <widget class="QComboBox" name="plot_mode_box">
+                       <property name="minimumSize">
+                        <size>
+                         <width>100</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="QLabel" name="label_25">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
-                        <string>TextLabel</string>
+                        <string>Plot Mode</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="2">
+                      <spacer name="verticalSpacer_4">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>20</width>
+                         <height>40</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item row="0" column="1" rowspan="3">
+                      <widget class="QLabel" name="view_2d_label">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>2D placeholder</string>
                        </property>
                       </widget>
                      </item>
@@ -1206,17 +782,178 @@
                    <property name="widgetResizable">
                     <bool>true</bool>
                    </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                    <widget class="QWidget" name="scrollAreaWidgetContents_3">
                     <property name="geometry">
                      <rect>
-                      <x>-59</x>
-                      <y>-175</y>
+                      <x>0</x>
+                      <y>-230</y>
                       <width>838</width>
-                      <height>614</height>
+                      <height>742</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_10">
-                     <item row="0" column="2">
+                     <item row="13" column="0">
+                      <layout class="QGridLayout" name="gridLayout_14" rowminimumheight="0,0,0">
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_22">
+                         <property name="text">
+                          <string>X axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="label_23">
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="2">
+                        <widget class="QSlider" name="slider_pro_x">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="3">
+                        <widget class="QLabel" name="label">
+                         <property name="text">
+                          <string>Threshold</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="2">
+                        <widget class="QSlider" name="slider_pro_y">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLabel" name="label_20">
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="3">
+                        <widget class="QLabel" name="label_24">
+                         <property name="text">
+                          <string>Switch Frame Timer</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="4">
+                        <widget class="QLineEdit" name="threshold_pro">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="4">
+                        <widget class="QLineEdit" name="timerInput_pro">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="label_19">
+                         <property name="text">
+                          <string>Y axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_15">
+                         <property name="text">
+                          <string>Z axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="2">
+                        <widget class="QSlider" name="slider_pro_z">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QLabel" name="label_18">
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="4">
+                        <widget class="QPushButton" name="resetView_pro">
+                         <property name="text">
+                          <string>Reset View</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="17" column="0" colspan="3">
+                      <widget class="Line" name="line_2">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="12" column="1" rowspan="2">
+                      <widget class="QListWidget" name="otherIn4_pro">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="7" column="0" rowspan="6">
+                      <widget class="QScrollArea" name="scrollArea_4">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>400</width>
+                         <height>500</height>
+                        </size>
+                       </property>
+                       <property name="mouseTracking">
+                        <bool>true</bool>
+                       </property>
+                       <property name="widgetResizable">
+                        <bool>true</bool>
+                       </property>
+                       <widget class="QWidget" name="scrollAreaWidgetContents_4">
+                        <property name="geometry">
+                         <rect>
+                          <x>0</x>
+                          <y>0</y>
+                          <width>398</width>
+                          <height>498</height>
+                         </rect>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_13"/>
+                       </widget>
+                      </widget>
+                     </item>
+                     <item row="7" column="2">
                       <layout class="QGridLayout" name="gridLayout_15">
                        <item row="0" column="0">
                         <widget class="QLabel" name="label_6">
@@ -1300,17 +1037,10 @@
                        </item>
                       </layout>
                      </item>
-                     <item row="5" column="1">
-                      <widget class="QListWidget" name="otherIn4_pro">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
+                     <item row="24" column="0" colspan="3">
+                      <widget class="QListWidget" name="extraInfo_pro"/>
                      </item>
-                     <item row="4" column="1">
+                     <item row="11" column="1">
                       <widget class="QLabel" name="label_10">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -1323,149 +1053,7 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="0" column="0" rowspan="6">
-                      <widget class="QScrollArea" name="scrollArea_4">
-                       <property name="minimumSize">
-                        <size>
-                         <width>400</width>
-                         <height>500</height>
-                        </size>
-                       </property>
-                       <property name="widgetResizable">
-                        <bool>true</bool>
-                       </property>
-                       <widget class="QWidget" name="scrollAreaWidgetContents_4">
-                        <property name="geometry">
-                         <rect>
-                          <x>0</x>
-                          <y>0</y>
-                          <width>398</width>
-                          <height>515</height>
-                         </rect>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_13">
-                         <item row="1" column="0">
-                          <widget class="QLabel" name="label_22">
-                           <property name="text">
-                            <string>X axis</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="3">
-                          <widget class="QLabel" name="label_24">
-                           <property name="text">
-                            <string>Switch Frame Timer</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="3" column="0">
-                          <widget class="QLabel" name="label_15">
-                           <property name="text">
-                            <string>Z axis</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="3" column="2">
-                          <widget class="QSlider" name="slider_pro_z">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="1">
-                          <widget class="QLabel" name="label_20">
-                           <property name="text">
-                            <string>0°</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="2">
-                          <widget class="QSlider" name="slider_pro_x">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="3" column="3">
-                          <widget class="QPushButton" name="pushButton">
-                           <property name="text">
-                            <string>Reset View</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="1">
-                          <widget class="QLabel" name="label_23">
-                           <property name="text">
-                            <string>0°</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="2">
-                          <spacer name="verticalSpacer_6">
-                           <property name="orientation">
-                            <enum>Qt::Vertical</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>20</width>
-                             <height>40</height>
-                            </size>
-                           </property>
-                          </spacer>
-                         </item>
-                         <item row="1" column="3">
-                          <widget class="QLabel" name="label">
-                           <property name="text">
-                            <string>Threshold</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="2">
-                          <widget class="QSlider" name="slider_pro_y">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="3" column="1">
-                          <widget class="QLabel" name="label_18">
-                           <property name="text">
-                            <string>0°</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="0">
-                          <widget class="QLabel" name="label_19">
-                           <property name="text">
-                            <string>Y axis</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="1" column="4">
-                          <widget class="QLineEdit" name="lineEdit">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="2" column="4">
-                          <widget class="QLineEdit" name="lineEdit_2">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </widget>
-                      </widget>
-                     </item>
-                     <item row="0" column="1" rowspan="4">
+                     <item row="7" column="1" rowspan="4">
                       <widget class="QLabel" name="label2d_pro">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1490,8 +1078,144 @@
                        </property>
                       </widget>
                      </item>
-                     <item row="6" column="0" colspan="3">
-                      <widget class="QListWidget" name="extraInfo_pro"/>
+                     <item row="18" column="0" colspan="3">
+                      <layout class="QGridLayout" name="gridLayout_17">
+                       <item row="3" column="0">
+                        <widget class="QLabel" name="wrl_attenuation_correction">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_attenuation_correction</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="pyart_ppi">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>pyart_ppi</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="2">
+                        <widget class="QLabel" name="wrl_plot_scan_strategy">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_plot_scan_strategy</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="wrl_polar">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_polar</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="3">
+                        <widget class="QLabel" name="wrl_ppi_no_clutter">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_ppi_no_clutter</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="1">
+                        <widget class="QLabel" name="wrl_plot_rain">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_plot_rain</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="2">
+                        <widget class="QLabel" name="wrl_ppi">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_ppi</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="3" column="3">
+                        <widget class="QLabel" name="wrl_clutter">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>wrl_clutter</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="19" column="0" colspan="3">
+                      <widget class="Line" name="line">
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -1527,6 +1251,475 @@
            </item>
           </layout>
          </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QWidget" name="full_menu_widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="logo_label_2">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resource.qrc">:/icon/icon/thunderstorm.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignLeft">
+          <widget class="QLabel" name="logo_label_3">
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>TITAN</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+          <widget class="QPushButton" name="home_btn_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>Home</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icon/icon/home_color.ico</normaloff>:/icon/icon/home_color.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+           <property name="autoDefault">
+            <bool>false</bool>
+           </property>
+           <property name="default">
+            <bool>false</bool>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignLeft">
+          <widget class="QPushButton" name="view2d_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>2D View</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icon/icon/2d_color.ico</normaloff>:/icon/icon/2d_color.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="view3d_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>3D View</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icon/icon/3d-cube.ico</normaloff>:/icon/icon/3d-cube.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="other_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>10</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Pro View</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>icon/eye.ico</normaloff>icon/eye.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>373</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="exit_btn_2">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Exit</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icon/icon/switch.ico</normaloff>:/icon/icon/switch.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>25</width>
+           <height>25</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="icon_only_widget" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="logo_label_1">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="resource.qrc">:/icon/icon/thunderstorm.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QPushButton" name="home_btn_1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icon/icon/home_color.ico</normaloff>:/icon/icon/home_color.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QPushButton" name="view2d_1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="resource.qrc">
+             <normaloff>:/icon/icon/2d_color.ico</normaloff>:/icon/icon/2d_color.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QPushButton" name="view3d_1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>icon/3d-cube.ico</normaloff>
+             <normalon>:/icon/icon/3d-cube.ico</normalon>
+             <disabledoff>:/icon/icon/3d-cube.ico</disabledoff>
+             <disabledon>:/icon/icon/3d-cube.ico</disabledon>
+             <activeon>:/icon/icon/3d-cube.ico</activeon>
+             <selectedon>:/icon/icon/3d-cube.ico</selectedon>icon/3d-cube.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+          <widget class="QPushButton" name="other_1">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>icon/eye.ico</normaloff>icon/eye.ico</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>25</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>375</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="exit_btn_1">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="resource.qrc">
+           <normaloff>:/icon/icon/switch.ico</normaloff>:/icon/icon/switch.ico</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>25</width>
+           <height>25</height>
+          </size>
+         </property>
         </widget>
        </item>
       </layout>
