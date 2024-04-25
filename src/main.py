@@ -1,667 +1,547 @@
-# import sys
-# import numpy as np
+import sys
+import numpy as np
 
-# import PyQt5
-# from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-# from PyQt5.QtCore import QFile, QTextStream, Qt
-# from PyQt5.QtGui import QIntValidator, QPixmap
+import PyQt5
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
+from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtGui import QIntValidator, QPixmap
 
-# from Object3d import GLWidget
-# from Frontend import Ui_MainWindow
-# from Radar import DataManager
-# from Utils import folderEmpty
-# from Config import SECOND, TICK
-# from messageBox import quitQuestionBox, errorBox
+from Object3d import GLWidget
+from Frontend import Ui_MainWindow
+from Radar import DataManager
+from Utils import folderEmpty
+from Config import SECOND, TICK
+from messageBox import quitQuestionBox, errorBox
 
-# # Set high DPI scaling attributes
-# QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-# QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+# Set high DPI scaling attributes
+QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-# class MainWindow(QMainWindow):
-#     """
-#     DashBoard contains side bar.
-#     We implement behaviors of dashboard here.
+class MainWindow(QMainWindow):
+    """
+    DashBoard contains side bar.
+    We implement behaviors of dashboard here.
 
-#     Args:
-#         QMainWindow (QWidget): Main widget
-#     """
-#     def __init__(self):
-#         super(MainWindow, self).__init__()
+    Args:
+        QMainWindow (QWidget): Main widget
+    """
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
-#         self.DataManager = DataManager()
+        self.DataManager = DataManager()
 
-#         self.ui = Ui_MainWindow()
-#         self.ui.setupUi(self)
-#         self.setContentsMargins(0, 0, 0, 0)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.setContentsMargins(0, 0, 0, 0)
 
-#         self.ui.icon_only_widget.hide()
-#         self.ui.stackedWidget.setCurrentIndex(0)
-#         self.ui.home_btn_2.setChecked(True)
-#         self.ui.exit_btn_1.disconnect()
-#         self.ui.exit_btn_2.disconnect()
-#         self.ui.exit_btn_2.clicked.connect(quitQuestionBox)
-#         self.ui.exit_btn_1.clicked.connect(quitQuestionBox)
-#         self.zoom_factor = 0
-#         self.last_pos = None
-#         self.mouse_x = 0
-#         self.mouse_y = 0
+        self.ui.icon_only_widget.hide()
+        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.home_btn_2.setChecked(True)
+        self.ui.exit_btn_1.disconnect()
+        self.ui.exit_btn_2.disconnect()
+        self.ui.exit_btn_2.clicked.connect(quitQuestionBox)
+        self.ui.exit_btn_1.clicked.connect(quitQuestionBox)
+        self.zoom_factor = 0
+        self.last_pos = None
+        self.mouse_x = 0
+        self.mouse_y = 0
 
-#         # init OpenGL Widget
-#         self.initGL()
+        # init OpenGL Widget
+        self.initGL()
 
-#         # init HomePage
-#         self.initHomePage() 
+        # init HomePage
+        self.initHomePage() 
 
-#         # init 2D Page
-#         self.init2DView() 
+        # init 2D Page
+        self.init2DView() 
 
-#         # add item for drop down 3d
-#         self.addItemRadar()
-#         self.addItemDate()
-#         self.addItemMode()
-#         self.addItemFile()
+        # add item for drop down 3d
+        self.addItemRadar()
+        self.addItemDate()
+        self.addItemMode()
+        self.addItemFile()
 
-#         # validator
-#         thresholdValidator = QIntValidator()
-#         thresholdValidator.setRange(0, 100)
-#         timerValidator = QIntValidator()
-#         timerValidator.setRange(0, 3600)
-#         self.ui.threshold.setValidator(thresholdValidator)
-#         self.ui.threshold.setText(str(self.glWidget.threshold))
-#         self.ui.timerInput.setValidator(timerValidator)
-#         self.ui.timerInput.setText("0")
+        # validator
+        thresholdValidator = QIntValidator()
+        thresholdValidator.setRange(0, 100)
+        timerValidator = QIntValidator()
+        timerValidator.setRange(0, 3600)
+        self.ui.threshold.setValidator(thresholdValidator)
+        self.ui.threshold.setText(str(self.glWidget.threshold))
+        self.ui.timerInput.setValidator(timerValidator)
+        self.ui.timerInput.setText("0")
 
-#         # timers
-#         mainTimer = PyQt5.QtCore.QTimer(self)
-#         mainTimer.setInterval(int(TICK))   # period, in milliseconds
-#         mainTimer.timeout.connect(self.glWidget.updateGL)
-#         mainTimer.start()
+        # timers
+        mainTimer = PyQt5.QtCore.QTimer(self)
+        mainTimer.setInterval(int(TICK))   # period, in milliseconds
+        mainTimer.timeout.connect(self.glWidget.updateGL)
+        mainTimer.start()
 
-#         self.switchFrameTimer = PyQt5.QtCore.QTimer(self)
-#         self.switchFrameTimer.timeout.connect(self.goNextFile)
-#         self.switchFrameTimer.stop()
+        self.switchFrameTimer = PyQt5.QtCore.QTimer(self)
+        self.switchFrameTimer.timeout.connect(self.goNextFile)
+        self.switchFrameTimer.stop()
 
-#         self.errorTimer = PyQt5.QtCore.QTimer(self)
-#         self.errorTimer.setInterval(5 * SECOND) 
-#         self.errorTimer.timeout.connect(self.clearError)
-#         self.errorTimer.stop()
+        self.errorTimer = PyQt5.QtCore.QTimer(self)
+        self.errorTimer.setInterval(5 * SECOND) 
+        self.errorTimer.timeout.connect(self.clearError)
+        self.errorTimer.stop()
 
 
-#         # just change when value change
-#         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
-#         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
-#         self.page_2Connected = False
+        # just change when value change
+        self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
+        self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
+        self.page_2Connected = False
 
-#         self.last_pos = None
-#         self.mouse_x = 0
-#         self.mouse_y = 0
-#     def closeEvent(self, event):
-#         if quitQuestionBox() == QMessageBox.Cancel:
-#             event.ignore()
-#         else:
-#             event.accept()
+        self.last_pos = None
+        self.mouse_x = 0
+        self.mouse_y = 0
+    def closeEvent(self, event):
+        if quitQuestionBox() == QMessageBox.Cancel:
+            event.ignore()
+        else:
+            event.accept()
 
-#     def page2Connect(self, event):
-#       if not self.page_2Connected:
-#         self.ui.threshold.textChanged.connect(self.getThreshold)
-#         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
-#         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
-#         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
-#         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
-#         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
-#         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
-#         self.page_2Connected = True
+    def page2Connect(self, event):
+      if not self.page_2Connected:
+        self.ui.threshold.textChanged.connect(self.getThreshold)
+        self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
+        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+        self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
+        self.ui.modeBox.currentIndexChanged.connect(self.getMode)
+        self.ui.dateBox.currentIndexChanged.connect(self.getDate)
+        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        self.page_2Connected = True
       
-#     def page2Disconnect(self, event):
-#       if self.page_2Connected:
-#         self.ui.threshold.textChanged.disconnect(self.getThreshold)
-#         self.ui.timerInput.textChanged.disconnect(self.getSwichFrameTimer)
-#         self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
-#         self.ui.radarBox.currentIndexChanged.disconnect(self.getRadar)
-#         self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
-#         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
-#         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
-#         self.page_2Connected = False
-#     def keyPressEvent(self, event):
-#         if event.key()== PyQt5.QtCore.Qt.Key_3:
-#             self.ui.view3d_1.setChecked(True)
-#             self.ui.view3d_2.setChecked(True)
-#         elif event.key()== PyQt5.QtCore.Qt.Key_2:
-#             self.ui.view2d_1.setChecked(True)
-#             self.ui.view2d_2.setChecked(True)
-#         elif event.key()== PyQt5.QtCore.Qt.Key_1:
-#             self.ui.home_btn_1.setChecked(True)
-#             self.ui.home_btn_1.setChecked(True)
-#         elif event.key()== PyQt5.QtCore.Qt.Key_Escape:
-#             quitQuestionBox()
-#         else:
-#             event.ignore()
-#     def mousePressEvent(self, event):
-#         if event.button() == Qt.LeftButton:
-#             self.last_pos = event.pos()
+    def page2Disconnect(self, event):
+      if self.page_2Connected:
+        self.ui.threshold.textChanged.disconnect(self.getThreshold)
+        self.ui.timerInput.textChanged.disconnect(self.getSwichFrameTimer)
+        self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
+        self.ui.radarBox.currentIndexChanged.disconnect(self.getRadar)
+        self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
+        self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
+        self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
+        self.page_2Connected = False
+    def keyPressEvent(self, event):
+        if event.key()== PyQt5.QtCore.Qt.Key_3:
+            self.ui.view3d_1.setChecked(True)
+            self.ui.view3d_2.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_2:
+            self.ui.view2d_1.setChecked(True)
+            self.ui.view2d_2.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_1:
+            self.ui.home_btn_1.setChecked(True)
+            self.ui.home_btn_1.setChecked(True)
+        elif event.key()== PyQt5.QtCore.Qt.Key_Escape:
+            quitQuestionBox()
+        else:
+            event.ignore()
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.last_pos = event.pos()
 
-#     def mouseMoveEvent(self, event):
-#         if self.last_pos is not None:
-#           dx = event.x() - self.last_pos.x()
-#           dy = event.y() - self.last_pos.y()
-#           if event.buttons() & Qt.LeftButton:
-#               self.glWidget.mousePos[0] += dx / self.width() * 10 # Convert to OpenGL coordinate
-#               self.glWidget.mousePos[1] -= dy / self.height() * 10 
-#               self.update()
-#           self.last_pos = event.pos()
+    def mouseMoveEvent(self, event):
+        if self.last_pos is not None:
+          dx = event.x() - self.last_pos.x()
+          dy = event.y() - self.last_pos.y()
+          if event.buttons() & Qt.LeftButton:
+              self.glWidget.mousePos[0] += dx / self.width() * 10 # Convert to OpenGL coordinate
+              self.glWidget.mousePos[1] -= dy / self.height() * 10 
+              self.update()
+          self.last_pos = event.pos()
 
-#     def mouseReleaseEvent(self, event):
-#         if event.button() == Qt.LeftButton:
-#             self.last_pos = None 
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.last_pos = None 
 
-#     def wheelEvent(self, event):
-#         """
-#         wheel event
-#         Args:
-#             event (QtGui.QWheelEvent): wheel event
-#         for user:
-#             mouse wheel clockwise (counter-clockwise) to zoom in (zoom out)
-#                 scale ability: 0.25 -> 25
-#             held left mouse button to move object
-#         """
-#         if self.ui.stackedWidget_2.currentIndex() == 0:
-#             try:
-#                 delta = event.angleDelta().y()
-#                 self.zoom_factor += (delta and delta // abs(delta))
-#                 if self.zoom_factor >= 96:
-#                     self.zoom_factor = 96
-#                 elif self.zoom_factor <= -3:
-#                     self.zoom_factor = -3
-#                 zoom = 1 + self.zoom_factor * 0.25
-#                 if event.modifiers() & Qt.ControlModifier:
-#                     self.glWidget.zoom_center[0] += 0
-#                     self.glWidget.zoom_center[1] += 0
-#                 else:
-#                     mouse_x = (event.x() - 150) / self.glWidget.width() * 2 -  1
-#                     mouse_y = (event.y() - 140 )/ self.glWidget.height()* 2 - 1
-#                     if event.angleDelta().y() > 0:
-#                         self.glWidget.zoom_center[0] += mouse_x/10
-#                         self.glWidget.zoom_center[1] += mouse_y/10
-#                     else: 
-#                         self.glWidget.zoom_center[0] -= mouse_x/10
-#                         self.glWidget.zoom_center[1] -= mouse_y/10
-#                 self.update()
-#                 self.glWidget.setUpScale(zoom)
-#             except:
-#                 print("error")
+    def wheelEvent(self, event):
+        """
+        wheel event
+        Args:
+            event (QtGui.QWheelEvent): wheel event
+        for user:
+            mouse wheel clockwise (counter-clockwise) to zoom in (zoom out)
+                scale ability: 0.25 -> 25
+            held left mouse button to move object
+        """
+        if self.ui.stackedWidget_2.currentIndex() == 0:
+            try:
+                delta = event.angleDelta().y()
+                self.zoom_factor += (delta and delta // abs(delta))
+                if self.zoom_factor >= 96:
+                    self.zoom_factor = 96
+                elif self.zoom_factor <= -3:
+                    self.zoom_factor = -3
+                zoom = 1 + self.zoom_factor * 0.25
+                if event.modifiers() & Qt.ControlModifier:
+                    self.glWidget.zoom_center[0] += 0
+                    self.glWidget.zoom_center[1] += 0
+                else:
+                    mouse_x = (event.x() - 150) / self.glWidget.width() * 2 -  1
+                    mouse_y = (event.y() - 140 )/ self.glWidget.height()* 2 - 1
+                    if event.angleDelta().y() > 0:
+                        self.glWidget.zoom_center[0] += mouse_x/10
+                        self.glWidget.zoom_center[1] += mouse_y/10
+                    else: 
+                        self.glWidget.zoom_center[0] -= mouse_x/10
+                        self.glWidget.zoom_center[1] -= mouse_y/10
+                self.update()
+                self.glWidget.setUpScale(zoom)
+            except:
+                print("error")
 
-#     ##Function for searching
-#     def on_search_btn_clicked(self):
-#         self.ui.stackedWidget.setCurrentIndex(5)
-#         search_text = self.ui.search_input.text().strip()
-#         if search_text:
-#             self.ui.label_9.setText(search_text)
+    ##Function for searching
+    def on_search_btn_clicked(self):
+        self.ui.stackedWidget.setCurrentIndex(5)
+        search_text = self.ui.search_input.text().strip()
+        if search_text:
+            self.ui.label_9.setText(search_text)
 
-#     # Function for changing page to user page
-#     # def on_user_btn_clicked(self):
-#     #     self.ui.stackedWidget.setCurrentIndex(6)
+    # Function for changing page to user page
+    # def on_user_btn_clicked(self):
+    #     self.ui.stackedWidget.setCurrentIndex(6)
 
-#     # Change QPushButton Checkable status when stackedWidget index changed
-#     def on_stackedWidget_currentChanged(self, index):
-#         btn_list = self.ui.icon_only_widget.findChildren(QPushButton) \
-#                     + self.ui.full_menu_widget.findChildren(QPushButton)
+    # Change QPushButton Checkable status when stackedWidget index changed
+    def on_stackedWidget_currentChanged(self, index):
+        btn_list = self.ui.icon_only_widget.findChildren(QPushButton) \
+                    + self.ui.full_menu_widget.findChildren(QPushButton)
 
-#         for btn in btn_list:
-#             if index in [5, 6]:
-#                 btn.setAutoExclusive(False)
-#                 btn.setChecked(False)
-#             else:
-#                 btn.setAutoExclusive(True)
+        for btn in btn_list:
+            if index in [5, 6]:
+                btn.setAutoExclusive(False)
+                btn.setChecked(False)
+            else:
+                btn.setAutoExclusive(True)
 
-#     ## functions for changing menu page
-#     def on_home_btn_1_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(0)
-#         self.ui.labelPage.setText("Home Page")
-
-
-#     def on_home_btn_2_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(0)
-#         self.ui.labelPage.setText("Home Page")
+    ## functions for changing menu page
+    def on_home_btn_1_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
 
 
-#     def on_view3d_1_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(1)
-#         self.ui.stackedWidget_2.setCurrentIndex(0)
-#         self.ui.labelPage.setText("3D View")
-#         self.ui.slider_3d_x.setEnabled(True)
-#         self.ui.slider_3d_y.setEnabled(True)
-
-#     def on_view3d_2_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(1)
-#         self.ui.stackedWidget_2.setCurrentIndex(0)
-#         self.ui.labelPage.setText("3D View")
-#         self.ui.slider_3d_x.setEnabled(True)
-#         self.ui.slider_3d_y.setEnabled(True)
-#     def on_view2d_1_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(1)
-#         self.ui.stackedWidget_2.setCurrentIndex(1)
-#         self.ui.labelPage.setText("2D View")
-
-#         # self.ui.slider_3d_x.setDisabled(True)
-#         # self.ui.slider_3d_y.setDisabled(True)
-
-#     def on_view2d_2_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(1)
-#         self.ui.stackedWidget_2.setCurrentIndex(1)
-#         self.ui.labelPage.setText("2D View")
-
-#         self.ui.slider_3d_x.setDisabled(True)
-#         self.ui.slider_3d_y.setDisabled(True)
-
-#     def on_other_1_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(2)
-#         self.ui.labelPage.setText("About")
+    def on_home_btn_2_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(0)
+        self.ui.labelPage.setText("Home Page")
 
 
-#     def on_other_2_toggled(self, ):
-#         self.ui.stackedWidget.setCurrentIndex(2)
-#         self.ui.labelPage.setText("About")
+    def on_view3d_1_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
 
-# #
-# #     def on_customers_btn_1_toggled(self):
-# #         self.ui.stackedWidget.setCurrentIndex(4)
-# #
-# #     def on_customers_btn_2_toggled(self):
-# #         self.ui.stackedWidget.setCurrentIndex(4)
+    def on_view3d_2_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(0)
+        self.ui.labelPage.setText("3D View")
+        self.ui.slider_3d_x.setEnabled(True)
+        self.ui.slider_3d_y.setEnabled(True)
+    def on_view2d_1_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
 
-#     def addItemRadar(self):
-#         radars = self.DataManager.listAllRadar()
-#         self.ui.radarBox.clear()
-#         for radar in radars:
-#             self.ui.radarBox.addItem(radar)
-#         if len(radars) > 0:
-#           self.DataManager.radarName = radars[0] + "/"
-#           self.ui.radarBox.setCurrentIndex(0)
+        # self.ui.slider_3d_x.setDisabled(True)
+        # self.ui.slider_3d_y.setDisabled(True)
 
-#     def addItemDate(self):
-#         self.ui.dateBox.clear()
-#         try:
-#             dates =  self.DataManager.listAllDateOfRadar()
-#             for date in dates:
-#                 self.ui.dateBox.addItem(date)
-#             if len(dates) > 0:
-#               self.DataManager.date = dates[0] + "/"
-#               self.DataManager.year, self.DataManager.month, self.DataManager.day = dates[0].split("/")
-#               self.DataManager.year += "/"
-#               self.DataManager.month += "/"
-#               self.DataManager.day += "/"
+    def on_view2d_2_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.ui.stackedWidget_2.setCurrentIndex(1)
+        self.ui.labelPage.setText("2D View")
 
-#               self.ui.dateBox.setCurrentIndex(0)
-#         except Exception as ex:
-#             print(f"An error occurred: {ex}")
+        self.ui.slider_3d_x.setDisabled(True)
+        self.ui.slider_3d_y.setDisabled(True)
 
-#     def addItemMode(self):
-#         self.ui.modeBox.clear()
+    def on_other_1_toggled(self):
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
 
-#         modes = self.DataManager.listAllModeOnDate()
-#         for mode in modes:
-#             self.ui.modeBox.addItem(mode)
-#         if len(modes) > 0:
-#           self.DataManager.mode = modes[0] + "/"
-#           self.ui.modeBox.setCurrentIndex(0)
 
-#     def addItemFile(self):
-#         self.ui.fileBox.clear()
-#         files = self.DataManager.listAllFile()
-#         for file in files:
-#             self.ui.fileBox.addItem(file)
-#         if len(files) > 0:
-#           self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
-#           self.ui.fileBox.setCurrentIndex(0)
+    def on_other_2_toggled(self, ):
+        self.ui.stackedWidget.setCurrentIndex(2)
+        self.ui.labelPage.setText("About")
 
-#     def getRadar(self, index = 0):
-#         #! get value of radar
-#         radar = self.ui.radarBox.currentText()
-#         if radar != "" and not folderEmpty(self.DataManager.getCurrentPath(filename=True) + radar):
-#             self.DataManager.radarName = radar + "/"
-#             self.clearPage2Box(date = True)
-#             self.addItemDate()
-#             self.getDate()
-#         else:
-#             print(f"Radar {radar} is empty")
-#             self.ui.radarBox.setCurrentIndex(0)
+#
+#     def on_customers_btn_1_toggled(self):
+#         self.ui.stackedWidget.setCurrentIndex(4)
+#
+#     def on_customers_btn_2_toggled(self):
+#         self.ui.stackedWidget.setCurrentIndex(4)
 
-#     def getDate(self, index=0):
-#         #! get value of date
-#         date = self.ui.dateBox.currentText()
-#         if date != "":
-#           year, month, day = date.split("/")
-#           if not folderEmpty(self.DataManager.getCurrentPath(radar=True) + year):
-#               self.DataManager.year = year + "/"
-#               if not folderEmpty(self.DataManager.getCurrentPath(year=True) + month):
-#                   self.DataManager.month = month + "/"
-#                   if not folderEmpty(self.DataManager.getCurrentPath(month=True) + day):
-#                       self.DataManager.day = day + "/"
-#                       self.clearPage2Box(mode = True)
-#                       self.DataManager.setDate()
-#                       self.addItemMode()
-#                       self.getMode()
-#                   else:
-#                       print(f"{self.DataManager.radarName} does not have {year}/{month}/{day}")
-#               else:
-#                   print(f"{self.DataManager.radarName} does not have {month} in this {year}")
-#           else:
-#               print(f"{self.DataManager.radarName} does not have {year}")
+    def addItemRadar(self):
+        radars = self.DataManager.listAllRadar()
+        self.ui.radarBox.clear()
+        for radar in radars:
+            self.ui.radarBox.addItem(radar)
+        if len(radars) > 0:
+          self.DataManager.radarName = radars[0] + "/"
+          self.ui.radarBox.setCurrentIndex(0)
 
-#     def getMode(self, index=0):
-#         #! get value of mode
-#         mode = self.ui.modeBox.currentText()
-#         if mode != "" and not folderEmpty(self.DataManager.getCurrentPath(date=True) + mode):
-#             self.DataManager.mode = mode + "/"
-#             self.clearPage2Box(files = True)
-#             self.addItemFile()
-#             self.glWidget.resetRadar(DataManager=self.DataManager)
-#             self.getFile()
-#         else:
-#             print(f"{mode} mode is empty")
+    def addItemDate(self):
+        self.ui.dateBox.clear()
+        try:
+            dates =  self.DataManager.listAllDateOfRadar()
+            for date in dates:
+                self.ui.dateBox.addItem(date)
+            if len(dates) > 0:
+              self.DataManager.date = dates[0] + "/"
+              self.DataManager.year, self.DataManager.month, self.DataManager.day = dates[0].split("/")
+              self.DataManager.year += "/"
+              self.DataManager.month += "/"
+              self.DataManager.day += "/"
 
-#     def getFile(self, index=0):
-#       f = self.ui.fileBox.currentText()
-#       if f != "":
-#         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
-#         self.glWidget.updateGL()
+              self.ui.dateBox.setCurrentIndex(0)
+        except Exception as ex:
+            print(f"An error occurred: {ex}")
 
-#     def getClutterFilter(self, state):
-#         if state:
-#             self.glWidget.update(clutterFilter=True)
-#         else:
-#             self.glWidget.update(clutterFilter=False)
-#         self.glWidget.updateGL()
+    def addItemMode(self):
+        self.ui.modeBox.clear()
 
-#     def getThreshold(self):
-#         if self.ui.threshold.text():
-#             print("Filter threshold with value: " + self.ui.threshold.text())
-#             errorBox(self.ui.threshold.text())
-#             self.glWidget.update(threshold=int(self.ui.threshold.text()))
-#         else:
-#             self.glWidget.update(threshold=0)
-#         self.glWidget.updateGL()
+        modes = self.DataManager.listAllModeOnDate()
+        for mode in modes:
+            self.ui.modeBox.addItem(mode)
+        if len(modes) > 0:
+          self.DataManager.mode = modes[0] + "/"
+          self.ui.modeBox.setCurrentIndex(0)
 
-#     def getSwichFrameTimer(self):
-#         if self.ui.timerInput.text():
-#             if int(self.ui.timerInput.text()) > 0:
-#                 self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
-#                 self.switchFrameTimer.start()
-#             else: self.switchFrameTimer.stop()
-#         else:
-#           self.ui.timerInput.setText("0")
-#           self.switchFrameTimer.stop()
+    def addItemFile(self):
+        self.ui.fileBox.clear()
+        files = self.DataManager.listAllFile()
+        for file in files:
+            self.ui.fileBox.addItem(file)
+        if len(files) > 0:
+          self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
+          self.ui.fileBox.setCurrentIndex(0)
 
-#     #write a fuction init 2d view add image to label: ui.view_2d_label
-#     def init2DView(self): 
-#       '''create mode box for user choosing mode'''
-#       self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-#       pixmap = QPixmap('temp.jpg')
-#       self.ui.view_2d_label.setPixmap(pixmap)
-#       self.ui.view_2d_label.setScaledContents(True)
+    def getRadar(self, index = 0):
+        #! get value of radar
+        radar = self.ui.radarBox.currentText()
+        if radar != "" and not folderEmpty(self.DataManager.getCurrentPath(filename=True) + radar):
+            self.DataManager.radarName = radar + "/"
+            self.clearPage2Box(date = True)
+            self.addItemDate()
+            self.getDate()
+        else:
+            print(f"Radar {radar} is empty")
+            self.ui.radarBox.setCurrentIndex(0)
+
+    def getDate(self, index=0):
+        #! get value of date
+        date = self.ui.dateBox.currentText()
+        if date != "":
+          year, month, day = date.split("/")
+          if not folderEmpty(self.DataManager.getCurrentPath(radar=True) + year):
+              self.DataManager.year = year + "/"
+              if not folderEmpty(self.DataManager.getCurrentPath(year=True) + month):
+                  self.DataManager.month = month + "/"
+                  if not folderEmpty(self.DataManager.getCurrentPath(month=True) + day):
+                      self.DataManager.day = day + "/"
+                      self.clearPage2Box(mode = True)
+                      self.DataManager.setDate()
+                      self.addItemMode()
+                      self.getMode()
+                  else:
+                      print(f"{self.DataManager.radarName} does not have {year}/{month}/{day}")
+              else:
+                  print(f"{self.DataManager.radarName} does not have {month} in this {year}")
+          else:
+              print(f"{self.DataManager.radarName} does not have {year}")
+
+    def getMode(self, index=0):
+        #! get value of mode
+        mode = self.ui.modeBox.currentText()
+        if mode != "" and not folderEmpty(self.DataManager.getCurrentPath(date=True) + mode):
+            self.DataManager.mode = mode + "/"
+            self.clearPage2Box(files = True)
+            self.addItemFile()
+            self.glWidget.resetRadar(DataManager=self.DataManager)
+            self.getFile()
+        else:
+            print(f"{mode} mode is empty")
+
+    def getFile(self, index=0):
+      f = self.ui.fileBox.currentText()
+      if f != "":
+        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
+        self.glWidget.updateGL()
+
+    def getClutterFilter(self, state):
+        if state:
+            self.glWidget.update(clutterFilter=True)
+        else:
+            self.glWidget.update(clutterFilter=False)
+        self.glWidget.updateGL()
+
+    def getThreshold(self):
+        if self.ui.threshold.text():
+            print("Filter threshold with value: " + self.ui.threshold.text())
+            errorBox(self.ui.threshold.text())
+            self.glWidget.update(threshold=int(self.ui.threshold.text()))
+        else:
+            self.glWidget.update(threshold=0)
+        self.glWidget.updateGL()
+
+    def getSwichFrameTimer(self):
+        if self.ui.timerInput.text():
+            if int(self.ui.timerInput.text()) > 0:
+                self.switchFrameTimer.setInterval( int(self.ui.timerInput.text()) * SECOND)
+                self.switchFrameTimer.start()
+            else: self.switchFrameTimer.stop()
+        else:
+          self.ui.timerInput.setText("0")
+          self.switchFrameTimer.stop()
+
+    #write a fuction init 2d view add image to label: ui.view_2d_label
+    def init2DView(self): 
+      '''create mode box for user choosing mode'''
+      self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
+      pixmap = QPixmap('temp.jpg')
+      self.ui.view_2d_label.setPixmap(pixmap)
+      self.ui.view_2d_label.setScaledContents(True)
     
-#     def initGL(self):
+    def initGL(self):
 
-#         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
 
-#         # ''' specified GL version: core 330 '''
-#         # glformat = PyQt5.QtOpenGL.QGLFormat()
-#         # glformat.setVersion(3, 3)
-#         # glformat.setProfile(PyQt5.QtOpenGL.QGLFormat.CoreProfile)
+        # ''' specified GL version: core 330 '''
+        # glformat = PyQt5.QtOpenGL.QGLFormat()
+        # glformat.setVersion(3, 3)
+        # glformat.setProfile(PyQt5.QtOpenGL.QGLFormat.CoreProfile)
 
-#         self.glWidget = GLWidget(self)
+        self.glWidget = GLWidget(self)
         
 
-#         self.glWidget.setSizePolicy(sizePolicy)
-#         self.ui.scrollArea.setWidget(self.glWidget)
+        self.glWidget.setSizePolicy(sizePolicy)
+        self.ui.scrollArea.setWidget(self.glWidget)
         
-#         self.ui.scrollArea.setWidgetResizable(True)
-#         self.ui.scrollArea.setAlignment(Qt.AlignHCenter)
-#         self.ui.scrollArea.setAlignment( Qt.AlignVCenter)
+        self.ui.scrollArea.setWidgetResizable(True)
+        self.ui.scrollArea.setAlignment(Qt.AlignHCenter)
+        self.ui.scrollArea.setAlignment( Qt.AlignVCenter)
 
-#         self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
-#         self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
-#         self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
+        self.ui.slider_3d_x.valueChanged.connect(self.updateSliderX)
+        self.ui.slider_3d_y.valueChanged.connect(self.updateSliderY)
+        self.ui.slider_3d_z.valueChanged.connect(self.updateSliderZ)
 
-#         self.ui.slider_3d_x.setMaximum(115)
-#         self.ui.slider_3d_y.setMaximum(115)
-#         self.ui.slider_3d_z.setMaximum(115)
+        self.ui.slider_3d_x.setMaximum(115)
+        self.ui.slider_3d_y.setMaximum(115)
+        self.ui.slider_3d_z.setMaximum(115)
 
-#         self.ui.preFile.clicked.connect(self.goPrevFile)
-#         self.ui.nextFile.clicked.connect(self.goNextFile)
+        self.ui.preFile.clicked.connect(self.goPrevFile)
+        self.ui.nextFile.clicked.connect(self.goNextFile)
 
-#         self.ui.resetView.clicked.connect(self.reset3DView)
+        self.ui.resetView.clicked.connect(self.reset3DView)
 
-#     def reset3DView(self):
-#         """
-#         Reset 3D view
-#         """
-#         #reset zoome view
-#         self.glWidget.zoom_center[0] = 0
-#         self.glWidget.zoom_center[1] = 0
+    def reset3DView(self):
+        """
+        Reset 3D view
+        """
+        #reset zoome view
+        self.glWidget.zoom_center[0] = 0
+        self.glWidget.zoom_center[1] = 0
         
-#         # reset position
-#         self.glWidget.mousePos[0] = 0
-#         self.glWidget.mousePos[1] = 0
+        # reset position
+        self.glWidget.mousePos[0] = 0
+        self.glWidget.mousePos[1] = 0
 
-#         # seset scale
-#         self.update()
-#         self.glWidget.setUpScale(1)
-#     def goPrevFile(self):
-#         index = max(0, self.ui.fileBox.currentIndex()-1)
-#         self.ui.fileBox.setCurrentIndex(index)
-#         self.getFile(index=index)
-
-
-#     def goNextFile(self):
-#         index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
-#         self.ui.fileBox.setCurrentIndex(index)
-#         self.getFile(index=index)
-
-#     def updateSliderX(self, val):
-#         self.glWidget.setRotX(val)
-#         tmp_value = val * np.pi
-#         tmp_value = min(tmp_value, 360)
-#         self.ui.x_value.setText(str(int(tmp_value)) + "°")
+        # seset scale
+        self.update()
+        self.glWidget.setUpScale(1)
+    def goPrevFile(self):
+        index = max(0, self.ui.fileBox.currentIndex()-1)
+        self.ui.fileBox.setCurrentIndex(index)
+        self.getFile(index=index)
 
 
-#     def updateSliderY(self, val):
-#         self.glWidget.setRotY(val)
-#         tmp_value = val * np.pi
-#         tmp_value = min(tmp_value, 360)
-#         self.ui.y_value.setText(str(int(tmp_value)) + "°")
+    def goNextFile(self):
+        index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
+        self.ui.fileBox.setCurrentIndex(index)
+        self.getFile(index=index)
 
-#     def updateSliderZ(self, val):
-#         self.glWidget.setRotZ(val)
-#         tmp_value = val * np.pi
-#         tmp_value = min(tmp_value, 360)
-#         self.ui.z_value.setText(str(int(tmp_value)) + "°")
+    def updateSliderX(self, val):
+        self.glWidget.setRotX(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.x_value.setText(str(int(tmp_value)) + "°")
 
-#     def initHomePage(self):
-#         self.ui.changeDirData.clicked.connect(self.chooseDir)
-#         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
 
-#     def chooseDir(self):
-#       dataDir = QFileDialog.getExistingDirectory()
-#       if dataDir is not None and dataDir != "":
-#         self.DataManager.reconstructFile(dataDir)
-#         self.DataManager.clearAll()
-#         self.ui.curData.setText(dataDir)
-#         self.DataManager.filePath = dataDir
-#         if self.DataManager.filePath[-1] != "/": self.DataManager.filePath += "/"
-#         self.addItemRadar()
-#         self.addItemDate()
-#         self.addItemMode()
-#         self.addItemFile()
+    def updateSliderY(self, val):
+        self.glWidget.setRotY(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.y_value.setText(str(int(tmp_value)) + "°")
 
-#     def getError(self, err):
-#         """
-#         show error message
-#         call this function when error occurs to display error message
-#         Args:
-#             err (str): error message"""
-#         self.ui.errorBox.setText(err)
-#         self.errorTimer.start()
+    def updateSliderZ(self, val):
+        self.glWidget.setRotZ(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.z_value.setText(str(int(tmp_value)) + "°")
 
-#     def clearError(self):
-#         self.ui.errorBox.clear()
-#         self.errorTimer.stop()
+    def initHomePage(self):
+        self.ui.changeDirData.clicked.connect(self.chooseDir)
+        self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
 
-#     def clearPage2Box(self, radarName = False, date = False, mode = False, files = False):
-#       if radarName:
-#         self.ui.radarBox.clear()
-#       elif date:
-#         self.ui.dateBox.clear()
-#         self.ui.modeBox.clear()
-#         self.ui.fileBox.clear()
-#       elif mode:
-#         self.ui.modeBox.clear()
-#         self.ui.fileBox.clear()
-#       elif files:
-#         self.ui.fileBox.clear()
+    def chooseDir(self):
+      dataDir = QFileDialog.getExistingDirectory()
+      if dataDir is not None and dataDir != "":
+        self.DataManager.reconstructFile(dataDir)
+        self.DataManager.clearAll()
+        self.ui.curData.setText(dataDir)
+        self.DataManager.filePath = dataDir
+        if self.DataManager.filePath[-1] != "/": self.DataManager.filePath += "/"
+        self.addItemRadar()
+        self.addItemDate()
+        self.addItemMode()
+        self.addItemFile()
+
+    def getError(self, err):
+        """
+        show error message
+        call this function when error occurs to display error message
+        Args:
+            err (str): error message"""
+        self.ui.errorBox.setText(err)
+        self.errorTimer.start()
+
+    def clearError(self):
+        self.ui.errorBox.clear()
+        self.errorTimer.stop()
+
+    def clearPage2Box(self, radarName = False, date = False, mode = False, files = False):
+      if radarName:
+        self.ui.radarBox.clear()
+      elif date:
+        self.ui.dateBox.clear()
+        self.ui.modeBox.clear()
+        self.ui.fileBox.clear()
+      elif mode:
+        self.ui.modeBox.clear()
+        self.ui.fileBox.clear()
+      elif files:
+        self.ui.fileBox.clear()
     
-# def loadStyle(QApplication):
-#     """
-#     load style file for application
-#     Args:
-#         QApplication (QtGui.QGuiApplication): our application
-#     """
-#     style_file = QFile("./style/style.qss")
-#     style_file.open(QFile.ReadOnly | QFile.Text)
-#     style_stream = QTextStream(style_file)
-#     QApplication.setStyleSheet(style_stream.readAll())
+def loadStyle(QApplication):
+    """
+    load style file for application
+    Args:
+        QApplication (QtGui.QGuiApplication): our application
+    """
+    style_file = QFile("./style/style.qss")
+    style_file.open(QFile.ReadOnly | QFile.Text)
+    style_stream = QTextStream(style_file)
+    QApplication.setStyleSheet(style_stream.readAll())
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
 
-#     # Load style
-#     loadStyle(app)
+    # Load style
+    loadStyle(app)
 
-#     # Window Constructor
-#     window = MainWindow()
+    # Window Constructor
+    window = MainWindow()
 
-#     # Window run
-#     window.show()
+    # Window run
+    window.show()
 
-#     # Exit
-#     sys.exit(app.exec())
-
-# import pygame
-# from pygame.locals import *
-# from OpenGL.GL import *
-# from OpenGL.GLUT import *
-# from OpenGL.GLU import *
-# import pyart
-# from scipy import ndimage
-# import pandas as pd
-# import numpy as np
-# from sklearn.preprocessing import MinMaxScaler
-
-# grid = pyart.io.read_grid("/Users/phucdang/Documents/dangnguyen/Document/project/titan/Data/NHB/2023/06/01/grid/1_prt/grid_NHB230601062008.nc")
-# def getSizeTable(frame):
-#   flat_image = pd.Series(frame.flatten())
-#   flat_image = flat_image[flat_image > 0]
-#   size_table = flat_image.value_counts(sort=False)
-#   return size_table
-# def getZIndices(array, value):
-#     z_indices, _, _ = np.where(array == value)
-#     unique_z_indices = np.unique(z_indices)
-#     if len(unique_z_indices) == 0:
-#         return None
-#     else:
-#         return unique_z_indices
-# def getEdgeIndices(image):
-#   borders = np.logical_xor(image, ndimage.binary_erosion(image))
-#   edge_indices = np.transpose(np.nonzero(borders))
-#   return edge_indices
-
-# masked = grid.fields['reflectivity']['data']
-# masked.data[masked.data == masked.fill_value] = 0
-# masked.data[masked.data < 32] = 0
-
-# frame, count = ndimage.label(masked.data)
-
-# size_table = getSizeTable(frame)
-
-# # determine smallObject 
-# small_objects = size_table.keys()[size_table < 10]
-
-# for obj in small_objects:
-#   frame[frame == obj] = 0
-
-# frame[frame!=1] = 0
-# z = getZIndices(frame, 1)
-
-# edge_points = []
-# l = []
-# start = 0
-# for val in z:
-#   edge_indices = getEdgeIndices(frame[val])
-#   points = np.vstack((
-#     grid.x['data'][edge_indices[:, 0]], 
-#     grid.y['data'][edge_indices[:, 1]]
-#     )).T
-#   points = np.hstack((points, np.full((points.shape[0], 1), grid.z['data'][val])))
-#   edge_points.append(points)
-#   end = start + len(points)
-#   l.append([start, end])
-#   start = end
-# scaler = MinMaxScaler(feature_range=(-2.5, 2.5))
-# # Concatenate all arrays into a single 2D array
-# concatenated_array = np.concatenate(edge_points, axis=0)
-# scaled_array = scaler.fit_transform(concatenated_array)
-# edge_points = []
-# for i in l:
-#   edge_points.append(scaled_array[i[0]:i[1]])
-# # Define edge points for each z-plane
-# # edge_points = [
-# #     [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)],  # Example edge points for z=0 plane
-# #     [(0.5, 0.5, 1), (1.5, 0.5, 1), (1.5, 1.5, 1), (0.5, 1.5, 1)],  # Example edge points for z=1 plane
-# #     [(0.7, 0, 2), (1.2, 0, 2), (1.2, 1, 2), (0.7, 1, 2)],  # Example edge points for z=2 plane
-# #     [(0.8, 0, 3), (1.1, 0, 3), (1.1, 0.8, 3), (0.8, 0.8, 3)],  # Example edge points for z=3 plane
-# #     [(0.5, 0.5, 4), (1.5, 0.5, 4), (1.5, 1.5, 4), (0.5, 1.5, 4)],  # Example edge points for z=4 plane
-# #     [(0, 0, 5), (1, 0, 5), (1, 1, 5), (0, 1, 5)],  # Example edge points for z=5 plane
-# # ]
-# # edge_points = scaled_arrays_list
-# def draw_object():
-
-#     num_planes = len(edge_points)
-#     side_planes = []
-#     side_planes_it = (num_planes - 1) if num_planes%2 == 1 else num_planes
-
-#     for i in range(side_planes_it):
-#       points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
-#       side_planes.append(points)
-
-    
-#     for i in range(num_planes):
-#         glBegin(GL_POLYGON)
-#         for point in edge_points[i]:
-#             glVertex3fv(point)
-#         glEnd()
-
-
-
-
-# def main():
-#     pygame.init()
-#     display = (800, 600)
-#     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
-#     # glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-#     gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
-#     glTranslatef(0.0, 0.0, -10)
-
-#     while True:
-#         for event in pygame.event.get():
-#             if event.type == pygame.QUIT:
-#                 pygame.quit()
-#                 quit()
-
-#         glRotatef(1, 1, 0, 1)
-#         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-#         draw_object()
-#         pygame.display.flip()
-#         pygame.time.wait(10)
-
-# if __name__ == "__main__":
-#     main()
+    # Exit
+    sys.exit(app.exec())
