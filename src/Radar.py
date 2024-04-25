@@ -374,11 +374,6 @@ class Radar:
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
 
-
-
-
-
-
         
       
 
