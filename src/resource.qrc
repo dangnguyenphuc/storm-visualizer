@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icon">
+    <file>icon/eye.ico</file>
     <file>icon/about.ico</file>
     <file>icon/more.ico</file>
     <file>icon/thunderstorm.png</file>
