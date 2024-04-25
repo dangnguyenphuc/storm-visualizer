@@ -73,6 +73,12 @@ class MainWindow(QMainWindow):
         self.ui.timerInput.setValidator(timerValidator)
         self.ui.timerInput.setText("0")
 
+
+        self.ui.threshold_pro.setValidator(thresholdValidator)
+        self.ui.threshold_pro.setText(str(self.glWidget.threshold))
+        self.ui.timerInput_pro.setValidator(timerValidator)
+        self.ui.timerInput_pro.setText("0")
+
         # timers
         mainTimer = PyQt5.QtCore.QTimer(self)
         mainTimer.setInterval(int(TICK))   # period, in milliseconds
@@ -105,6 +111,8 @@ class MainWindow(QMainWindow):
       if not self.page_2Connected:
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
+        self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
+        self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
@@ -141,21 +149,22 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        mousePos = event.pos()
+        if event.button() == Qt.LeftButton and self.glWidget.rect().contains(mousePos):
             self.last_pos = event.pos()
 
     def mouseMoveEvent(self, event):
-        if self.last_pos is not None:
+        if self.last_pos is not None :
           dx = event.x() - self.last_pos.x()
           dy = event.y() - self.last_pos.y()
-          if event.buttons() & Qt.LeftButton:
+          if event.buttons() & Qt.LeftButton :
               self.glWidget.mousePos[0] += dx / self.width() * 10 # Convert to OpenGL coordinate
               self.glWidget.mousePos[1] -= dy / self.height() * 10 
               self.update()
           self.last_pos = event.pos()
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.LeftButton  and self.glWidget.rect().contains(event.pos()):
             self.last_pos = None 
 
     def wheelEvent(self, event):
@@ -168,7 +177,8 @@ class MainWindow(QMainWindow):
                 scale ability: 0.25 -> 25
             held left mouse button to move object
         """
-        if self.ui.stackedWidget_2.currentIndex() == 0:
+        mousePos = event.pos()
+        if (self.ui.stackedWidget_2.currentIndex() == 0 or self.ui.stackedWidget_2.currentIndex() == 2 ) and self.glWidget.rect().contains(mousePos):
             try:
                 delta = event.angleDelta().y()
                 self.zoom_factor += (delta and delta // abs(delta))
@@ -177,7 +187,7 @@ class MainWindow(QMainWindow):
                 elif self.zoom_factor <= -3:
                     self.zoom_factor = -3
                 zoom = 1 + self.zoom_factor * 0.25
-                if event.modifiers() & Qt.ControlModifier:
+                if event.modifiers() & Qt.AltModifier:
                     self.glWidget.zoom_center[0] += 0
                     self.glWidget.zoom_center[1] += 0
                 else:
@@ -193,6 +203,8 @@ class MainWindow(QMainWindow):
                 self.glWidget.setUpScale(zoom)
             except:
                 print("error")
+        else:
+            event.ignore()
 
     ##Function for searching
     def on_search_btn_clicked(self):
@@ -236,12 +248,16 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setEnabled(True)
 
     def on_view3d_2_toggled(self):
+        self.ui.scrollArea_4.takeWidget()
+        self.ui.scrollArea.setWidget(self.glWidget)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(0)
         self.ui.labelPage.setText("3D View")
         self.ui.slider_3d_x.setEnabled(True)
         self.ui.slider_3d_y.setEnabled(True)
     def on_view2d_1_toggled(self):
+        self.ui.scrollArea_4.takeWidget()
+        self.ui.scrollArea.setWidget(self.glWidget)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(1)
         self.ui.labelPage.setText("2D View")
@@ -250,6 +266,8 @@ class MainWindow(QMainWindow):
         # self.ui.slider_3d_y.setDisabled(True)
 
     def on_view2d_2_toggled(self):
+        self.ui.scrollArea.takeWidget()
+        self.ui.scrollArea_4.setWidget(self.glWidget)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(1)
         self.ui.labelPage.setText("2D View")
@@ -258,6 +276,9 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setDisabled(True)
 
     def on_other_1_toggled(self):
+        self.ui.scrollArea.takeWidget()
+        self.ui.scrollArea_4.setWidget(self.glWidget)
+
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
@@ -382,12 +403,17 @@ class MainWindow(QMainWindow):
     def getThreshold(self):
         if self.ui.threshold.text():
             print("Filter threshold with value: " + self.ui.threshold.text())
-            errorBox(self.ui.threshold.text())
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
         self.glWidget.updateGL()
-
+    def getThresholdPro(self):
+        if self.ui.threshold_pro.text():
+            print("Filter threshold with value: " + self.ui.threshold_pro.text())
+            self.glWidget.update(threshold=int(self.ui.threshold_pro.text()))
+        else:
+            self.glWidget.update(threshold=0)
+        self.glWidget.updateGL()
     def getSwichFrameTimer(self):
         if self.ui.timerInput.text():
             if int(self.ui.timerInput.text()) > 0:
@@ -397,15 +423,24 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput.setText("0")
           self.switchFrameTimer.stop()
-
+    def getSwichFrameTimerPro(self):
+        if self.ui.timerInput_pro.text():
+            if int(self.ui.timerInput_pro.text()) > 0:
+                self.switchFrameTimer.setInterval( int(self.ui.timerInput_pro.text()) * SECOND)
+                self.switchFrameTimer.start()
+            else: self.switchFrameTimer.stop()
+        else:
+          self.ui.timerInput_pro.setText("0")
+          self.switchFrameTimer.stop()
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
       '''create mode box for user choosing mode'''
-      self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
+    #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
       pixmap = QPixmap('temp.jpg')
       self.ui.view_2d_label.setPixmap(pixmap)
       self.ui.view_2d_label.setScaledContents(True)
-    
+      self.addPlotBoxMode()
+      self.addPlotModeImage()
     def initGL(self):
 
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
@@ -438,9 +473,11 @@ class MainWindow(QMainWindow):
 
         self.ui.resetView.clicked.connect(self.reset3DView)
     def initProView(self):
-        self.ui.scrollArea_4.setMinimumHeight(self.ui.page_3.height())
+        self.ui.scrollArea_4.setMinimumHeight(int(self.ui.stackedWidget_2.height() * 0.5))
         self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
         self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
+        self.ui.scrollArea.setWidget(self.glWidget)
+
         # 2D 
         source = 'temp.jpg'
         pixmap = QPixmap(source)
@@ -451,6 +488,48 @@ class MainWindow(QMainWindow):
         self.addStormList()
         self.ui.lat_pro.setText(f'12.00')
         self.ui.long_pro.setText(f'24.00')
+
+        self.ui.slider_pro_x.valueChanged.connect(self.updateSliderX)
+        self.ui.slider_pro_y.valueChanged.connect(self.updateSliderY)
+        self.ui.slider_pro_z.valueChanged.connect(self.updateSliderZ)
+
+        self.ui.slider_pro_x.setMaximum(115)
+        self.ui.slider_pro_y.setMaximum(115)
+        self.ui.slider_pro_z.setMaximum(115)
+
+        self.ui.resetView_pro.clicked.connect(self.reset3DView)
+
+    def addPlotBoxMode(self):
+        plotMode = ["pyart_ppi","wrl_polar","wrl_ppi", "wrl_clutter", "wrl_ppi_no_clutter", "wrl_attenuation_correction","wrl_plot_rain", "wrl_plot_scan_strategy", ]
+        # for i in range(0, len(plotMode)):
+        #     self.ui.plot_mode_box.addItem(plotMode[i])
+        self.ui.plot_mode_box.addItems(plotMode)
+        self.ui.plot_mode_box.setCurrentIndex(0)
+    def addPlotModeImage(self):
+        source = 'placeholder.png'
+        pixmap = QPixmap(source)
+        pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
+        self.ui.pyart_ppi.setPixmap(pixmap)
+        self.ui.wrl_polar.setPixmap(pixmap)
+        self.ui.wrl_ppi.setPixmap(pixmap)
+        self.ui.wrl_clutter.setPixmap(pixmap)
+        self.ui.wrl_ppi_no_clutter.setPixmap(pixmap)
+        self.ui.wrl_attenuation_correction.setPixmap(pixmap)
+        self.ui.wrl_plot_rain.setPixmap(pixmap)
+        self.ui.wrl_plot_scan_strategy.setPixmap(pixmap)
+
+        # self.ui.pyart_ppi.setScaledContents(True)   
+        # self.ui.wrl_polar.setScaledContents(True)
+        # self.ui.wrl_ppi.setScaledContents(True)
+        # self.ui.wrl_clutter.setScaledContents(True)
+        # self.ui.wrl_ppi_no_clutter.setScaledContents(True)
+        # self.ui.wrl_attenuation_correction.setScaledContents(True)
+        # self.ui.wrl_plot_rain.setScaledContents(True)
+        # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
+        
+
+    def getPlotMode(self) -> str:
+        return self.ui.plot_mode_box.currentText()
     def addInfor(self):
         radarName = "NhaBe"
         entries = ['This is other information box',f'Radar: {radarName}', 'two', 'three']
@@ -474,7 +553,9 @@ class MainWindow(QMainWindow):
         # reset position
         self.glWidget.mousePos[0] = 0
         self.glWidget.mousePos[1] = 0
-
+        self.updateSliderX(0)
+        self.updateSliderY(0)
+        self.updateSliderZ(0)
         # seset scale
         self.update()
         self.glWidget.setUpScale(1)
@@ -572,7 +653,7 @@ if __name__ == "__main__":
     window = MainWindow()
 
     # Window run
-    window.show()
+    window.showMaximized()
 
     # Exit
     sys.exit(app.exec())

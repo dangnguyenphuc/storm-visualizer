@@ -147,9 +147,11 @@
 
   /*= Style for 2d page
   ==================================================== */
+  #view_2d_label{
+	border: 1px solid #000;
+  }
 	#page_6 {
 		border: none;
-		background : #fff;
 	}
 	#scrollArea_3{
 		border: none;
@@ -157,7 +159,7 @@
 	}
 	#scrollAreaWidgetContents {
 		border: none;
-		background : #000;
+
 	}
 /*= END
   ==================================================== */
