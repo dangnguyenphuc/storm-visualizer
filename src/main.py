@@ -406,8 +406,8 @@ class MainWindow(QMainWindow):
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
-        self.ui.lat_pro.setText(str(self.glWidget.radar.data.longitude['data'][0]))
-        self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
+        self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
+        self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
         
         
         
@@ -535,8 +535,8 @@ class MainWindow(QMainWindow):
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
-        self.ui.lat_pro.setText(str(self.glWidget.radar.data.longitude['data'][0]))
-        self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
+        self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
+        self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
 
     def addPlotBoxMode(self):
         plotMode = [
