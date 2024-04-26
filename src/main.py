@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+import threading
 
 import PyQt5
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
@@ -459,7 +460,22 @@ class MainWindow(QMainWindow):
       self.addPlotBoxMode()
       self.addPlotModeImage()
 
-      self.getPlotMode()
+      # Gen 1st plots
+      modes = [
+          ("pyart_ppi", 0),
+          ("wrl_polar", 0),
+          ("wrl_ppi", 0), 
+          ("wrl_clutter", 0), 
+          ("wrl_ppi_no_clutter", 0), 
+          ("wrl_attenuation_correction", 0),
+          ("wrl_plot_rain", 0), 
+          ("wrl_plot_scan_strategy", 0),
+        ]
+      threads = []
+      for (mode, sweep) in (modes):
+        self.getPlotMode(mode, sweep)
+
+      self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
       self.ui.view_2d_label.setScaledContents(True)
 
     def initGL(self):
@@ -561,9 +577,10 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
         
 
-    def getPlotMode(self):
-      mode = self.ui.plot_mode_box.currentText()
-      self.glWidget.update(plot_mode = (mode, 0))
+    def getPlotMode(self, mode=None, sweep=0):
+      if mode is None or isinstance(mode, int):
+        mode = self.ui.plot_mode_box.currentText()
+      self.glWidget.update(plot_mode = (mode, sweep))
       self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
       
          
