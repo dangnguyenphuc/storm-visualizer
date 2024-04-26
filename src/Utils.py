@@ -57,6 +57,12 @@ def getYearMonthDate(radar):
 
     return (dt.year, dt.strftime("%m"), dt.strftime("%d"))
 
+def getHourMinuteSecond(radar):
+    date_string = radar.time['units'].split(" ")[-1]
+    dt = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%SZ")
+
+    return (dt.strftime("%H"), dt.strftime("%M"), dt.strftime("%S"))
+
 # def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
 #     with open(vertex_filepath,'r') as f:
 #         vertex_src = f.readlines()

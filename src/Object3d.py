@@ -10,7 +10,6 @@ from OpenGL.arrays import vbo
 
 from Radar import *
 
-
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None, index = 0, threshold = 0, format = None):
         self.parent = parent

@@ -9,7 +9,7 @@ from PyQt5.QtGui import QIntValidator, QPixmap
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
-from Utils import folderEmpty
+from Utils import folderEmpty, getHourMinuteSecond
 from Config import SECOND, TICK
 from messageBox import quitQuestionBox, errorBox
 
@@ -48,16 +48,14 @@ class MainWindow(QMainWindow):
 
         # init OpenGL Widget
         self.initGL()
-
         # init HomePage
         self.initHomePage() 
-
         # init 2D Page
         self.init2DView() 
-
         # init Pro view
         self.initProView()
-        # add item for drop down 3d
+
+        # add item for drop down
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
@@ -72,7 +70,6 @@ class MainWindow(QMainWindow):
         self.ui.threshold.setText(str(self.glWidget.threshold))
         self.ui.timerInput.setValidator(timerValidator)
         self.ui.timerInput.setText("0")
-
 
         self.ui.threshold_pro.setValidator(thresholdValidator)
         self.ui.threshold_pro.setText(str(self.glWidget.threshold))
@@ -93,7 +90,6 @@ class MainWindow(QMainWindow):
         self.errorTimer.setInterval(5 * SECOND) 
         self.errorTimer.timeout.connect(self.clearError)
         self.errorTimer.stop()
-
 
         # just change when value change
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
@@ -124,10 +120,10 @@ class MainWindow(QMainWindow):
       if self.page_2Connected:
         self.ui.threshold.textChanged.disconnect(self.getThreshold)
         self.ui.timerInput.textChanged.disconnect(self.getSwichFrameTimer)
-        self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
         self.ui.radarBox.currentIndexChanged.disconnect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
+        self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
 
@@ -148,6 +144,7 @@ class MainWindow(QMainWindow):
             quitQuestionBox()
         else:
             event.ignore()
+
     def mousePressEvent(self, event):
         mousePos = event.pos()
         if event.button() == Qt.LeftButton and self.glWidget.rect().contains(mousePos):
@@ -206,16 +203,12 @@ class MainWindow(QMainWindow):
         else:
             event.ignore()
 
-    ##Function for searching
+    # Function for searching
     def on_search_btn_clicked(self):
         self.ui.stackedWidget.setCurrentIndex(5)
         search_text = self.ui.search_input.text().strip()
         if search_text:
             self.ui.label_9.setText(search_text)
-
-    # Function for changing page to user page
-    # def on_user_btn_clicked(self):
-    #     self.ui.stackedWidget.setCurrentIndex(6)
 
     # Change QPushButton Checkable status when stackedWidget index changed
     def on_stackedWidget_currentChanged(self, index):
@@ -229,11 +222,9 @@ class MainWindow(QMainWindow):
             else:
                 btn.setAutoExclusive(True)
 
-    ## functions for changing menu page
     def on_home_btn_1_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.labelPage.setText("Home Page")
-
 
     def on_home_btn_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(0)
@@ -255,6 +246,7 @@ class MainWindow(QMainWindow):
         self.ui.labelPage.setText("3D View")
         self.ui.slider_3d_x.setEnabled(True)
         self.ui.slider_3d_y.setEnabled(True)
+
     def on_view2d_1_toggled(self):
         self.ui.scrollArea_4.takeWidget()
         self.ui.scrollArea.setWidget(self.glWidget)
@@ -350,6 +342,9 @@ class MainWindow(QMainWindow):
           self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
           self.ui.fileBox.setCurrentIndex(0)
 
+
+          
+
     def getRadar(self, index = 0):
         #! get value of radar
         radar = self.ui.radarBox.currentText()
@@ -406,6 +401,12 @@ class MainWindow(QMainWindow):
       if f != "":
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.glWidget.updateGL()
+        self.addInfor()
+        self.addExtraInfor()
+        self.addStormList()
+        self.ui.lat_pro.setText(str(self.glWidget.radar.data.longitude['data'][0]))
+        self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
+        
 
     def getClutterFilter(self, state):
         if state:
@@ -446,15 +447,18 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput_pro.setText("0")
           self.switchFrameTimer.stop()
+
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
       '''create mode box for user choosing mode'''
     #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-      pixmap = QPixmap('temp.jpg')
-      self.ui.view_2d_label.setPixmap(pixmap)
-      self.ui.view_2d_label.setScaledContents(True)
-      self.addPlotBoxMode()
-      self.addPlotModeImage()
+      # pixmap = QPixmap('temp.jpg')
+      # self.ui.view_2d_label.setPixmap(pixmap)
+      # self.ui.view_2d_label.setScaledContents(True)
+      # self.addPlotBoxMode()
+      # self.addPlotModeImage()
+      pass
+
     def initGL(self):
 
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
@@ -486,6 +490,7 @@ class MainWindow(QMainWindow):
         self.ui.nextFile.clicked.connect(self.goNextFile)
 
         self.ui.resetView.clicked.connect(self.reset3DView)
+
     def initProView(self):
         self.ui.scrollArea_4.setMinimumHeight(int(self.ui.stackedWidget_2.height() * 0.5))
         self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
@@ -493,15 +498,10 @@ class MainWindow(QMainWindow):
         self.ui.scrollArea.setWidget(self.glWidget)
 
         # 2D 
-        source = 'temp.jpg'
-        pixmap = QPixmap(source)
-        self.ui.label2d_pro.setPixmap(pixmap)
+        source = ['temp.jpg']
+        scanStrategyImage = QPixmap(source)
+        self.ui.label2d_pro.setPixmap(scanStrategyImage)
         self.ui.label2d_pro.setScaledContents(True)
-        self.addInfor()
-        self.addExtraInfor()
-        self.addStormList()
-        self.ui.lat_pro.setText(f'12.00')
-        self.ui.long_pro.setText(f'24.00')
 
         self.ui.slider_pro_x.valueChanged.connect(self.updateSliderX)
         self.ui.slider_pro_y.valueChanged.connect(self.updateSliderY)
@@ -513,12 +513,19 @@ class MainWindow(QMainWindow):
 
         self.ui.resetView_pro.clicked.connect(self.reset3DView)
 
+        self.addInfor()
+        self.addExtraInfor()
+        self.addStormList()
+        self.ui.lat_pro.setText(str(self.glWidget.radar.data.longitude['data'][0]))
+        self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
+
     def addPlotBoxMode(self):
         plotMode = ["pyart_ppi","wrl_polar","wrl_ppi", "wrl_clutter", "wrl_ppi_no_clutter", "wrl_attenuation_correction","wrl_plot_rain", "wrl_plot_scan_strategy", ]
         # for i in range(0, len(plotMode)):
         #     self.ui.plot_mode_box.addItem(plotMode[i])
         self.ui.plot_mode_box.addItems(plotMode)
         self.ui.plot_mode_box.setCurrentIndex(0)
+
     def addPlotModeImage(self):
         source = 'placeholder.png'
         pixmap = QPixmap(source)
@@ -544,18 +551,31 @@ class MainWindow(QMainWindow):
 
     def getPlotMode(self) -> str:
         return self.ui.plot_mode_box.currentText()
+
     def addInfor(self):
-        radarName = "NhaBe"
-        entries = ['This is other information box',f'Radar: {radarName}', 'two', 'three']
+        self.ui.otherIn4_pro.clear()
+        time = getHourMinuteSecond(self.glWidget.radar.data)
+        currentTime = f'{time[0]}:{time[1]}:{time[2]}'
+        entries = [
+          'This is other information box',
+          f'Radar: {self.DataManager.radarName}', 
+          f"Altitude: {self.glWidget.radar.data.altitude['data'][0]}",
+          f"Time: {currentTime}",
+          f"Ray Missing: {self.glWidget.radar.data.metadata['rays_missing']}"
+        ]
         self.ui.otherIn4_pro.addItems(entries)
+
     def addExtraInfor(self):
-        radarName = "NhaBe"
-        entries = ['This is extra information box',f'Radar: {radarName}', 'two', 'three']
+        self.ui.extraInfo_pro.clear()
+        entries = ['This is extra information box',f'Radar: {self.DataManager.radarName}', 'two', 'three']
         self.ui.extraInfo_pro.addItems(entries)
+
     def addStormList(self):
+        self.ui.stromList.clear()
         entries = [f'storm 1: theshold...', 'storm 1: theshold...', 'storm 1: theshold...']
         self.ui.stromList.addItems(entries)
         self.ui.stromList.setCurrentIndex(-1)
+
     def reset3DView(self):
         """
         Reset 3D view
