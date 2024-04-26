@@ -400,12 +400,15 @@ class MainWindow(QMainWindow):
       f = self.ui.fileBox.currentText()
       if f != "":
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
+        self.getPlotMode()
         self.glWidget.updateGL()
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
         self.ui.lat_pro.setText(str(self.glWidget.radar.data.longitude['data'][0]))
         self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
+        
+        
         
 
     def getClutterFilter(self, state):
@@ -452,12 +455,12 @@ class MainWindow(QMainWindow):
     def init2DView(self): 
       '''create mode box for user choosing mode'''
     #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-      # pixmap = QPixmap('temp.jpg')
-      # self.ui.view_2d_label.setPixmap(pixmap)
-      # self.ui.view_2d_label.setScaledContents(True)
-      # self.addPlotBoxMode()
-      # self.addPlotModeImage()
-      pass
+
+      self.addPlotBoxMode()
+      self.addPlotModeImage()
+
+      self.getPlotMode()
+      self.ui.view_2d_label.setScaledContents(True)
 
     def initGL(self):
 
@@ -499,7 +502,7 @@ class MainWindow(QMainWindow):
 
         # 2D 
         source = ['temp.jpg']
-        scanStrategyImage = QPixmap(source)
+        scanStrategyImage = QPixmap(source[0])
         self.ui.label2d_pro.setPixmap(scanStrategyImage)
         self.ui.label2d_pro.setScaledContents(True)
 
@@ -520,24 +523,33 @@ class MainWindow(QMainWindow):
         self.ui.long_pro.setText(str(self.glWidget.radar.data.latitude['data'][0]))
 
     def addPlotBoxMode(self):
-        plotMode = ["pyart_ppi","wrl_polar","wrl_ppi", "wrl_clutter", "wrl_ppi_no_clutter", "wrl_attenuation_correction","wrl_plot_rain", "wrl_plot_scan_strategy", ]
-        # for i in range(0, len(plotMode)):
-        #     self.ui.plot_mode_box.addItem(plotMode[i])
+        plotMode = [
+          "pyart_ppi",
+          "wrl_polar",
+          "wrl_ppi", 
+          "wrl_clutter", 
+          "wrl_ppi_no_clutter", 
+          "wrl_attenuation_correction",
+          "wrl_plot_rain", 
+          "wrl_plot_scan_strategy",
+        ]
         self.ui.plot_mode_box.addItems(plotMode)
         self.ui.plot_mode_box.setCurrentIndex(0)
+        self.ui.plot_mode_box.currentIndexChanged.connect(self.getPlotMode)
+
 
     def addPlotModeImage(self):
-        source = 'placeholder.png'
-        pixmap = QPixmap(source)
+        source = 'temp.png'
+        pixmap = QPixmap('temp.png')
         pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
-        self.ui.pyart_ppi.setPixmap(pixmap)
-        self.ui.wrl_polar.setPixmap(pixmap)
-        self.ui.wrl_ppi.setPixmap(pixmap)
-        self.ui.wrl_clutter.setPixmap(pixmap)
-        self.ui.wrl_ppi_no_clutter.setPixmap(pixmap)
-        self.ui.wrl_attenuation_correction.setPixmap(pixmap)
-        self.ui.wrl_plot_rain.setPixmap(pixmap)
-        self.ui.wrl_plot_scan_strategy.setPixmap(pixmap)
+        # self.ui.pyart_ppi.setPixmap(pixmap)
+        # self.ui.wrl_polar.setPixmap(pixmap)
+        # self.ui.wrl_ppi.setPixmap(pixmap)
+        # self.ui.wrl_clutter.setPixmap(pixmap)
+        # self.ui.wrl_ppi_no_clutter.setPixmap(pixmap)
+        # self.ui.wrl_attenuation_correction.setPixmap(pixmap)
+        # self.ui.wrl_plot_rain.setPixmap(pixmap)
+        # self.ui.wrl_plot_scan_strategy.setPixmap(pixmap)
 
         # self.ui.pyart_ppi.setScaledContents(True)   
         # self.ui.wrl_polar.setScaledContents(True)
@@ -549,8 +561,12 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
         
 
-    def getPlotMode(self) -> str:
-        return self.ui.plot_mode_box.currentText()
+    def getPlotMode(self):
+      mode = self.ui.plot_mode_box.currentText()
+      self.glWidget.update(plot_mode = (mode, 0))
+      self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+      
+         
 
     def addInfor(self):
         self.ui.otherIn4_pro.clear()

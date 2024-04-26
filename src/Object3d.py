@@ -39,13 +39,15 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
 
-    def update(self, index=None, threshold=None, clutterFilter = None):
+    def update(self, index=None, threshold=None, clutterFilter = None, plot_mode = (None,0)):
         if index is not None:
             self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
         if clutterFilter is not None:
             self.radar.isFilterClutter(clutterFilter)
+        if plot_mode[0] is not None:
+            self.radar.plot(mode=plot_mode[0], sweep=plot_mode[1])
 
         self.setUpVBO()
 

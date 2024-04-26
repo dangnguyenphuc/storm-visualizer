@@ -276,7 +276,7 @@ class Radar:
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
     self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
   
-  def plot(self, mode = "pyart_ppi", sweep = 0):
+  def plot(self, mode = "wrl_ppi", sweep = 0):
       fig = plt.figure(figsize=(10, 7))
       plt.clf()
 
@@ -332,34 +332,29 @@ class Radar:
                         lon_0=self.data.longitude['data'][0],
                         lat_0=self.data.latitude['data'][0])
 
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/pyart_ppi.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del display
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_polar":
         da.plot()
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_polar.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_ppi":
         da_geo.wrl.vis.plot(add_colorbar=True)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_ppi.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_clutter":
         clutter.wrl.vis.plot(cmap=plt.cm.gray)
         plt.title("Clutter Map")
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_clutter.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_ppi_no_clutter":
         data_no_clutter.wrl.vis.plot(add_colorbar=True, vmin = 0)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
-        plt.close()
-        del da, da_geo, clutter, pia, data_attcorr, z, R, depths
-      elif mode == "wrl_ppi_no_clutter":
-        data_no_clutter.wrl.vis.plot(add_colorbar=True, vmin = 0)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_ppi_no_clutter.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_attenuation_correction":
@@ -368,12 +363,12 @@ class Radar:
         pass
       elif mode == "wrl_plot_rain":
         depths.wrl.vis.plot()
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_plot_rain.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_plot_scan_strategy":
         wrl.vis.plot_scan_strategy(r, self.data.fixed_angle['data'], site)
-        plt.savefig('temp.jpg', bbox_inches='tight', pad_inches=0)
+        plt.savefig('plot/wrl_plot_scan_strategy.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
 
