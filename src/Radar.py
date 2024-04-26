@@ -139,11 +139,14 @@ class DataManager:
 
       for i in range(len(data)):
         radar = pyart.io.read(data[i])
-        if radar.instrument_parameters['prt_mode']['data'][0].decode() == 'fixed' or len(radar.instrument_parameters['prt_mode']['data']) == 0:
-          fixed.append(data[i])
-        elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'dual' : dual.append(data[i])
-        elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'staggered' : staggered.append(data[i])
-        else: other.append(data[i])
+        try:
+          if radar.instrument_parameters['prt_mode']['data'][0].decode() == 'fixed' or len(radar.instrument_parameters['prt_mode']['data']) == 0:
+            fixed.append(data[i])
+          elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'dual' : dual.append(data[i])
+          elif radar.instrument_parameters['prt_mode']['data'][0].decode() == 'staggered' : staggered.append(data[i])
+          else: other.append(data[i])
+        except:
+          continue
 
       if len(fixed) > 0:
         firstDir = filePath + radarName + date + 'fixed/'
@@ -177,7 +180,7 @@ class DataManager:
     def get_grid(radar):
       """ Returns grid object from radar object. """
       grid = pyart.map.grid_from_radars(
-          radar, grid_shape=(41, 801, 801),
+          radar, grid_shape=(41, 801, 801), 
           grid_limits=((0, 20000), (-200000,200000), (-200000, 200000)),
           fields=['reflectivity'], gridding_algo='map_gates_to_grid',
           h_factor=0., nb=0.6, bsp=1., min_radius=200.)

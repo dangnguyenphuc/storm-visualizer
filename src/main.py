@@ -302,8 +302,17 @@ class MainWindow(QMainWindow):
         for radar in radars:
             self.ui.radarBox.addItem(radar)
         if len(radars) > 0:
-          self.DataManager.radarName = radars[0] + "/"
-          self.ui.radarBox.setCurrentIndex(0)
+          try:
+            nhabeIndex = radars.index("NHB")
+          except:
+            nhabeIndex = radars.index("nha-be-radar")
+          self.DataManager.radarName = radars[nhabeIndex] + "/"
+          index = self.ui.radarBox.findText("NHB", PyQt5.QtCore.Qt.MatchFixedString)
+          if index >= 0:
+              self.ui.radarBox.setCurrentIndex(index)
+          else:
+              index = self.ui.radarBox.findText("nha-be-radar", PyQt5.QtCore.Qt.MatchFixedString)
+              self.ui.radarBox.setCurrentIndex(index)
 
     def addItemDate(self):
         self.ui.dateBox.clear()
@@ -351,7 +360,12 @@ class MainWindow(QMainWindow):
             self.getDate()
         else:
             print(f"Radar {radar} is empty")
-            self.ui.radarBox.setCurrentIndex(0)
+            index = self.ui.radarBox.findText("NHB", QtCore.Qt.MatchFixedString)
+            if index >= 0:
+                self.ui.radarBox.setCurrentIndex(index)
+            else:
+                index = self.ui.radarBox.findText("nha-be-radar", QtCore.Qt.MatchFixedString)
+                self.ui.radarBox.setCurrentIndex(index)
 
     def getDate(self, index=0):
         #! get value of date
@@ -600,7 +614,8 @@ class MainWindow(QMainWindow):
         self.DataManager.clearAll()
         self.ui.curData.setText(dataDir)
         self.DataManager.filePath = dataDir
-        if self.DataManager.filePath[-1] != "/": self.DataManager.filePath += "/"
+        if self.DataManager.filePath[-1] != "/": 
+          self.DataManager.filePath += "/"
         self.addItemRadar()
         self.addItemDate()
         self.addItemMode()
