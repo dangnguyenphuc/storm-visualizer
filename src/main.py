@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         # init HomePage
         self.initHomePage() 
         # init 2D Page
-        self.init2DView() 
+        # self.init2DView() 
         # init Pro view
         self.initProView()
 
@@ -101,19 +101,21 @@ class MainWindow(QMainWindow):
         if quitQuestionBox() == QMessageBox.Cancel:
             event.ignore()
         else:
+            self.glWidget.clear()
             event.accept()
 
     def page2Connect(self, event):
       if not self.page_2Connected:
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
-        self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
-        self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+
+        self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
+        self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
         self.page_2Connected = True
       
     def page2Disconnect(self, event):
@@ -281,13 +283,6 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget_2.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
 
-#
-#     def on_customers_btn_1_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(4)
-#
-#     def on_customers_btn_2_toggled(self):
-#         self.ui.stackedWidget.setCurrentIndex(4)
-
     def addItemRadar(self):
         radars = self.DataManager.listAllRadar()
         self.ui.radarBox.clear()
@@ -407,9 +402,6 @@ class MainWindow(QMainWindow):
         self.addStormList()
         self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
         self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
-        
-        
-        
 
     def getClutterFilter(self, state):
         if state:
@@ -420,18 +412,18 @@ class MainWindow(QMainWindow):
 
     def getThreshold(self):
         if self.ui.threshold.text():
-            print("Filter threshold with value: " + self.ui.threshold.text())
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
         else:
             self.glWidget.update(threshold=0)
         self.glWidget.updateGL()
+
     def getThresholdPro(self):
         if self.ui.threshold_pro.text():
-            print("Filter threshold with value: " + self.ui.threshold_pro.text())
             self.glWidget.update(threshold=int(self.ui.threshold_pro.text()))
         else:
             self.glWidget.update(threshold=0)
         self.glWidget.updateGL()
+
     def getSwichFrameTimer(self):
         if self.ui.timerInput.text():
             if int(self.ui.timerInput.text()) > 0:
@@ -441,6 +433,7 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput.setText("0")
           self.switchFrameTimer.stop()
+
     def getSwichFrameTimerPro(self):
         if self.ui.timerInput_pro.text():
             if int(self.ui.timerInput_pro.text()) > 0:
@@ -461,8 +454,8 @@ class MainWindow(QMainWindow):
 
       # Gen 1st plots
       modes = [
-          ("pyart_ppi", 0),
           ("wrl_polar", 0),
+          ("pyart_ppi", 0),
           ("wrl_ppi", 0), 
           ("wrl_clutter", 0), 
           ("wrl_ppi_no_clutter", 0), 
@@ -470,7 +463,7 @@ class MainWindow(QMainWindow):
           ("wrl_plot_rain", 0), 
           ("wrl_plot_scan_strategy", 0),
         ]
-      threads = []
+
       for (mode, sweep) in (modes):
         self.getPlotMode(mode, sweep)
 
@@ -478,17 +471,8 @@ class MainWindow(QMainWindow):
       self.ui.view_2d_label.setScaledContents(True)
 
     def initGL(self):
-
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
-
-        # ''' specified GL version: core 330 '''
-        # glformat = PyQt5.QtOpenGL.QGLFormat()
-        # glformat.setVersion(3, 3)
-        # glformat.setProfile(PyQt5.QtOpenGL.QGLFormat.CoreProfile)
-
-        self.glWidget = GLWidget(self)
-        
-
+        self.glWidget = GLWidget(self)        
         self.glWidget.setSizePolicy(sizePolicy)
         self.ui.scrollArea.setWidget(self.glWidget)
         
@@ -506,7 +490,6 @@ class MainWindow(QMainWindow):
 
         self.ui.preFile.clicked.connect(self.goPrevFile)
         self.ui.nextFile.clicked.connect(self.goNextFile)
-
         self.ui.resetView.clicked.connect(self.reset3DView)
 
     def initProView(self):
@@ -539,8 +522,8 @@ class MainWindow(QMainWindow):
 
     def addPlotBoxMode(self):
         plotMode = [
-          "pyart_ppi",
           "wrl_polar",
+          "pyart_ppi",
           "wrl_ppi", 
           "wrl_clutter", 
           "wrl_ppi_no_clutter", 
@@ -579,7 +562,7 @@ class MainWindow(QMainWindow):
     def getPlotMode(self, mode=None, sweep=0):
       if mode is None or isinstance(mode, int):
         mode = self.ui.plot_mode_box.currentText()
-      self.glWidget.update(plot_mode = (mode, sweep))
+      self.glWidget.update(plot_mode = (mode, sweep), flag=False)
       self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
       
          
@@ -724,3 +707,4 @@ if __name__ == "__main__":
 
     # Exit
     sys.exit(app.exec())
+

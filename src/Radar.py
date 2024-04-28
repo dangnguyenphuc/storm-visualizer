@@ -275,6 +275,8 @@ class Radar:
   def getRadar(self):
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
     self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    self.positions = self.get_vertices_position(scaler)
   
   def plot(self, mode = "wrl_ppi", sweep = 0):
       fig = plt.figure(figsize=(10, 7))
@@ -422,14 +424,15 @@ class Radar:
   def get_all_vertices_by_threshold(self, threshold = 0):
 
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
-      scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-      vertices = self.get_vertices_position(scaler)
+
       return {
-          'position': vertices[indices],
-          'color': color(self.currentReflectivity[indices])
+          'position': self.positions[indices],
+          # 'color': color(self.currentReflectivity[indices])
+          'color': self.currentReflectivity[indices]
       }
 
   def isFilterClutter(self, isFilter = False):
+
     def get_DBZ_from_sweep(radar, sweep = 1):
       try:
         return radar["data"][sweep]["sweep_data"]["DB_DBZ2"]

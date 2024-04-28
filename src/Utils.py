@@ -1,7 +1,4 @@
-# from OpenGL.GL import *
-# from OpenGL.GLUT import *
-# from OpenGL.GLU import *
-# from OpenGL.GL.shaders import compileProgram,compileShader
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +7,10 @@ import calendar
 from datetime import datetime
 from Config import TICK
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL.shaders import compileProgram,compileShader
 
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
@@ -82,3 +83,16 @@ def color(value):
     colors[:, 1] = normalized_values        # Green channel
     colors[:, 2] = 0.8-normalized_values     # Blue channel
     return colors
+
+
+def read_shader(vertex_filepath: str = "shaders/vertex.txt", fragment_filepath: str = "shaders/fragment.txt") -> int:
+    with open(vertex_filepath,'r') as f:
+        vertex_src = f.readlines()
+
+    with open(fragment_filepath,'r') as f:
+        fragment_src = f.readlines()
+
+    return {
+      'vertex': vertex_src,
+      'fragment': fragment_src
+    }
