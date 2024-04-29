@@ -64,26 +64,6 @@ def getHourMinuteSecond(radar):
 
     return (dt.strftime("%H"), dt.strftime("%M"), dt.strftime("%S"))
 
-# def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
-#     with open(vertex_filepath,'r') as f:
-#         vertex_src = f.readlines()
-
-#     with open(fragment_filepath,'r') as f:
-#         fragment_src = f.readlines()
-
-#     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
-#                             compileShader(fragment_src, GL_FRAGMENT_SHADER))
-
-#     return shader
-
-def color(value):
-    normalized_values = (value + 20) / (65 + 20)
-    colors = np.zeros((len(value), 3))
-    colors[:, 0] = 0.3 + normalized_values # Red channel
-    colors[:, 1] = normalized_values        # Green channel
-    colors[:, 2] = 0.8-normalized_values     # Blue channel
-    return colors
-
 
 def read_shader(vertex_filepath: str = "shaders/vertex.txt", fragment_filepath: str = "shaders/fragment.txt") -> int:
     with open(vertex_filepath,'r') as f:

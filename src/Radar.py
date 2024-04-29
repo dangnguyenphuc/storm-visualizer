@@ -11,7 +11,7 @@ import xarray
 
 from tint.grid_utils import *
 from Config import *
-from Utils import listDirInDir, listFile, is_valid_day_for_month_year, color, getYearMonthDate
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate
 
 class DataManager:
 
@@ -374,9 +374,6 @@ class Radar:
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
 
-        
-      
-
   def increaseIndex(self):
     self.currentIndex += 1
 
@@ -427,9 +424,9 @@ class Radar:
 
       return {
           'position': self.positions[indices],
-          # 'color': color(self.currentReflectivity[indices])
           'color': self.currentReflectivity[indices]
       }
+
 
   def isFilterClutter(self, isFilter = False):
 
@@ -444,7 +441,7 @@ class Radar:
       site = (self.data.longitude['data'][0], self.data.latitude['data'][0], self.data.altitude['data'][0])
       r = self.data.range['data']
 
-      self.currentReflectivity = np.ma.masked_array(np.empty((0, self.data.ngates)), mask=np.empty((0, self.data.ngates), dtype=bool))
+      temp = np.ma.masked_array(np.empty((0, self.data.ngates)), mask=np.empty((0, self.data.ngates), dtype=bool))
       for sweep in range(self.data.nsweeps):
 
         da = wrl.georef.create_xarray_dataarray(
@@ -457,10 +454,9 @@ class Radar:
         clutter = da.wrl.classify.filter_gabella(tr1=12, n_p=6, tr2=1.1)
         data_no_clutter = da.wrl.ipol.interpolate_polar(clutter)
         masked_array = np.ma.masked_array(data_no_clutter, mask=data_no_clutter < -327, fill_value=None)
+        temp = np.ma.concatenate((temp, masked_array), axis=0)
 
-        self.currentReflectivity = np.ma.concatenate((self.currentReflectivity, masked_array), axis=0)
-
-      self.currentReflectivity = self.currentReflectivity.flatten()
+      self.currentReflectivity = temp.flatten()
 
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
@@ -546,5 +542,5 @@ class Grid:
     vertices = self.get_vertices_position(scaler)
     return {
         'position': vertices[indices],
-        'color': color(self.currentReflectivity[indices])
+        'color': self.currentReflectivity[indices]
     }

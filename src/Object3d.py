@@ -107,7 +107,6 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
-            print(threshold)
         if clutterFilter is not None:
             self.radar.isFilterClutter(clutterFilter)
         if plot_mode[0] is not None:
@@ -184,7 +183,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.entity.position = [self.mousePos[0], self.mousePos[1] , self.entity.position[2]]
 
         self.getModelTransform()
-        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
+        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.position))
         
         # Clean up state
         gl.glUseProgram(0)
@@ -192,29 +191,30 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpVBO(self):
       # Build data
       v = self.radar.get_all_vertices_by_threshold(self.threshold)
-      position = v['position']
-      color = v['color']
-
-      color = color[:, np.newaxis]
-      self.vertices = np.concatenate((position, color), axis=1)
-
+      self.position  = v['position']
+      self.color = v['color']
       try:
         # Request a buffer slot from GPU
-        self.vbo = gl.glGenBuffers(1)
+        self.positionVBO = gl.glGenBuffers(1)
+        self.colorVBO = gl.glGenBuffers(1)
 
         # Make this buffer the default one
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo)
-
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.positionVBO)
         # Upload CPU data to GPU buffer
-        gl.glBufferData(gl.GL_ARRAY_BUFFER, self.vertices.nbytes, self.vertices, gl.GL_DYNAMIC_DRAW)
+        gl.glBufferData(gl.GL_ARRAY_BUFFER, self.position.nbytes, self.position, gl.GL_STATIC_DRAW)
 
         positionLocation = gl.glGetAttribLocation(self.program, "position")
         gl.glEnableVertexAttribArray(positionLocation)
-        gl.glVertexAttribPointer(positionLocation, 3, gl.GL_FLOAT, False, 16, ctypes.c_void_p(0))
+        gl.glVertexAttribPointer(positionLocation, 3, gl.GL_FLOAT, gl.GL_FALSE, 12, ctypes.c_void_p(0))
 
+
+        # Make this buffer the default one
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.colorVBO)
+        # Upload CPU data to GPU buffer
+        gl.glBufferData(gl.GL_ARRAY_BUFFER, self.color.nbytes, self.color, gl.GL_STATIC_DRAW)
         colorLocation = gl.glGetAttribLocation(self.program, "value")
         gl.glEnableVertexAttribArray(colorLocation)
-        gl.glVertexAttribPointer(colorLocation, 1, gl.GL_FLOAT, False, 16, ctypes.c_void_p(12))
+        gl.glVertexAttribPointer(colorLocation, 1, gl.GL_FLOAT, gl.GL_FALSE, 4, ctypes.c_void_p(0))
       except:
         pass
 
