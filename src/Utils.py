@@ -76,3 +76,11 @@ def read_shader(vertex_filepath: str = "shaders/vertex.txt", fragment_filepath: 
       'vertex': vertex_src,
       'fragment': fragment_src
     }
+
+def color(value):
+    normalized_values = (value + 0) / (65 + 0)
+    colors = np.zeros((len(value), 3))
+    colors[:, 0] = 0.3 + normalized_values # Red channel
+    colors[:, 1] = normalized_values        # Green channel
+    colors[:, 2] = 0.8-normalized_values     # Blue channel
+    return colors

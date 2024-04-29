@@ -118,7 +118,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     
     def clear(self):
       try:
-        gl.glDeleteBuffers(1, (self.vbo,))
+        gl.glDeleteBuffers(3, (self.positionVBO, self.colorVBO, self.mapVBO,))
       except:
         pass
     
@@ -168,7 +168,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glEnable(gl.GL_DEPTH_TEST) 
         self.createAssets()
         self.setUpVBO()
-        # self.loadMap()
+        self.loadMap()
 
     def resizeGL(self, width, height):
         gl.glViewport(0, 0, width, height)
@@ -183,7 +183,12 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.entity.position = [self.mousePos[0], self.mousePos[1] , self.entity.position[2]]
 
         self.getModelTransform()
+
+        self.setUpVBO()
         gl.glDrawArrays(gl.GL_POINTS, 0, len(self.position))
+
+        self.drawMap()
+        
         
         # Clean up state
         gl.glUseProgram(0)
@@ -212,7 +217,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.colorVBO)
         # Upload CPU data to GPU buffer
         gl.glBufferData(gl.GL_ARRAY_BUFFER, self.color.nbytes, self.color, gl.GL_STATIC_DRAW)
-        colorLocation = gl.glGetAttribLocation(self.program, "value")
+        colorLocation = gl.glGetAttribLocation(self.program, "reflectivity")
         gl.glEnableVertexAttribArray(colorLocation)
         gl.glVertexAttribPointer(colorLocation, 1, gl.GL_FLOAT, gl.GL_FALSE, 4, ctypes.c_void_p(0))
       except:
@@ -240,39 +245,48 @@ class GLWidget(QtOpenGL.QGLWidget):
       gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_BASE_LEVEL, 0)
       gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAX_LEVEL, 0)
       gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, m.size[0], m.size[1], 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, mData)
+      gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
       m.close()
 
 
-    def drawMap(self, centerX = 0, centerY = 0, centerZ = -1):
-      verts = ((2, 2), (2, -2), (-2, -2), (-2, 2))
-      texts = ((1, 0), (1, 1), (0, 1), (0, 0))
-      surf = (0, 1, 2, 3)
+    def drawMap(self):
+      mapVert = np.array([
+        (2, 2, -1, 0, 1, 0), 
+        (2, -2, -1, 0, 1, 1), 
+        (-2, -2, -1, 0, 0, 1), 
+        (-2, 2, -1, 0, 0, 0)
+      ], dtype=np.float32)
 
+      surf = (0, 1, 2, 3)
+    
       # Use shader program
       gl.glUseProgram(self.program)
 
       # Set uniform variables
-      gl.glUniform1i(gl.glGetUniformLocation(self.program, "textureAvailable"), 1)
-      gl.glUniform1i(gl.glGetUniformLocation(self.program, "imageTexture"), 0)
+      gl.glUniform1i(gl.glGetUniformLocation(self.program, "mapTexture"), 0)
 
       # Bind texture
       gl.glActiveTexture(gl.GL_TEXTURE0)
       gl.glBindTexture(gl.GL_TEXTURE_2D, self.mID)
 
-      # Set vertex attribute pointers
-      gl.glEnableVertexAttribArray(2)
-      gl.glVertexAttribPointer(2, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, verts)
+      self.mapVBO = gl.glGenBuffers(1)
+      gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.mapVBO)
+      gl.glBufferData(gl.GL_ARRAY_BUFFER, mapVert.nbytes, mapVert, gl.GL_STATIC_DRAW)
 
-      gl.glEnableVertexAttribArray(3)
-      gl.glVertexAttribPointer(3, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, texts)
+      positionLocation = gl.glGetAttribLocation(self.program, "position")
+      gl.glEnableVertexAttribArray(positionLocation)
+      gl.glVertexAttribPointer(positionLocation, 3, gl.GL_FLOAT, gl.GL_FALSE, 24, ctypes.c_void_p(0))
+
+      colorLocation = gl.glGetAttribLocation(self.program, "reflectivity")
+      gl.glEnableVertexAttribArray(colorLocation)
+      gl.glVertexAttribPointer(colorLocation, 1, gl.GL_FLOAT, gl.GL_FALSE, 24, ctypes.c_void_p(12))
+
+      texCoordLocation = gl.glGetAttribLocation(self.program, "texCoord")
+      gl.glEnableVertexAttribArray(texCoordLocation)
+      gl.glVertexAttribPointer(texCoordLocation, 2, gl.GL_FLOAT, gl.GL_FALSE, 24, ctypes.c_void_p(16))
 
       # Draw quad
       gl.glDrawArrays(gl.GL_QUADS, 0, 4)
-
-      # Clean up
-      gl.glDisableVertexAttribArray(0)
-      gl.glDisableVertexAttribArray(1)
-      gl.glUseProgram(0)
 
     def setUniforms(self, width, height, fovy = 45, near = 1.0, far = 100) -> None:
       gl.glUseProgram(self.program)

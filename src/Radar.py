@@ -11,7 +11,7 @@ import xarray
 
 from tint.grid_utils import *
 from Config import *
-from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate
+from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate, color
 
 class DataManager:
 

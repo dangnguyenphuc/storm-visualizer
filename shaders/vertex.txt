@@ -1,12 +1,15 @@
 attribute vec3 position;
-attribute float value;
+attribute float reflectivity;
+attribute vec2 texCoord;
 
-varying float v_value;
+varying vec2 varyingTexCoord;
+varying float vertexReflectivity;
 
 uniform mat4 model;
 uniform mat4 projection;
 
 void main() {
     gl_Position = projection * model * vec4(position, 1.0);
-    v_value = value;
+    vertexReflectivity = reflectivity;
+    varyingTexCoord = texCoord;
 }
