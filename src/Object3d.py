@@ -14,113 +14,80 @@ from Radar import *
 from Utils import read_shader
 
 class Entity:
-    """
-        A basic object in the world, with a position and rotation.
-    """
 
     def __init__(self, position: list[float], eulers: list[float], scale: float = 1):
-        """
-            Initialize the entity.
-
-            Parameters:
-
-                position: the position of the entity.
-
-                eulers: the rotation of the entity
-                        about each axis.
-        """
         self.scale = scale
         self.position = np.array(position, dtype=np.float32)
         self.eulers = np.array(eulers, dtype=np.float32)
+    
+    def updateScale(self, val) ->None:
+        self.scale = val
 
-    def updateY(self) -> None:
-        """
-            Update the object, this is hard coded for now.
-        """
+    def updateY(self, val) -> None:
+        self.eulers[1] = val
 
-        self.eulers[1] += 0.25
+        if self.eulers[1] >= 360:
+            self.eulers[1] = 360
+        elif self.eulers[1] <=0:
+            self.eulers[1] = 0
 
-        if self.eulers[1] > 360:
-            self.eulers[1] -= 360
+    def updateX(self, val) -> None:
+        self.eulers[0] = val
 
-    def updateX(self) -> None:
-        """
-            Update the object, this is hard coded for now.
-        """
+        if self.eulers[0] >= 360:
+            self.eulers[0] = 360
+        elif self.eulers[0] <=0:
+            self.eulers[0] = 0
 
-        self.eulers[0] += 0.25
+    def updateZ(self, val) -> None:
 
-        if self.eulers[0] > 360:
-            self.eulers[0] -= 360
+        self.eulers[2] = val
 
-    def updateZ(self) -> None:
-        """
-            Update the object, this is hard coded for now.
-        """
+        if self.eulers[2] >= 360:
+            self.eulers[2] = 360
+        elif self.eulers[2] <=0:
+            self.eulers[2] = 0
 
-        self.eulers[2] += 0.25
-
-        if self.eulers[2] > 360:
-            self.eulers[2] -= 360
-
-    def getModelTransform(self, index = 1) -> np.ndarray:
-        """
-            Returns the entity's model to world
-            transformation matrix.
-        """
+    def getModelTransform(self) -> np.ndarray:
 
         model_transform = pyrr.matrix44.create_identity(dtype=np.float32)
-
-        # axis = [0,0,0]
-        # axis[index] = 1
-        # model_transform = pyrr.matrix44.multiply(
-        #     m1=model_transform,
-        #     m2=pyrr.matrix44.create_from_axis_rotation(
-        #         axis = axis,
-        #         theta = np.radians(self.eulers[1]),
-        #         dtype = np.float32
-        #     )
-        # )
-
-        # Rotate around Y-axis by -90 degrees (or 270 degrees)
-        if index == 1:
-            model_transform = pyrr.matrix44.multiply(
-                m1=model_transform,
-                m2=pyrr.matrix44.create_from_axis_rotation(
-                    axis=[1, 0, 0],  # X-axis
-                    theta=np.radians(-90),  # Rotate -90 degrees around Y-axis
-                    dtype=np.float32
-                )
-            )
-
-        # Rotate around X-axis
-        model_transform = pyrr.matrix44.multiply(
+        for i in range(3):
+          axis = [0,0,0]
+          axis[i] = 1
+          model_transform = pyrr.matrix44.multiply(
             m1=model_transform,
             m2=pyrr.matrix44.create_from_axis_rotation(
-                axis=[0, 1, 0],  # X-axis
-                theta=np.radians(self.eulers[1]),  # Rotate around X-axis based on entity's rotation
+                axis=axis,  # Y-axis
+                theta=np.radians(self.eulers[i]),
                 dtype=np.float32
-            )
-        )
+              )
+          )
+        # Apply scaling
+        scale_matrix = pyrr.matrix44.create_from_scale([self.scale] * 3)
+        model_transform = pyrr.matrix44.multiply(model_transform, scale_matrix)
 
-        return pyrr.matrix44.multiply(
-            m1=model_transform,
-            m2=pyrr.matrix44.create_from_translation(
-                vec=np.array(self.position),dtype=np.float32
-            )
+        # Apply translation
+        translation_matrix = pyrr.matrix44.create_from_translation(
+            vec=np.array(self.position),
+            dtype=np.float32
         )
+        model_transform = pyrr.matrix44.multiply(model_transform, translation_matrix)
+
+        return model_transform
+
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None, index = 0, threshold = 0):
         self.parent = parent
         super().__init__(parent)
         self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
-        self.setUpScale()
+        
         self.mousePos = [0, 0] 
         self.zoom_center = [0, 0] 
-        self.scale = 1.0
+        
+
     def setUpScale(self, val=1.0):
-        self.scale = val
+        self.entity.updateScale(val)
 
     def setUpRadar(self, index = 0, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
         self.radar = Radar(index, filePath, radarName, year, month, day, mode)
@@ -140,6 +107,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
+            print(threshold)
         if clutterFilter is not None:
             self.radar.isFilterClutter(clutterFilter)
         if plot_mode[0] is not None:
@@ -158,7 +126,8 @@ class GLWidget(QtOpenGL.QGLWidget):
     def createAssets(self):
       self.entity = Entity(
                   position = [0,0,-10],
-                  eulers = [0,-90,0]
+                  eulers = [0,0,0],
+                  scale= 1
         )
       codes = read_shader()
       self.program = gl.glCreateProgram()
@@ -200,71 +169,29 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glEnable(gl.GL_DEPTH_TEST) 
         self.createAssets()
         self.setUpVBO()
-        self.loadMap()
-
-        self.rotX = 0.0
-        self.rotY = 0.0
-        self.rotZ = 0.0
+        # self.loadMap()
 
     def resizeGL(self, width, height):
         gl.glViewport(0, 0, width, height)
         self.setUniforms(width=width, height=height, fovy=45.0, near=1.0, far=100)
         self.getUniformLocations()
-        # gl.glMatrixMode(gl.GL_PROJECTION)
-        # gl.glLoadIdentity()
-        # aspect = width / float(height)
-
-        # # gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_LINE)
-
-        # GLU.gluPerspective(45.0, aspect, 1.0, 100.0)
-        # gl.glMatrixMode(gl.GL_MODELVIEW)
+        self.getModelTransform()
 
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glUseProgram(self.program)
+
+        self.entity.position = [self.mousePos[0], self.mousePos[1] , self.entity.position[2]]
+
         self.getModelTransform()
-
         gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
-
-        # gl.glPushMatrix()
-
-        # gl.glTranslate(self.mousePos[0], self.mousePos[1], -5.0)   
-        # gl.glTranslatef(self.zoom_center[0], self.zoom_center[1],  0)
-        # gl.glScale(self.scale, self.scale, self.scale) 
-        # gl.glTranslatef(-self.zoom_center[0], -self.zoom_center[1], 0) 
-        # gl.glRotate(self.rotX, 1.0, 0.0, 0.0)
-        # gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
-        # gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
-
-        # self.drawMap()
-
-        # self.vertVBO.bind()
-        # gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        # gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
-
-        # '''Comment these line when testing'''
-        # self.colorVBO.bind()
-        # gl.glEnableClientState(gl.GL_COLOR_ARRAY)
-        # gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
-        # '''to this'''
-
-
-        # gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
-        # # gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.vertices))
-
-        # # Unbind and disable after drawing
-        # self.vertVBO.unbind()
-        # gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
-
-        # '''Comment these line when testing'''
-        # self.colorVBO.unbind()
-        # gl.glDisableClientState(gl.GL_COLOR_ARRAY)
-        # '''to this'''
-        # gl.glPopMatrix()
+        
+        # Clean up state
+        gl.glUseProgram(0)
 
     def setUpVBO(self):
       # Build data
-      v = self.radar.get_all_vertices_by_threshold()
+      v = self.radar.get_all_vertices_by_threshold(self.threshold)
       position = v['position']
       color = v['color']
 
@@ -290,14 +217,15 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glVertexAttribPointer(colorLocation, 1, gl.GL_FLOAT, False, 16, ctypes.c_void_p(12))
       except:
         pass
+
     def setRotX(self, val):
-        self.rotX = np.pi * val
+        self.entity.updateX(val * np.pi)
 
     def setRotY(self, val):
-        self.rotY = np.pi * val
+        self.entity.updateY(val * np.pi)
 
     def setRotZ(self, val):
-        self.rotZ = np.pi * val
+        self.entity.updateZ(val * np.pi)
 
     def loadMap(self, filePath="map.png"):
       m = Image.open(filePath)
@@ -316,20 +244,35 @@ class GLWidget(QtOpenGL.QGLWidget):
 
 
     def drawMap(self, centerX = 0, centerY = 0, centerZ = -1):
-      verts = ((2, 2), (2,-2), (-2,-2), (-2,2))
+      verts = ((2, 2), (2, -2), (-2, -2), (-2, 2))
       texts = ((1, 0), (1, 1), (0, 1), (0, 0))
       surf = (0, 1, 2, 3)
 
-      gl.glEnable(gl.GL_TEXTURE_2D)
+      # Use shader program
+      gl.glUseProgram(self.program)
+
+      # Set uniform variables
+      gl.glUniform1i(gl.glGetUniformLocation(self.program, "textureAvailable"), 1)
+      gl.glUniform1i(gl.glGetUniformLocation(self.program, "imageTexture"), 0)
+
+      # Bind texture
+      gl.glActiveTexture(gl.GL_TEXTURE0)
       gl.glBindTexture(gl.GL_TEXTURE_2D, self.mID)
 
-      gl.glBegin(gl.GL_QUADS)
-      for i in surf:
-          gl.glTexCoord3f(texts[i][0], texts[i][1], 0)
-          gl.glVertex3f(centerX + verts[i][0], centerY + verts[i][1], centerZ)  # Added centerZ
-      gl.glEnd()
-      
-      gl.glDisable(gl.GL_TEXTURE_2D)
+      # Set vertex attribute pointers
+      gl.glEnableVertexAttribArray(2)
+      gl.glVertexAttribPointer(2, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, verts)
+
+      gl.glEnableVertexAttribArray(3)
+      gl.glVertexAttribPointer(3, 2, gl.GL_FLOAT, gl.GL_FALSE, 0, texts)
+
+      # Draw quad
+      gl.glDrawArrays(gl.GL_QUADS, 0, 4)
+
+      # Clean up
+      gl.glDisableVertexAttribArray(0)
+      gl.glDisableVertexAttribArray(1)
+      gl.glUseProgram(0)
 
     def setUniforms(self, width, height, fovy = 45, near = 1.0, far = 100) -> None:
       gl.glUseProgram(self.program)
@@ -354,17 +297,8 @@ class GLWidget(QtOpenGL.QGLWidget):
       gl.glUseProgram(self.program)
       self.modelMatrixLocation = gl.glGetUniformLocation(self.program, "model")
 
-    def getModelTransform(self, index=1):
-      """
-      @param:
-        + index: range(0,3)
-          - 0: for x axis
-          - 1: for y axis
-          - 2: for z axis
-      """
-      # self.entity.updateY()
-
+    def getModelTransform(self):
       gl.glUniformMatrix4fv(
           self.modelMatrixLocation, 1, gl.GL_FALSE,
-          self.entity.getModelTransform(index)
+          self.entity.getModelTransform()
       )

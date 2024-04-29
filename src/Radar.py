@@ -542,7 +542,7 @@ class Grid:
 
     # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
     indices = np.where(self.currentReflectivity > threshold)
-    scaler = MinMaxScaler(feature_range=(-10.0, 10.0))
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     vertices = self.get_vertices_position(scaler)
     return {
         'position': vertices[indices],

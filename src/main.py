@@ -201,7 +201,7 @@ class MainWindow(QMainWindow):
                 self.update()
                 self.glWidget.setUpScale(zoom)
             except:
-                print("error")
+                print("Scale error")
         else:
             event.ignore()
 
@@ -595,7 +595,7 @@ class MainWindow(QMainWindow):
         """
         Reset 3D view
         """
-        #reset zoome view
+        #reset zoom view
         self.glWidget.zoom_center[0] = 0
         self.glWidget.zoom_center[1] = 0
         
@@ -605,14 +605,15 @@ class MainWindow(QMainWindow):
         self.updateSliderX(0)
         self.updateSliderY(0)
         self.updateSliderZ(0)
-        # seset scale
+
+        # reset scale
         self.update()
         self.glWidget.setUpScale(1)
+
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
         self.ui.fileBox.setCurrentIndex(index)
         self.getFile(index=index)
-
 
     def goNextFile(self):
         index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
