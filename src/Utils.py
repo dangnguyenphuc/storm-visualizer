@@ -1,7 +1,4 @@
-# from OpenGL.GL import *
-# from OpenGL.GLUT import *
-# from OpenGL.GLU import *
-# from OpenGL.GL.shaders import compileProgram,compileShader
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +7,10 @@ import calendar
 from datetime import datetime
 from Config import TICK
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL.shaders import compileProgram,compileShader
 
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
@@ -63,20 +64,21 @@ def getHourMinuteSecond(radar):
 
     return (dt.strftime("%H"), dt.strftime("%M"), dt.strftime("%S"))
 
-# def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
-#     with open(vertex_filepath,'r') as f:
-#         vertex_src = f.readlines()
 
-#     with open(fragment_filepath,'r') as f:
-#         fragment_src = f.readlines()
+def read_shader(vertex_filepath: str = "shaders/vertex.txt", fragment_filepath: str = "shaders/fragment.txt") -> int:
+    with open(vertex_filepath,'r') as f:
+        vertex_src = f.readlines()
 
-#     shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
-#                             compileShader(fragment_src, GL_FRAGMENT_SHADER))
+    with open(fragment_filepath,'r') as f:
+        fragment_src = f.readlines()
 
-#     return shader
+    return {
+      'vertex': vertex_src,
+      'fragment': fragment_src
+    }
 
 def color(value):
-    normalized_values = (value + 20) / (65 + 20)
+    normalized_values = (value + 0) / (65 + 0)
     colors = np.zeros((len(value), 3))
     colors[:, 0] = 0.3 + normalized_values # Red channel
     colors[:, 1] = normalized_values        # Green channel

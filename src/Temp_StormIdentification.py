@@ -80,12 +80,11 @@ def draw_object():
 
     num_planes = len(edge_points)
     side_planes = []
-    side_planes_it = (num_planes - 1) if num_planes%2 == 1 else num_planes
+    side_planes_it = num_planes
 
     for i in range(side_planes_it):
       points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
       side_planes.append(points)
-
 
     for i in range(len(side_planes)):
       glBegin(GL_LINES)
