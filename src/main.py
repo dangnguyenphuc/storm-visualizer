@@ -2,6 +2,7 @@ import sys
 import numpy as np
 
 import PyQt5
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
 from PyQt5.QtCore import QFile, QTextStream, Qt
 from PyQt5.QtGui import QIntValidator, QPixmap
@@ -51,7 +52,7 @@ class MainWindow(QMainWindow):
         # init HomePage
         self.initHomePage() 
         # init 2D Page
-        self.init2DView() 
+        # self.init2DView() 
         # init Pro view
         self.initProView()
 
@@ -73,8 +74,8 @@ class MainWindow(QMainWindow):
 
         self.ui.threshold_pro.setValidator(thresholdValidator)
         self.ui.threshold_pro.setText(str(self.glWidget.threshold))
-        self.ui.timerInput_pro.setValidator(timerValidator)
-        self.ui.timerInput_pro.setText("0")
+        # self.ui.timerInput_pro.setValidator(timerValidator)
+        # self.ui.timerInput_pro.setText("0")
 
         # timers
         mainTimer = PyQt5.QtCore.QTimer(self)
@@ -108,12 +109,12 @@ class MainWindow(QMainWindow):
         self.ui.threshold.textChanged.connect(self.getThreshold)
         self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
         self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
-        self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
+        # self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
         self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
-        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        # self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
         self.page_2Connected = True
       
     def page2Disconnect(self, event):
@@ -124,7 +125,7 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
-        self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
+        # self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.page_2Connected = False
 
     def keyPressEvent(self, event):
@@ -399,7 +400,7 @@ class MainWindow(QMainWindow):
     def getFile(self, index=0):
       f = self.ui.fileBox.currentText()
       if f != "":
-        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
+        # self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.getPlotMode()
         self.glWidget.updateGL()
         self.addInfor()
@@ -441,15 +442,15 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput.setText("0")
           self.switchFrameTimer.stop()
-    def getSwichFrameTimerPro(self):
-        if self.ui.timerInput_pro.text():
-            if int(self.ui.timerInput_pro.text()) > 0:
-                self.switchFrameTimer.setInterval( int(self.ui.timerInput_pro.text()) * SECOND)
-                self.switchFrameTimer.start()
-            else: self.switchFrameTimer.stop()
-        else:
-          self.ui.timerInput_pro.setText("0")
-          self.switchFrameTimer.stop()
+    # def getSwichFrameTimerPro(self):
+    #     if self.ui.timerInput_pro.text():
+    #         if int(self.ui.timerInput_pro.text()) > 0:
+    #             self.switchFrameTimer.setInterval( int(self.ui.timerInput_pro.text()) * SECOND)
+    #             self.switchFrameTimer.start()
+    #         else: self.switchFrameTimer.stop()
+    #     else:
+    #       self.ui.timerInput_pro.setText("0")
+    #       self.switchFrameTimer.stop()
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
@@ -510,13 +511,11 @@ class MainWindow(QMainWindow):
         self.ui.resetView.clicked.connect(self.reset3DView)
 
     def initProView(self):
-        self.ui.scrollArea_4.setMinimumHeight(int(self.ui.stackedWidget_2.height() * 0.5))
-        self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
-        self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
+
         self.ui.scrollArea.setWidget(self.glWidget)
 
         # 2D 
-        source = ['temp.jpg']
+        source = ['./plot/wrl_plot_scan_strategy.png']
         scanStrategyImage = QPixmap(source[0])
         self.ui.label2d_pro.setPixmap(scanStrategyImage)
         self.ui.label2d_pro.setScaledContents(True)
@@ -534,9 +533,13 @@ class MainWindow(QMainWindow):
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
+        self.addPlotModeImage()
         self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
         self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
 
+        # self.ui.scrollArea_4.setMinimumHeight(int(self.ui.page_3.height() * 0.75))
+        # self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
+        self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
     def addPlotBoxMode(self):
         plotMode = [
           "pyart_ppi",
@@ -557,14 +560,14 @@ class MainWindow(QMainWindow):
         source = 'temp.png'
         pixmap = QPixmap('temp.png')
         pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
-        # self.ui.pyart_ppi.setPixmap(pixmap)
-        # self.ui.wrl_polar.setPixmap(pixmap)
-        # self.ui.wrl_ppi.setPixmap(pixmap)
-        # self.ui.wrl_clutter.setPixmap(pixmap)
-        # self.ui.wrl_ppi_no_clutter.setPixmap(pixmap)
-        # self.ui.wrl_attenuation_correction.setPixmap(pixmap)
-        # self.ui.wrl_plot_rain.setPixmap(pixmap)
-        # self.ui.wrl_plot_scan_strategy.setPixmap(pixmap)
+        self.ui.pyart_ppi.setPixmap(QPixmap('./plot/pyart_ppi.png'))
+        self.ui.wrl_polar.setPixmap(QPixmap('./plot/wrl_ppi.png'))
+        self.ui.wrl_ppi.setPixmap(QPixmap('./plot/wrl_ppi.png'))
+        self.ui.wrl_clutter.setPixmap(QPixmap('./plot/wrl_clutter.png'))
+        self.ui.wrl_ppi_no_clutter.setPixmap(QPixmap('./plot/wrl_ppi_no_clutter.png'))
+        # self.ui.wrl_attenuation_correction.setPixmap(QPixmap('./plot/wrl_.png').scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio))
+        self.ui.wrl_plot_rain.setPixmap(QPixmap('./plot/wrl_plot_rain.png'))
+        self.ui.wrl_plot_scan_strategy.setPixmap(QPixmap('./plot/wrl_plot_scan_strategy.png'))
 
         # self.ui.pyart_ppi.setScaledContents(True)   
         # self.ui.wrl_polar.setScaledContents(True)
@@ -574,7 +577,7 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_attenuation_correction.setScaledContents(True)
         # self.ui.wrl_plot_rain.setScaledContents(True)
         # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
-        
+        # 
 
     def getPlotMode(self, mode=None, sweep=0):
       if mode is None or isinstance(mode, int):
