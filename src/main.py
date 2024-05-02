@@ -4,7 +4,7 @@ import numpy as np
 import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import QFile, QTextStream, Qt
+from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl
 from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.last_pos = None
         self.mouse_x = 0
         self.mouse_y = 0
-
+        self.urlSource = None
         # init OpenGL Widget
         self.initGL()
         # init HomePage
@@ -116,10 +116,8 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
         # self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
-        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
 
         self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
-        self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
         self.page_2Connected = True
       
     def page2Disconnect(self, event):
@@ -437,25 +435,8 @@ class MainWindow(QMainWindow):
         else:
           self.ui.timerInput.setText("0")
           self.switchFrameTimer.stop()
-    # def getSwichFrameTimerPro(self):
-    #     if self.ui.timerInput_pro.text():
-    #         if int(self.ui.timerInput_pro.text()) > 0:
-    #             self.switchFrameTimer.setInterval( int(self.ui.timerInput_pro.text()) * SECOND)
-    #             self.switchFrameTimer.start()
-    #         else: self.switchFrameTimer.stop()
-    #     else:
-    #       self.ui.timerInput_pro.setText("0")
-    #       self.switchFrameTimer.stop()
 
-    def getSwichFrameTimerPro(self):
-        if self.ui.timerInput_pro.text():
-            if int(self.ui.timerInput_pro.text()) > 0:
-                self.switchFrameTimer.setInterval( int(self.ui.timerInput_pro.text()) * SECOND)
-                self.switchFrameTimer.start()
-            else: self.switchFrameTimer.stop()
-        else:
-          self.ui.timerInput_pro.setText("0")
-          self.switchFrameTimer.stop()
+
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
@@ -552,7 +533,6 @@ class MainWindow(QMainWindow):
 
 
     def addPlotModeImage(self):
-        source = 'temp.png'
         pixmap = QPixmap('temp.png')
         pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
         self.ui.pyart_ppi.setPixmap(QPixmap('./plot/pyart_ppi.png'))
@@ -657,7 +637,12 @@ class MainWindow(QMainWindow):
     def initHomePage(self):
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
+        self.ui.actionOpenURL.clicked.connect(self.getURL)
 
+    def getURL(self):
+        """get URL source"""
+        self.urlSource = self.ui.url.text()
+        print(self.urlSource)
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
       if dataDir is not None and dataDir != "":
@@ -697,7 +682,13 @@ class MainWindow(QMainWindow):
         self.ui.fileBox.clear()
       elif files:
         self.ui.fileBox.clear()
-    
+    def getScan3D(self):
+        self.ui.checkBox_scan.isChecked()
+        pass
+    def getScanPro(self):
+        self.ui.checkBox_scan_pro.isChecked()
+        pass
+
 def loadStyle(QApplication):
     """
     load style file for application
