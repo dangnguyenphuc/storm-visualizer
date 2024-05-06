@@ -139,7 +139,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_2">
@@ -581,6 +581,26 @@
                    </property>
                   </widget>
                  </item>
+                 <item row="2" column="7">
+                  <widget class="QCheckBox" name="clutterFilterToggle">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Clutter Filter</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="6">
+                  <widget class="QCheckBox" name="gridCheckBox">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Grid</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>
@@ -588,7 +608,7 @@
              <item>
               <widget class="QStackedWidget" name="stackedWidget_2">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_5">
                 <layout class="QGridLayout" name="gridLayout_7">

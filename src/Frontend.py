@@ -276,6 +276,14 @@ class Ui_MainWindow(object):
         self.chooseSweep.setSizePolicy(sizePolicy)
         self.chooseSweep.setObjectName("chooseSweep")
         self.gridLayout_9.addWidget(self.chooseSweep, 0, 7, 1, 1)
+        self.clutterFilterToggle = QtWidgets.QCheckBox(self.page_2)
+        self.clutterFilterToggle.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.clutterFilterToggle.setObjectName("clutterFilterToggle")
+        self.gridLayout_9.addWidget(self.clutterFilterToggle, 2, 7, 1, 1)
+        self.gridCheckBox = QtWidgets.QCheckBox(self.page_2)
+        self.gridCheckBox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.gridCheckBox.setObjectName("gridCheckBox")
+        self.gridLayout_9.addWidget(self.gridCheckBox, 2, 6, 1, 1)
         self.horizontalLayout_5.addLayout(self.gridLayout_9)
         self.verticalLayout_6.addLayout(self.horizontalLayout_5)
         self.stackedWidget_2 = QtWidgets.QStackedWidget(self.page_2)
@@ -901,11 +909,11 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName("actionExit")
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
         self.fileBox.setCurrentIndex(0)
         self.radarBox.setCurrentIndex(-1)
         self.modeBox.setCurrentIndex(-1)
-        self.stackedWidget_2.setCurrentIndex(1)
+        self.stackedWidget_2.setCurrentIndex(0)
         self.view3d_1.toggled['bool'].connect(self.view3d_2.setChecked) # type: ignore
         self.view2d_1.toggled['bool'].connect(self.view2d_2.setChecked) # type: ignore
         self.other_1.toggled['bool'].connect(self.other_2.setChecked) # type: ignore
@@ -977,6 +985,8 @@ class Ui_MainWindow(object):
         self.nextFile.setText(_translate("MainWindow", "Next File"))
         self.label_13.setText(_translate("MainWindow", "RADAR"))
         self.label_26.setText(_translate("MainWindow", "Sweep No."))
+        self.clutterFilterToggle.setText(_translate("MainWindow", "Clutter Filter"))
+        self.gridCheckBox.setText(_translate("MainWindow", "Grid"))
         self.label_3.setText(_translate("MainWindow", "Y axis"))
         self.threshold.setToolTip(_translate("MainWindow", "<html><head/><body><p>press enter to confirm thresh hold</p></body></html>"))
         self.x_value.setText(_translate("MainWindow", "0°"))

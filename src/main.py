@@ -115,7 +115,8 @@ class MainWindow(QMainWindow):
         self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
         self.ui.modeBox.currentIndexChanged.connect(self.getMode)
         self.ui.dateBox.currentIndexChanged.connect(self.getDate)
-        # self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+        self.ui.gridCheckBox.stateChanged.connect(self.getGrid)
 
         self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
         self.page_2Connected = True
@@ -128,7 +129,9 @@ class MainWindow(QMainWindow):
         self.ui.modeBox.currentIndexChanged.disconnect(self.getMode)
         self.ui.dateBox.currentIndexChanged.disconnect(self.getDate)
         self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
-        # self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
+        self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
+        self.ui.gridCheckBox.stateChanged.disconnect(self.getGrid)
+
         self.page_2Connected = False
 
     def keyPressEvent(self, event):
@@ -236,9 +239,14 @@ class MainWindow(QMainWindow):
 
 
     def on_view3d_1_toggled(self):
+        self.ui.scrollArea_4.takeWidget()
+        self.ui.scrollArea.setWidget(self.glWidget)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(0)
         self.ui.labelPage.setText("3D View")
+        self.ui.clutterFilterToggle.setEnabled(True)
+        self.ui.gridCheckBox.setEnabled(True)
+
         self.ui.slider_3d_x.setEnabled(True)
         self.ui.slider_3d_y.setEnabled(True)
 
@@ -248,15 +256,20 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(0)
         self.ui.labelPage.setText("3D View")
+        self.ui.clutterFilterToggle.setEnabled(True)
+        self.ui.gridCheckBox.setEnabled(True)
+
         self.ui.slider_3d_x.setEnabled(True)
         self.ui.slider_3d_y.setEnabled(True)
 
     def on_view2d_1_toggled(self):
-        self.ui.scrollArea_4.takeWidget()
-        self.ui.scrollArea.setWidget(self.glWidget)
+        self.ui.scrollArea.takeWidget()
+        self.ui.scrollArea_4.setWidget(self.glWidget)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(1)
         self.ui.labelPage.setText("2D View")
+        self.ui.clutterFilterToggle.setEnabled(False)
+        self.ui.gridCheckBox.setEnabled(False)
 
         # self.ui.slider_3d_x.setDisabled(True)
         # self.ui.slider_3d_y.setDisabled(True)
@@ -267,6 +280,8 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(1)
         self.ui.labelPage.setText("2D View")
+        self.ui.clutterFilterToggle.setEnabled(False)
+        self.ui.gridCheckBox.setEnabled(False)
 
         self.ui.slider_3d_x.setDisabled(True)
         self.ui.slider_3d_y.setDisabled(True)
@@ -396,7 +411,7 @@ class MainWindow(QMainWindow):
     def getFile(self, index=0):
       f = self.ui.fileBox.currentText()
       if f != "":
-        # self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
+        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
         self.getPlotMode()
         self.glWidget.updateGL()
         self.addInfor()
@@ -412,6 +427,12 @@ class MainWindow(QMainWindow):
             self.glWidget.update(clutterFilter=False)
         self.glWidget.updateGL()
 
+    def getGrid(self, state):
+        if state:
+            self.ui.clutterFilterToggle.setEnabled(False)
+            self.ui.clutterFilterToggle.setChecked(False)
+        else: 
+            self.ui.clutterFilterToggle.setEnabled(True)
     def getThreshold(self):
         if self.ui.threshold.text():
             self.glWidget.update(threshold=int(self.ui.threshold.text()))
