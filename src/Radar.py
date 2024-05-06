@@ -9,6 +9,7 @@ import pyart
 import wradlib as wrl
 import xarray
 
+from Titan.StormIdentification import getStorm, getStormWithIndex
 from tint.grid_utils import *
 from Config import *
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate, color
@@ -299,10 +300,10 @@ class Radar:
   def getRadar(self):
 
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
+    self.gridData = pyart.io.read_grid(self.DataManager.grid_data[self.currentIndex])
     # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
 
     if self.isGrid:
-      self.gridData = pyart.io.read_grid(self.DataManager.grid_data[self.currentIndex])
       self.currentReflectivity = self.gridData.fields['reflectivity']['data'].flatten()
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
@@ -506,6 +507,29 @@ class Radar:
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
   
+  def getStorm(self, threshold = 32, minSize = 10):
+    self.stormFrame, self.stormCount = getStorm(grid=self.DataManager.grid_data, threshold=threshold, minSize=minSize)
+    if self.stormCount == 0:
+      print("Error: There is no storm in this {}".format(self.currentIndex))
+      return
+  
+  def getStormVertex(self, index = 1):
+    if self.stormCount == 0:
+      print("Error: There is no storm in file {} in folder".format(self.currentIndex, self.DataManager.getCurrentPath(mode=True)))
+      return
+
+    if index > self.stormCount:
+      print("Error: Invalid storm index")
+      return
+
+    concatenated_array, l = getStormWithIndex(grid, frame)
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    scaled_array = scaler.fit_transform(concatenated_array)
+    edge_points = []
+    for i in l:
+      edge_points.append(scaled_array[i[0]:i[1]])
+
+    
 
   # def get_all_vertices_by_threshold(self, threshold = 0):
 
