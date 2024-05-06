@@ -65,23 +65,8 @@ concatenated_array, l = getStormWithIndex(grid, frame)
 #   l.append([start, end])
 #   start = end
 
-scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-# # Concatenate all arrays into a single 2D array
-# concatenated_array = np.concatenate(edge_points, axis=0)
-scaled_array = scaler.fit_transform(concatenated_array)
-edge_points = []
-for i in l:
-  edge_points.append(scaled_array[i[0]:i[1]])
 
-
-def draw_object():
-  num_planes = len(edge_points)
-  side_planes = []
-  side_planes_it = num_planes
-
-  for i in range(side_planes_it - 1):
-    points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
-    side_planes.append(points)
+def draw_object(edge_points, side_planes):
 
   for i in range(len(side_planes)):
     glBegin(GL_LINES)
@@ -91,11 +76,24 @@ def draw_object():
             glVertex3fv(side_planes[i][k])
     glEnd()
   
-  for i in range(num_planes):
+  for i in range(len(edge_points)):
       glBegin(GL_POLYGON)
       for point in edge_points[i]:
           glVertex3fv(point)
       glEnd() 
+
+scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+# # Concatenate all arrays into a single 2D array
+# concatenated_array = np.concatenate(edge_points, axis=0)
+scaled_array = scaler.fit_transform(concatenated_array)
+edge_points = []
+for i in l:
+  edge_points.append(scaled_array[i[0]:i[1]])
+
+side_planes = []
+for i in range( len(edge_points) - 1):
+    points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
+    side_planes.append(points)
     
 def main():
     pygame.init()
@@ -113,7 +111,7 @@ def main():
 
         glRotatef(1, 1, 0, 1)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        draw_object()
+        draw_object(edge_points, side_planes)
         pygame.display.flip()
         pygame.time.wait(10)
 

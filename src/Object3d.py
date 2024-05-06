@@ -371,12 +371,15 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.plot(mode=plot_mode[0], sweep=plot_mode[1])
 
         if flag:
-          self.setUpVBO()
+          # self.setUpVBO()
+          self.radar.getStorm()
+          self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))  
         gl.glEnable(gl.GL_DEPTH_TEST)  
-        self.setUpVBO()
+        self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
+        # self.setUpVBO()
         self.loadMap()
 
         self.rotX = 0.0
@@ -407,28 +410,29 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
 
-        self.drawMap()
+        self.renderStorm()
+        # self.drawMap()
 
-        self.vertVBO.bind()
-        gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+        # self.vertVBO.bind()
+        # gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+        # gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
 
         '''Comment these line when testing'''
-        self.colorVBO.bind()
-        gl.glEnableClientState(gl.GL_COLOR_ARRAY)
-        gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
+        # self.colorVBO.bind()
+        # gl.glEnableClientState(gl.GL_COLOR_ARRAY)
+        # gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
         '''to this'''
 
 
-        gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
+        # gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
 
         # Unbind and disable after drawing
-        self.vertVBO.unbind()
-        gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
+        # self.vertVBO.unbind()
+        # gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
 
         '''Comment these line when testing'''
-        self.colorVBO.unbind()
-        gl.glDisableClientState(gl.GL_COLOR_ARRAY)
+        # self.colorVBO.unbind()
+        # gl.glDisableClientState(gl.GL_COLOR_ARRAY)
         '''to this'''
         self.drawMap()
         gl.glPopMatrix()
@@ -485,3 +489,19 @@ class GLWidget(QtOpenGL.QGLWidget):
       gl.glEnd()
       
       gl.glDisable(gl.GL_TEXTURE_2D)
+    
+    def renderStorm(self):
+      if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
+        for i in range(len(self.stormSide)):
+          gl.glBegin(gl.GL_LINES)
+          for j in range(len(self.stormSide[i])):
+              for k in range(i + 1, len(self.stormSide[i])):
+                  gl.glVertex3fv(self.stormSide[i][j])
+                  gl.glVertex3fv(self.stormSide[i][k])
+          gl.glEnd()
+        
+        for i in range(len(self.stormLayer)):
+            gl.glBegin(gl.GL_POLYGON)
+            for point in self.stormLayer[i]:
+                gl.glVertex3fv(point)
+            gl.glEnd() 

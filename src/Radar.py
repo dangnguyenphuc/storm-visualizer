@@ -288,6 +288,7 @@ class Radar:
   def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
     self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
     self.isGrid = True
+    self.stormCount = 0
     self.currentIndex = fileIndex
     self.getRadar()
 
@@ -508,7 +509,7 @@ class Radar:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
   
   def getStorm(self, threshold = 32, minSize = 10):
-    self.stormFrame, self.stormCount = getStorm(grid=self.DataManager.grid_data, threshold=threshold, minSize=minSize)
+    self.stormFrame, self.stormCount = getStorm(grid=self.gridData, threshold=threshold, minSize=minSize)
     if self.stormCount == 0:
       print("Error: There is no storm in this {}".format(self.currentIndex))
       return
@@ -516,18 +517,25 @@ class Radar:
   def getStormVertex(self, index = 1):
     if self.stormCount == 0:
       print("Error: There is no storm in file {} in folder".format(self.currentIndex, self.DataManager.getCurrentPath(mode=True)))
-      return
+      return None, None
 
     if index > self.stormCount:
       print("Error: Invalid storm index")
-      return
+      return None, None
 
-    concatenated_array, l = getStormWithIndex(grid, frame)
+    concatenated_array, plane = getStormWithIndex(self.gridData, self.stormFrame)
     scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     scaled_array = scaler.fit_transform(concatenated_array)
     edge_points = []
-    for i in l:
+    for i in plane:
       edge_points.append(scaled_array[i[0]:i[1]])
+    
+    side_planes = []
+    for i in range(len(edge_points) - 1):
+      points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
+      side_planes.append(points)
+
+    return edge_points, side_planes
 
     
 
