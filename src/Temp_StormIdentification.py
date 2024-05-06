@@ -16,6 +16,7 @@ def getSizeTable(frame):
   flat_image = flat_image[flat_image > 0]
   size_table = flat_image.value_counts(sort=False)
   return size_table
+
 def getZIndices(array, value):
     z_indices, _, _ = np.where(array == value)
     unique_z_indices = np.unique(z_indices)
@@ -23,6 +24,7 @@ def getZIndices(array, value):
         return None
     else:
         return unique_z_indices
+        
 def getEdgeIndices(image):
   borders = np.logical_xor(image, ndimage.binary_erosion(image))
   edge_indices = np.transpose(np.nonzero(borders))
@@ -66,16 +68,8 @@ scaled_array = scaler.fit_transform(concatenated_array)
 edge_points = []
 for i in l:
   edge_points.append(scaled_array[i[0]:i[1]])
-# Define edge points for each z-plane
-# edge_points = [
-#     [(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)],  # Example edge points for z=0 plane
-#     [(0.5, 0.5, 1), (1.5, 0.5, 1), (1.5, 1.5, 1), (0.5, 1.5, 1)],  # Example edge points for z=1 plane
-#     [(0.7, 0, 2), (1.2, 0, 2), (1.2, 1, 2), (0.7, 1, 2)],  # Example edge points for z=2 plane
-#     [(0.8, 0, 3), (1.1, 0, 3), (1.1, 0.8, 3), (0.8, 0.8, 3)],  # Example edge points for z=3 plane
-#     [(0.5, 0.5, 4), (1.5, 0.5, 4), (1.5, 1.5, 4), (0.5, 1.5, 4)],  # Example edge points for z=4 plane
-#     [(0, 0, 5), (1, 0, 5), (1, 1, 5), (0, 1, 5)],  # Example edge points for z=5 plane
-# ]
-# edge_points = scaled_arrays_list
+
+
 def draw_object():
 
     num_planes = len(edge_points)

@@ -35,7 +35,9 @@ class DataManager:
 
     if self.filePath is None or self.radarName is None or self.date is None or self.mode is None:
       self.raw_data = None
-    else: self.raw_data = self.getAllDataFilePaths()
+      self.grid_data = None
+    else: 
+      self.setData()
   
   def setDate(self):
     if self.year is None or self.month is None or self.day is None:
@@ -55,16 +57,26 @@ class DataManager:
 
   def getAllDataFilePaths(self, filePath = None, radarName = None, date = None, mode = None):
 
-    if filePath is None and radarName is None and date is None and mode is None:
+    if filePath is None:
       filePath = self.filePath
+    if radarName is None:
       radarName = self.radarName
+    if date is None:
       date = self.date
+    if mode is None:
       mode = self.mode
 
     filePaths = [
         filePath + radarName + date + mode + fileName for fileName in self.listAllFile(filePath, radarName, date, mode)
     ]
     return filePaths
+
+  def setGridData(self):
+    self.grid_data = self.getAllDataFilePaths(mode="grid/" + self.mode)
+  
+  def setData(self):
+    self.raw_data = self.getAllDataFilePaths()
+    self.setGridData()
 
   def reconstructFile(self, filePath = None):
     if filePath is None:
@@ -177,11 +189,19 @@ class DataManager:
       if mode: os.rmdir(filePath + radarName + date + mode)
 
   def genNhaBeRadarGrid(self):
-    def get_grid(radar):
+    def get_grid(radar, grid_shape = (150, 401, 401), z_range = None, y_range = None, x_range = None):
+      
+      if z_range is None:
+        z_range = (0,radar.gate_z['data'][-1])
+      if y_range is None:
+        z_range = (-radar.gate_y['data'][-1], radar.gate_y['data'][-1])
+      if x_range is None:
+        x_range = (-radar.gate_x['data'][-1], radar.gate_x['data'][-1])
+
       """ Returns grid object from radar object. """
       grid = pyart.map.grid_from_radars(
-          radar, grid_shape=(41, 801, 801), 
-          grid_limits=((0, 20000), (-200000,200000), (-200000, 200000)),
+          radar, grid_shape=grid_shape, 
+          grid_limits=(z_range, y_range, x_range),
           fields=['reflectivity'], gridding_algo='map_gates_to_grid',
           h_factor=0., nb=0.6, bsp=1., min_radius=200.)
       return grid
@@ -190,6 +210,10 @@ class DataManager:
         tmp_dir = self.filePath + self.radarName + self.date + "grid/" + self.mode
         if not os.path.exists(tmp_dir):
           os.makedirs(tmp_dir)
+        else:
+          # return if grids already created
+          if len(listFile(tmp_dir)) == len(listFile(self.filePath + self.radarName + self.date + self.mode)):
+            return
 
         keys = self.getAllDataFilePaths()
         for key in keys:
@@ -262,7 +286,7 @@ class Radar:
 
   def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
     self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
-
+    self.isGrid = True
     self.currentIndex = fileIndex
     self.getRadar()
 
@@ -273,10 +297,17 @@ class Radar:
     self.DataManager = DataManager
 
   def getRadar(self):
+
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
-    self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
-    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-    self.positions = self.get_vertices_position(scaler)
+    # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+
+    if self.isGrid:
+      self.gridData = pyart.io.read_grid(self.DataManager.grid_data[self.currentIndex])
+      self.currentReflectivity = self.gridData.fields['reflectivity']['data'].flatten()
+    else:
+      self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+
+    self.positions = self.get_vertices_position()
   
   def plot(self, mode = "wrl_ppi", sweep = 0):
       fig = plt.figure(figsize=(10, 7))
@@ -407,7 +438,10 @@ class Radar:
           return self.data.gate_z["data"][indices]
       else:  return self.data.gate_z["data"]
 
-  def get_vertices_position(self, scaler):
+  def get_vertices_position(self):
+    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    if not self.isGrid:
+      # if Raw format
       return scaler.fit_transform(
           np.column_stack(
               (
@@ -417,16 +451,27 @@ class Radar:
               )
           )
       )
+    else:
+      # if is Grid format
+      a = self.gridData.z['data']
+      b = self.gridData.y['data']
+      c = self.gridData.x['data']
+
+      # Create all combinations of indices
+      idx_a, idx_b, idx_c = np.meshgrid(np.arange(len(a)), np.arange(len(b)), np.arange(len(c)), indexing='ij')
+      combinations = np.array([c[idx_c.ravel()], b[idx_b.ravel()], a[idx_a.ravel()]]).T
+      return scaler.fit_transform(
+          combinations
+      )
+      
 
   def get_all_vertices_by_threshold(self, threshold = 0):
-
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
-
       return {
           'position': self.positions[indices],
-          'color': self.currentReflectivity[indices]
+          'color': color(self.currentReflectivity[indices]),
+          # 'color': self.currentReflectivity[indices]
       }
-
 
   def isFilterClutter(self, isFilter = False):
 
@@ -460,87 +505,41 @@ class Radar:
 
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
-
-class Grid:
-
-  def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
-    self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
-
-    self.currentIndex = fileIndex
-    self.getGrid()
   
-  def setDataMangerWithParam(self, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
-    self.DataManager = DataManager(filePath=filePath, radarName=radarName, year=year, month=month, day=day, mode= "grid/" + mode)
-  
-  def setDataManger(self, DataManager: DataManager):
-    self.DataManager = DataManager
 
-  def getGrid(self):
-    self.data = pyart.io.read_grid(self.DataManager.raw_data[self.currentIndex])
-    self.currentReflectivity = self.data.fields['reflectivity']['data']
+  # def get_all_vertices_by_threshold(self, threshold = 0):
 
-  def increaseIndex(self):
-    self.currentIndex += 1
+  #   # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
 
-    if (self.currentIndex >= len(self.DataManager.raw_data)):
-      self.currentIndex = 0
+  #   # storm Identification testing
+  #   def getSizeTable(frame):
+  #     flat_image = pd.Series(frame.flatten())
+  #     flat_image = flat_image[flat_image > 0]
+  #     size_table = flat_image.value_counts(sort=False)
+  #     return size_table
 
-  def readDataFromFilePath(self, filePath: str):
-    self.data = pyart.io.read_grid(filePath)
+  #   masked = self.data.fields['reflectivity']['data']
+  #   masked.data[masked.data == masked.fill_value] = 0
+  #   masked.data[masked.data < 32] = 0
 
-  def update(self, index = None):
-    if index is not None:
-      self.currentIndex = index
-    else:
-      self.increaseIndex()
+  #   frame, count = ndimage.label(masked.data)
 
-    self.getGrid()
+  #   size_table = getSizeTable(frame)
 
-  def get_vertices_position(self, scaler):
-    a = self.data.z['data']
-    b = self.data.y['data']
-    c = self.data.x['data']
+  #   # determine smallObject 
+  #   small_objects = size_table.keys()[size_table < 10]
 
-    # Create all combinations of indices
-    idx_a, idx_b, idx_c = np.meshgrid(np.arange(len(a)), np.arange(len(b)), np.arange(len(c)), indexing='ij')
-    combinations = np.array([c[idx_c.ravel()], b[idx_b.ravel()], a[idx_a.ravel()]]).T
-    return scaler.fit_transform(
-        combinations
-    )
-
-  def get_all_vertices_by_threshold(self, threshold = 0):
-
-    # indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask),self.currentReflectivity.data >= threshold))
-
-    # storm Identification testing
-    def getSizeTable(frame):
-      flat_image = pd.Series(frame.flatten())
-      flat_image = flat_image[flat_image > 0]
-      size_table = flat_image.value_counts(sort=False)
-      return size_table
-
-    masked = self.data.fields['reflectivity']['data']
-    masked.data[masked.data == masked.fill_value] = 0
-    masked.data[masked.data < 32] = 0
-
-    frame, count = ndimage.label(masked.data)
-
-    size_table = getSizeTable(frame)
-
-    # determine smallObject 
-    small_objects = size_table.keys()[size_table < 10]
-
-    for obj in small_objects:
-        frame[frame == obj] = 0
+  #   for obj in small_objects:
+  #       frame[frame == obj] = 0
     
-    # get unique value 
-    self.currentReflectivity = frame.flatten()
+  #   # get unique value 
+  #   self.currentReflectivity = frame.flatten()
 
-    # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
-    indices = np.where(self.currentReflectivity > threshold)
-    scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
-    vertices = self.get_vertices_position(scaler)
-    return {
-        'position': vertices[indices],
-        'color': self.currentReflectivity[indices]
-    }
+  #   # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
+  #   indices = np.where(self.currentReflectivity > threshold)
+  #   scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+  #   vertices = self.get_vertices_position(scaler)
+  #   return {
+  #       'position': vertices[indices],
+  #       'color': self.currentReflectivity[indices]
+  #   }
