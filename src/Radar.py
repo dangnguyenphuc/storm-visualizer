@@ -10,7 +10,7 @@ import wradlib as wrl
 import xarray
 
 from Titan.StormIdentification import getStorm, getStormWithIndex
-from tint.grid_utils import *
+from Titan.tint.grid_utils import *
 from Config import *
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate, color
 
@@ -287,7 +287,7 @@ class Radar:
 
   def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
     self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
-    self.isGrid = True
+    self.isGrid = False
     self.stormCount = 0
     self.currentIndex = fileIndex
     self.getRadar()

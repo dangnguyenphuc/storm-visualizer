@@ -376,16 +376,17 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.plot(mode=plot_mode[0], sweep=plot_mode[1])
 
         if flag:
-          # self.setUpVBO()
-          self.radar.getStorm()
-          self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
-          self.setUpStorm()
+          self.setUpVBO()
+
+          # self.radar.getStorm()
+          # self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
+          # self.setUpStorm()
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))  
         gl.glEnable(gl.GL_DEPTH_TEST)  
-        self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
-        # self.setUpVBO()
+        # self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
+        self.setUpVBO()
         self.loadMap()
 
         self.rotX = 0.0
@@ -416,32 +417,38 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
 
-        self.renderStorm()
-        # self.drawMap()
+        # self.renderStorm()
 
-        # self.vertVBO.bind()
-        # gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        # gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+        self.drawMap()
+        self.renderRaw()
 
-        '''Comment these line when testing'''
-        # self.colorVBO.bind()
-        # gl.glEnableClientState(gl.GL_COLOR_ARRAY)
-        # gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
-        '''to this'''
-
-
-        # gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
-
-        # Unbind and disable after drawing
-        # self.vertVBO.unbind()
+        
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
-
-        '''Comment these line when testing'''
-        # self.colorVBO.unbind()
-        # gl.glDisableClientState(gl.GL_COLOR_ARRAY)
-        '''to this'''
-
         gl.glPopMatrix()
+
+    def renderRaw(self):
+
+      self.vertVBO.bind()
+      gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+      gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+
+      """Comment these line when testing"""
+      self.colorVBO.bind()
+      gl.glEnableClientState(gl.GL_COLOR_ARRAY)
+      gl.glColorPointer(3, gl.GL_FLOAT, 0, None)
+      """to this"""
+
+
+      gl.glDrawArrays(gl.GL_POINTS, 0, len(self.vertices))
+
+      # Unbind and disable after drawing
+      self.vertVBO.unbind()
+      
+      """Comment these line when testing"""
+      self.colorVBO.unbind()
+      gl.glDisableClientState(gl.GL_COLOR_ARRAY)
+      """to this"""
+
 
     def setUpVBO(self):
 
