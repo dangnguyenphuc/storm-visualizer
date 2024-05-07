@@ -341,9 +341,14 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
         self.setUpScale()
+
+        self.stormVBO = []
+        self.stormSideVBO = None
+
         self.mousePos = [0, 0] 
         self.zoom_center = [0, 0] 
-        self.scale = 1.0
+        
+
     def setUpScale(self, val=1.0):
         self.scale = val
 
@@ -492,34 +497,44 @@ class GLWidget(QtOpenGL.QGLWidget):
       gl.glDisable(gl.GL_TEXTURE_2D)
 
     def setUpStorm(self):
-      self.stormVBO = []
-      for i in range(len(self.stormLayer)):
-          vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
-                                    (1, -1)).astype(np.float32))
-          self.stormVBO.append(vertVBO)
+      
+      # clear up before setting VBO
+      if len(self.stormVBO) > 0:
+        for i in (self.stormVBO).copy():
+          i.delete()
+          self.stormVBO.remove(i)
+        
+      if self.stormSideVBO:
+          self.stormSideVBO.delete()
+          
+      if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
+        self.stormVBO = []
+        for i in range(len(self.stormLayer)):
+            vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
+                                      (1, -1)).astype(np.float32))
+            self.stormVBO.append(vertVBO)
+
+        self.stormSideLine = []
+        for i in range(len(self.stormSide)):
+          for j in range(len(self.stormSide[i])):
+            if j < len(self.stormLayer[i]):
+              for k in range(len(self.stormLayer[i]), len(self.stormSide[i])):
+                  self.stormSideLine.append(self.stormSide[i][j])
+                  self.stormSideLine.append(self.stormSide[i][k])
+            else: continue
+        self.stormSideVBO = vbo.VBO(np.reshape(self.stormSideLine,
+                                      (1, -1)).astype(np.float32))
+
     
     def renderStorm(self):
       
-      if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
-        # for i in range(len(self.stormSide)):
-        #   gl.glBegin(gl.GL_LINES)
-        #   for j in range(len(self.stormSide[i])):
-        #       for k in range(i + 1, len(self.stormSide[i])):
-        #           gl.glVertex3fv(self.stormSide[i][j])
-        #           gl.glVertex3fv(self.stormSide[i][k])
-        #   gl.glEnd()
+      if len(self.stormVBO) > 0:
         
-        # for i in range(len(self.stormLayer)):
-        #     for point in self.stormLayer[i]:
-        #         # gl.glVertex3fv(point)
-        #         self.vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
-        #                                   (1, -1)).astype(np.float32))
-        #         self.vertVBO.bind()
-        #         gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        #         gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
-        #         gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i]))
-        #         self.vertVBO.unbind()
-        #         self.vertVBO.delete()
+        self.stormSideVBO.bind()
+        gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+        gl.glDrawArrays(gl.GL_LINES, 0, len(self.stormSideLine))
+        self.stormSideVBO.unbind()
 
         for i in range(len(self.stormVBO)):
             self.stormVBO[i].bind()
@@ -527,5 +542,4 @@ class GLWidget(QtOpenGL.QGLWidget):
             gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
             gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i]))
             self.stormVBO[i].unbind()
-            # vbo.delete()
 
