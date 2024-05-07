@@ -374,6 +374,7 @@ class GLWidget(QtOpenGL.QGLWidget):
           # self.setUpVBO()
           self.radar.getStorm()
           self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
+          self.setUpStorm()
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))  
@@ -428,13 +429,13 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         # Unbind and disable after drawing
         # self.vertVBO.unbind()
-        # gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
+        gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
 
         '''Comment these line when testing'''
         # self.colorVBO.unbind()
         # gl.glDisableClientState(gl.GL_COLOR_ARRAY)
         '''to this'''
-        self.drawMap()
+
         gl.glPopMatrix()
 
     def setUpVBO(self):
@@ -489,19 +490,42 @@ class GLWidget(QtOpenGL.QGLWidget):
       gl.glEnd()
       
       gl.glDisable(gl.GL_TEXTURE_2D)
+
+    def setUpStorm(self):
+      self.stormVBO = []
+      for i in range(len(self.stormLayer)):
+          vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
+                                    (1, -1)).astype(np.float32))
+          self.stormVBO.append(vertVBO)
     
     def renderStorm(self):
+      
       if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
-        for i in range(len(self.stormSide)):
-          gl.glBegin(gl.GL_LINES)
-          for j in range(len(self.stormSide[i])):
-              for k in range(i + 1, len(self.stormSide[i])):
-                  gl.glVertex3fv(self.stormSide[i][j])
-                  gl.glVertex3fv(self.stormSide[i][k])
-          gl.glEnd()
+        # for i in range(len(self.stormSide)):
+        #   gl.glBegin(gl.GL_LINES)
+        #   for j in range(len(self.stormSide[i])):
+        #       for k in range(i + 1, len(self.stormSide[i])):
+        #           gl.glVertex3fv(self.stormSide[i][j])
+        #           gl.glVertex3fv(self.stormSide[i][k])
+        #   gl.glEnd()
         
-        for i in range(len(self.stormLayer)):
-            gl.glBegin(gl.GL_POLYGON)
-            for point in self.stormLayer[i]:
-                gl.glVertex3fv(point)
-            gl.glEnd() 
+        # for i in range(len(self.stormLayer)):
+        #     for point in self.stormLayer[i]:
+        #         # gl.glVertex3fv(point)
+        #         self.vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
+        #                                   (1, -1)).astype(np.float32))
+        #         self.vertVBO.bind()
+        #         gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+        #         gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+        #         gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i]))
+        #         self.vertVBO.unbind()
+        #         self.vertVBO.delete()
+
+        for i in range(len(self.stormVBO)):
+            self.stormVBO[i].bind()
+            gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+            gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+            gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i]))
+            self.stormVBO[i].unbind()
+            # vbo.delete()
+
