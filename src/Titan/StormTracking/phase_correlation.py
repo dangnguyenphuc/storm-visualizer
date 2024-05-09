@@ -1,5 +1,42 @@
 import numpy as np
-from scipy import ndimage 
+from scipy import ndimage
+
+def get_ambient_flow(obj_extent, img1, img2, params, grid_size):
+    """ Takes in object extent and two images and returns ambient flow. Margin
+    is the additional region around the object used to compute the flow
+    vectors. """
+    margin_z = params['FLOW_MARGIN'] / grid_size[0]
+    margin_y = params['FLOW_MARGIN'] / grid_size[1]
+    margin_x = params['FLOW_MARGIN'] / grid_size[2]
+
+    z_lb = obj_extent['obj_center'][0] - obj_extent['obj_radius'] - margin_z
+    z_ub = obj_extent['obj_center'][0] + obj_extent['obj_radius'] + margin_z
+    y_lb = obj_extent['obj_center'][1] - obj_extent['obj_radius'] - margin_y
+    y_ub = obj_extent['obj_center'][1] + obj_extent['obj_radius'] + margin_y
+    x_lb = obj_extent['obj_center'][2] - obj_extent['obj_radius'] - margin_x
+    x_ub = obj_extent['obj_center'][2] + obj_extent['obj_radius'] + margin_x
+    z_lb = int(z_lb)
+    z_ub = int(z_ub)
+    y_lb = int(y_lb)
+    y_ub = int(y_ub)
+    x_lb = int(x_lb)
+    x_ub = int(x_ub)
+
+    dims = img1.shape
+
+    z_lb = np.max([z_lb, 0])
+    z_ub = np.min([z_ub, dims[0]])
+    y_lb = np.max([y_lb, 0])
+    y_ub = np.max([y_ub, dims[1]])
+    x_lb = np.max([x_lb, 0])
+    x_ub = np.max([x_ub, dims[2]])
+
+    flow_region1 = np.copy(img1[z_lb:z_ub+1, y_lb:y_ub+1, x_lb:x_ub+1])
+    flow_region2 = np.copy(img2[z_lb:z_ub+1, y_lb:y_ub+1, x_lb:x_ub+1])
+
+    flow_region1[flow_region1 != 0] = 1
+    flow_region2[flow_region2 != 0] = 1
+    return fft_flowvectors(flow_region1, flow_region2)
 
 def fft_flowvectors(im1, im2, global_shift=False):
     """ Estimates flow vectors in two images using cross covariance. """

@@ -26,5 +26,3 @@ def get_obj_extent(labeled_image, obj_label):
     obj_extent = {'obj_center': obj_center, 'obj_radius': obj_radius,
                   'obj_volume': obj_volume, 'obj_index': obj_index}
     return obj_extent
-
-
