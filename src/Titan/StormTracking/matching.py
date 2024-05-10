@@ -61,7 +61,7 @@ def clip_shift(shift, record, params):
     else:
         return shift
 
-# NOT DONE
+
 def correct_shift(local_shift, current_objects, obj_id1, global_shift, record,
                   params):
     """ Takes in flow vector based on local phase correlation (see
