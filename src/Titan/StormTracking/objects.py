@@ -90,3 +90,150 @@ def attach_last_heads(frame1, frame2, current_objects):
 
     current_objects['last_heads'] = heads
     return current_objects
+
+
+def check_isolation(raw, filtered, grid_size, params):
+    """ Returns list of booleans indicating object isolation. Isolated objects
+    are not connected to any other objects by pixels greater than ISO_THRESH,
+    and have at most one peak. """
+    nobj = np.max(filtered)
+    min_size = params['MIN_SIZE'] / np.prod(grid_size/1000)
+    iso_filtered = get_filtered_frame(raw,
+                                      min_size,
+                                      params['ISO_THRESH'])
+    nobj_iso = np.max(iso_filtered)
+    iso = np.empty(nobj, dtype='bool')
+
+    for iso_id in np.arange(nobj_iso) + 1:
+        obj_ind = np.where(iso_filtered == iso_id)
+        objects = np.unique(filtered[obj_ind])
+        objects = objects[objects != 0]
+        if len(objects) == 1 and single_max(obj_ind, raw, params):
+            iso[objects - 1] = True
+        else:
+            iso[objects - 1] = False
+    return iso
+
+
+def single_max(obj_ind, raw, params):
+    """ Returns True if object has at most one peak. """
+    max_proj = np.max(raw, axis=0)
+    smooth = ndimage.filters.gaussian_filter(max_proj, params['ISO_SMOOTH'])
+    padded = np.pad(smooth, 1, mode='constant')
+    obj_ind = [axis + 1 for axis in obj_ind]  # adjust for padding
+    maxima = 0
+    for pixel in range(1,len(obj_ind[0])):
+        ind_0 = obj_ind[0][pixel]
+        ind_1 = obj_ind[1][pixel]
+        neighborhood = padded[(ind_0-1):(ind_0+2), (ind_1-1):(ind_1+2)]
+        max_ind = np.unravel_index(neighborhood.argmax(), neighborhood.shape)
+        if max_ind == (1, 1):
+            maxima += 1
+            if maxima > 1:
+                return False
+    return True
+
+
+def get_object_prop(image1, grid1, field, record, params):
+    """ Returns dictionary of object properties for all objects found in
+    image1. """
+    id1 = []
+    center = []
+    grid_x = []
+    grid_y = []
+    grid_z = []
+    # area = []
+    longitude = []
+    latitude = []
+    field_max = []
+    max_height = []
+    volume = []
+    nobj = np.max(image1)
+
+    unit_dim = record.grid_size
+    unit_alt = unit_dim[0]/1000
+    # unit_area = (unit_dim[1]*unit_dim[2])/(1000**2)
+    unit_vol = (unit_dim[0]*unit_dim[1]*unit_dim[2])/(1000**3)
+
+    raw3D = grid1.fields[field]['data'].data
+
+    for obj in np.arange(nobj) + 1:
+        obj_index = np.argwhere(image1 == obj)
+        id1.append(obj)
+
+        # 2D frame stats
+        center.append(np.median(obj_index, axis=0))
+        this_centroid = np.round(np.mean(obj_index, axis=0), 3)
+        grid_x.append(this_centroid[2])
+        grid_y.append(this_centroid[1])
+        grid_z.append(this_centroid[0])
+        # area.append(obj_index.shape[0] * unit_area)
+
+        rounded = np.round(this_centroid).astype('i')
+        cent_met = np.array([grid1.z['data'][rounded[0]],
+                             grid1.y['data'][rounded[1]],
+                             grid1.x['data'][rounded[2]]])
+
+        projparams = grid1.get_projparams()
+        lon, lat = pyart.core.transforms.cartesian_to_geographic(cent_met[2],
+                                                                 cent_met[1],
+                                                                 projparams)
+
+        longitude.append(np.round(lon[0], 4))
+        latitude.append(np.round(lat[0], 4))
+
+        # raw 3D grid stats
+        obj_slices = [raw3D[:, ind[1], ind[2]] for ind in obj_index]
+        field_max.append(np.max(obj_slices))
+        filtered_slices = [obj_slice > params['FIELD_THRESH']
+                           for obj_slice in obj_slices]
+        heights = [np.arange(raw3D.shape[0])[ind] for ind in filtered_slices]
+        max_height.append(np.max(np.concatenate(heights)) * unit_alt)
+        volume.append(np.sum(filtered_slices) * unit_vol)
+
+    # cell isolation
+    isolation = check_isolation(raw3D, image1, record.grid_size, params)
+
+    objprop = {'id1': id1,
+               'center': center,
+               'grid_x': grid_x,
+               'grid_y': grid_y,
+               'grid_y': grid_z,
+              #  'area': area,
+               'field_max': field_max,
+               'max_height': max_height,
+               'volume': volume,
+               'lon': longitude,
+               'lat': latitude,
+               'isolated': isolation}
+    return objprop
+
+
+def write_tracks(old_tracks, record, current_objects, obj_props):
+    """ Writes all cell information to tracks dataframe. """
+    print('Writing tracks for scan', record.scan)
+
+    nobj = len(obj_props['id1'])
+    scan_num = [record.scan] * nobj
+    uid = current_objects['uid']
+
+    new_tracks = pd.DataFrame({
+        'scan': scan_num,
+        'uid': uid,
+        'time': record.time,
+        'grid_x': obj_props['grid_x'],
+        'grid_y': obj_props['grid_y'],
+        'grid_z': obj_props['grid_z'],
+        'lon': obj_props['lon'],
+        'lat': obj_props['lat'],
+        # 'area': obj_props['area'],
+        'vol': obj_props['volume'],
+        'max': obj_props['field_max'],
+        'max_alt': obj_props['max_height'],
+        'isolated': obj_props['isolated']
+    })
+    new_tracks.set_index(['scan', 'uid'], inplace=True)
+    # print(f"Before: {new_tracks}")
+    tracks = pd.concat([old_tracks, new_tracks], ignore_index=False)
+    # print(f"After: {tracks}")
+    return tracks

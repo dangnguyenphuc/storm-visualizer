@@ -61,10 +61,25 @@ import pyart
 ############### OBJECT CENTER
 
 
-labeled_image = np.zeros((5, 5, 5), dtype=int)
-labeled_image[2:5, 2:5, 1:4] = 1  # Assign object ID 1 to a cube in the center
-print(np.argwhere(labeled_image == 1))
+# labeled_image = np.zeros((5, 5, 5), dtype=int)
+# labeled_image[2:5, 2:5, 1:4] = 1  # Assign object ID 1 to a cube in the center
+# print(np.argwhere(labeled_image == 1))
 
-print(labeled_image)
+# print(labeled_image)
+
+from StormTracking.grid_utils import get_grid_size
+
+# grid1 = pyart.io.read_grid("/Users/phucdang/Documents/dangnguyen/Document/project/titan/Data/NHB/2023/06/05/grid/1_prt/grid_NHB230605000007.nc")
+# print(get_grid_size(grid1))
+
+dims = (4,4,4)
+data = np.arange(np.prod(dims)).reshape(dims)
+
+max_proj = np.max(data, axis=0)
+# smooth = ndimage.filters.gaussian_filter(max_proj, 3)
+padded = np.pad(max_proj, 1, mode='constant')
+print(padded)
+
+
 
 
