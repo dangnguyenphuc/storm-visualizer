@@ -544,7 +544,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 98, 28))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 1003, 440))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         self.gridLayout_7.addWidget(self.scrollArea, 0, 0, 1, 1)
@@ -624,7 +624,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 195, 63))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1003, 529))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_16 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_16.setObjectName("gridLayout_16")
@@ -1152,11 +1152,11 @@ class Ui_MainWindow(object):
         self.actionExit.setObjectName("actionExit")
 
         self.retranslateUi(MainWindow)
-        self.stackedWidget.setCurrentIndex(0)
+        self.stackedWidget.setCurrentIndex(1)
         self.fileBox.setCurrentIndex(0)
         self.radarBox.setCurrentIndex(-1)
         self.modeBox.setCurrentIndex(-1)
-        self.stackedWidget_2.setCurrentIndex(0)
+        self.stackedWidget_2.setCurrentIndex(1)
         self.view3d_1.toggled['bool'].connect(self.view3d_2.setChecked) # type: ignore
         self.view2d_1.toggled['bool'].connect(self.view2d_2.setChecked) # type: ignore
         self.other_1.toggled['bool'].connect(self.other_2.setChecked) # type: ignore

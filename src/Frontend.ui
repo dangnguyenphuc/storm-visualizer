@@ -139,7 +139,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_2">
@@ -1037,7 +1037,7 @@
              <item>
               <widget class="QStackedWidget" name="stackedWidget_2">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_5">
                 <layout class="QGridLayout" name="gridLayout_7">
@@ -1066,8 +1066,8 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>98</width>
-                      <height>28</height>
+                      <width>1003</width>
+                      <height>440</height>
                      </rect>
                     </property>
                    </widget>
@@ -1237,8 +1237,8 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>195</width>
-                      <height>63</height>
+                      <width>1003</width>
+                      <height>529</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_16">
