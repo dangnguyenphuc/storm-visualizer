@@ -6,7 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
 from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl
 from PyQt5.QtGui import QIntValidator, QPixmap
-
+import datetime
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
         self.errorTimer.stop()
 
         # just change when value change
+        self.ui.actionOpenURL.clicked.connect(self.getOnlineSettings)
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
         self.page_2Connected = False
@@ -709,6 +710,76 @@ class MainWindow(QMainWindow):
     def getScanPro(self):
         self.ui.checkBox_scan_pro.isChecked()
         pass
+
+    def getTrackingInfo(self) -> dict:
+        trackInfor ={'FIELD_THRESH': 32,
+                    'MIN_SIZE': 8,
+                    'SEARCH_MARGIN': 4000,
+                    'FLOW_MARGIN': 10000,
+                    'MAX_FLOW_MAG': 50,
+                    'MAX_DISPARITY': 999,
+                    'MAX_SHIFT_DISP': 15,
+                    'ISO_THRESH': 8,
+                    'ISO_SMOOTH': 3,
+                    'GS_ALT': 1500}
+        if  self.ui.track_field_thresh.text() :
+            trackInfor["FIELD_THRESH"] =  self.ui.track_field_thresh.text()
+        if  self.ui.track_field_thresh.text() :
+            trackInfor["MIN_SIZE"]  = self.ui.track_min_size.text()
+        if  self.ui.track_search_margin.text() :
+            trackInfor["SEARCH_MARGIN"] =  self.ui.track_search_margin.text()
+        if  self.ui.track_flow_margin.text() :
+            trackInfor["FLOW_MARGIN"] = self.ui.track_flow_margin.text()
+        if self.ui.track_max_flow_mag.text():
+            trackInfor["MAX_FLOW_MAG"] = self.ui.track_max_flow_mag.text()
+        if self.ui.track_max_disparity.text():
+            trackInfor["MAX_DISPARITY"] = self.ui.track_max_disparity.text()
+        if self.ui.track_max_shift_disp.text():
+            trackInfor["MAX_SHIFT_DISP"] = self.ui.track_max_shift_disp.text()
+        if self.ui.track_iso_thresh.text():
+            trackInfor["ISO_THRESH"] = self.ui.track_iso_thresh.text()
+        if self.ui.track_iso_smooth.text():
+            trackInfor["ISO_SMOOTH"] = self.ui.track_iso_smooth.text()
+        if self.ui.track_gs_alt.text():
+            trackInfor["GS_ALT"] = self.ui.track_gs_alt.text()
+        if self.ui.track_vmin.text():
+            trackInfor["VMIN"] = self.ui.track_vmin.text()
+        if self.ui.track_vmax.text():
+            trackInfor["VMAX"] = self.ui.track_vmax.text()
+        return trackInfor
+
+    def getOnlineSettings(self) -> dict:
+        onlineSettings = {  'startTime': "2024-04-24 00:00:00",
+                            'endTime' : "2024-04-24 23:59:59",
+                            'archiveMode': False,
+                            'sleepSecs' : 10,
+                            'dryRun' : False,
+                            'force'  : False,
+                            'tmpDir' : "../Temp" ,
+                            'outputDir': "../Data",
+                            } 
+        dt_start = self.ui.onl_start_time.dateTime()
+        dt_start_string = dt_start.toString(self.ui.onl_start_time.displayFormat())
+        dt_end = self.ui.onl_end_time.dateTime()
+        dt_end_string = dt_end.toString(self.ui.onl_end_time.displayFormat())
+
+        if self.ui.curData.text():
+            onlineSettings['outputDir'] = self.ui.curData.text()
+        if self.ui.onl_sleep_secs.text():
+            onlineSettings['sleepSecs'] = self.ui.onl_sleep_secs.text()
+
+        onlineSettings['startTime'] = dt_start_string
+        onlineSettings['endTime'] = dt_end_string
+        onlineSettings['archiveMode'] = self.ui.onl_archive_mode.isChecked()
+        onlineSettings['dryRun'] = self.ui.onl_dry_run.isChecked()
+        onlineSettings['force'] = self.ui.onl_force.isChecked()
+        self.setRadarFromOnlineSource(["KDYX"])
+
+        return onlineSettings
+    def setRadarFromOnlineSource(self, radarList):
+        examData = ["KDYX"]
+        radarList = examData
+        self.ui.onl_radar_list.addItems(radarList)
 
 def loadStyle(QApplication):
     """
