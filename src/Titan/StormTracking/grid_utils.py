@@ -36,9 +36,9 @@ def get_filtered_frame(grid, min_size, thresh):
     """ Returns a labeled frame from gridded radar data. Smaller objects
     are removed and the rest are labeled. """
     # echo_height = get_vert_projection(grid, thresh)
-    masked = grid
-    masked.data[masked.data == masked.fill_value] = 0
-    masked.data[masked.data < threshold] = 0
+    # masked = grid
+    # masked.data[masked.data == masked.fill_value] = 0
+    grid[grid < threshold] = 0
     labeled_echo = ndimage.label(grid)[0]
     frame = clear_small_echoes(labeled_echo, min_size)
     return frame
@@ -55,3 +55,12 @@ def clear_small_echoes(label_image, min_size):
         label_image[label_image == obj] = 0
     label_image = ndimage.label(label_image)
     return label_image[0]
+
+def extract_grid_data(grid_obj, field, grid_size, params, all=False):
+    min_size = params['MIN_SIZE'] / np.prod(grid_size/1000)
+    masked = grid_obj.fields[field]['data']
+    masked.data[masked.data == masked.fill_value] = 0
+    raw = masked.data
+    frame = get_filtered_frame(masked.data, min_size,
+                               params['FIELD_THRESH'])
+    return raw, frame
