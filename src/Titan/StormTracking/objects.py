@@ -3,6 +3,9 @@ import pandas as pd
 import pyart
 from scipy import ndimage
 
+from .grid_utils import get_filtered_frame
+
+
 def get_object_center(obj_id, labeled_image):
     """ Returns index of center pixel of the given object id from labeled
     image. The center is calculated as the median pixel of the object extent;
@@ -86,7 +89,7 @@ def attach_last_heads(frame1, frame2, current_objects):
             center2 = get_object_center(current_objects['id2'][obj], frame2)
             heads[obj, :] = center2 - center1
         else:
-            heads[obj, :] = np.ma.array([-999, -999], mask=[True, True])
+            heads[obj, :] = np.ma.array([-999, -999, -999], mask=[True, True, True])
 
     current_objects['last_heads'] = heads
     return current_objects
@@ -198,7 +201,7 @@ def get_object_prop(image1, grid1, field, record, params):
                'center': center,
                'grid_x': grid_x,
                'grid_y': grid_y,
-               'grid_y': grid_z,
+               'grid_z': grid_z,
               #  'area': area,
                'field_max': field_max,
                'max_height': max_height,

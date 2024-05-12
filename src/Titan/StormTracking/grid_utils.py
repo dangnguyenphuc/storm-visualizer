@@ -25,6 +25,12 @@ def get_grid_size(grid_obj):
     y_size = y_len / (grid_obj.y['data'].shape[0] - 1)
     return np.array([z_size, y_size, x_size])
 
+
+def get_grid_alt(grid_size, alt_meters=1500):
+    """ Returns z-index closest to alt_meters. """
+    return int(np.round(alt_meters//grid_size[0]))
+
+
 def get_radar_info(grid_obj):
     radar_lon = grid_obj.radar_longitude['data'][0]
     radar_lat = grid_obj.radar_latitude['data'][0]
@@ -32,13 +38,14 @@ def get_radar_info(grid_obj):
             'radar_lat': radar_lat}
     return info
 
+
 def get_filtered_frame(grid, min_size, thresh):
     """ Returns a labeled frame from gridded radar data. Smaller objects
     are removed and the rest are labeled. """
     # echo_height = get_vert_projection(grid, thresh)
     # masked = grid
     # masked.data[masked.data == masked.fill_value] = 0
-    grid[grid < threshold] = 0
+    grid[grid < thresh] = 0
     labeled_echo = ndimage.label(grid)[0]
     frame = clear_small_echoes(labeled_echo, min_size)
     return frame
@@ -55,6 +62,7 @@ def clear_small_echoes(label_image, min_size):
         label_image[label_image == obj] = 0
     label_image = ndimage.label(label_image)
     return label_image[0]
+
 
 def extract_grid_data(grid_obj, field, grid_size, params, all=False):
     min_size = params['MIN_SIZE'] / np.prod(grid_size/1000)
