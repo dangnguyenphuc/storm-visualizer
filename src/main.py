@@ -12,7 +12,7 @@ from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
 from Utils import folderEmpty, getHourMinuteSecond
-from Config import SECOND, TICK
+from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG
 from messageBox import quitQuestionBox, errorBox
 
 # Set high DPI scaling attributes
@@ -511,6 +511,7 @@ class MainWindow(QMainWindow):
         self.ui.preFile.clicked.connect(self.goPrevFile)
         self.ui.nextFile.clicked.connect(self.goNextFile)
         self.ui.resetView.clicked.connect(self.reset3DView)
+        self.ui.checkBox_scan.clicked.connect(self.getScan3D)
 
     def initProView(self):
 
@@ -542,6 +543,7 @@ class MainWindow(QMainWindow):
         # self.ui.scrollArea_4.setMinimumHeight(int(self.ui.page_3.height() * 0.75))
         # self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
         self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
+    
     def addPlotBoxMode(self):
         plotMode = [
           "wrl_polar",
@@ -578,7 +580,6 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_attenuation_correction.setScaledContents(True)
         # self.ui.wrl_plot_rain.setScaledContents(True)
         # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
-        # 
 
     def getPlotMode(self, mode=None, sweep=0):
       if mode is None or isinstance(mode, int):
@@ -586,8 +587,6 @@ class MainWindow(QMainWindow):
       self.glWidget.update(plot_mode = (mode, sweep), flag=False)
       self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
       
-         
-
     def addInfor(self):
         self.ui.otherIn4_pro.clear()
         time = getHourMinuteSecond(self.glWidget.radar.data)
@@ -669,6 +668,7 @@ class MainWindow(QMainWindow):
         """get URL source"""
         self.urlSource = self.ui.url.text()
         print(self.urlSource)
+
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
       if dataDir is not None and dataDir != "":
@@ -688,7 +688,8 @@ class MainWindow(QMainWindow):
         show error message
         call this function when error occurs to display error message
         Args:
-            err (str): error message"""
+            err (str): error message
+        """
         self.ui.errorBox.setText(err)
         self.errorTimer.start()
 
@@ -708,24 +709,17 @@ class MainWindow(QMainWindow):
         self.ui.fileBox.clear()
       elif files:
         self.ui.fileBox.clear()
-    def getScan3D(self):
-        self.ui.checkBox_scan.isChecked()
-        pass
-    def getScanPro(self):
+
+    def getScan3D(self, state):
+        self.glWidget.setUpVBO(flag=(not state))
+        self.glWidget.updateGL()
+
+    def getScanPro(self, state):
         self.ui.checkBox_scan_pro.isChecked()
         pass
 
     def getTrackingInfo(self) -> dict:
-        trackInfor ={'FIELD_THRESH': 32,
-                    'MIN_SIZE': 8,
-                    'SEARCH_MARGIN': 4000,
-                    'FLOW_MARGIN': 10000,
-                    'MAX_FLOW_MAG': 50,
-                    'MAX_DISPARITY': 999,
-                    'MAX_SHIFT_DISP': 15,
-                    'ISO_THRESH': 8,
-                    'ISO_SMOOTH': 3,
-                    'GS_ALT': 1500}
+        trackInfor = DEFAULT_2D_TRACK_CONFIG
         if  self.ui.track_field_thresh.text() :
             trackInfor["FIELD_THRESH"] =  self.ui.track_field_thresh.text()
         if  self.ui.track_field_thresh.text() :
@@ -753,15 +747,7 @@ class MainWindow(QMainWindow):
         return trackInfor
 
     def getOnlineSettings(self) -> dict:
-        onlineSettings = {  'startTime': "2024-04-24 00:00:00",
-                            'endTime' : "2024-04-24 23:59:59",
-                            'archiveMode': False,
-                            'sleepSecs' : 10,
-                            'dryRun' : False,
-                            'force'  : False,
-                            'tmpDir' : "../Temp" ,
-                            'outputDir': "../Data",
-                            } 
+        onlineSettings = DEFAULT_PULL_DATA_CONFIG
         dt_start = self.ui.onl_start_time.dateTime()
         dt_start_string = dt_start.toString(self.ui.onl_start_time.displayFormat())
         dt_end = self.ui.onl_end_time.dateTime()

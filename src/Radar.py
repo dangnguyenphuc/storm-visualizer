@@ -478,6 +478,14 @@ class Radar:
           # 'color': self.currentReflectivity[indices]
       }
 
+  def get_all_vertices(self):
+    r = self.currentReflectivity
+    r.data[r.data == r.fill_value] = 0
+    return {
+          'position': self.positions,
+          'color': color(r),
+      }
+
   def isFilterClutter(self, isFilter = False):
 
     def get_DBZ_from_sweep(radar, sweep = 1):

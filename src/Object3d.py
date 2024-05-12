@@ -453,9 +453,12 @@ class GLWidget(QtOpenGL.QGLWidget):
       """to this"""
 
 
-    def setUpVBO(self):
-
-        v = self.radar.get_all_vertices_by_threshold(self.threshold)
+    def setUpVBO(self, flag = True):
+        if flag:
+          v = self.radar.get_all_vertices_by_threshold(self.threshold)
+        else:
+          v = self.radar.get_all_vertices()
+          
         self.vertices = v['position']
         self.vertVBO = vbo.VBO(np.reshape(self.vertices,
                                           (1, -1)).astype(np.float32))
