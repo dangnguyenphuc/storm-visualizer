@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1036</width>
+    <width>1243</width>
     <height>704</height>
    </rect>
   </property>
@@ -160,30 +160,299 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="2">
-                <widget class="QLineEdit" name="url">
+               <item row="3" column="0" colspan="5">
+                <widget class="Line" name="line_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1" rowspan="3">
+                <widget class="Line" name="line_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="curData">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>300</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>400</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="placeholderText">
-                  <string>URL Source</string>
+                 <property name="text">
+                  <string>../Data</string>
                  </property>
                 </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="Line" name="line_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <layout class="QGridLayout" name="gridLayout_18">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_24">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>FIELD THRESH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="track_field_thresh">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="3">
+                  <widget class="QPushButton" name="track_accept_button">
+                   <property name="text">
+                    <string>Accept</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QLineEdit" name="track_vmin">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_27">
+                   <property name="text">
+                    <string>MIN SIZE</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QLineEdit" name="track_iso_smooth">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_29">
+                   <property name="text">
+                    <string>FLOW MARGIN</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="3">
+                  <widget class="QLineEdit" name="track_max_shift_disp">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="3">
+                  <widget class="QLineEdit" name="track_gs_alt">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QLineEdit" name="track_max_disparity">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="4">
+                  <widget class="QLabel" name="label_38">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Tracking Information</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="3">
+                  <spacer name="verticalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_31">
+                   <property name="text">
+                    <string>vmin </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QLineEdit" name="track_max_flow_mag">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_30">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>MAX FLOW MAG</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="3">
+                  <widget class="QLineEdit" name="track_iso_thresh">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="track_min_size">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QLabel" name="label_34">
+                   <property name="text">
+                    <string>ISO THRESH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="track_flow_margin">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="2">
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>vmax </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="3">
+                  <widget class="QLineEdit" name="track_vmax">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_28">
+                   <property name="text">
+                    <string>SEARCH MARGIN</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QLabel" name="label_35">
+                   <property name="text">
+                    <string>ISO SMOOTH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_32">
+                   <property name="text">
+                    <string>MAX DISPARITY</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="track_search_margin">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QLabel" name="label_33">
+                   <property name="text">
+                    <string>MAX SHIFT DISP</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>GS ALT</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item row="0" column="2">
                 <widget class="QLabel" name="defaultDirData">
@@ -224,46 +493,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="1" column="2">
-                <widget class="QLabel" name="curData">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>../Data</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QPushButton" name="actionOpenURL">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="text">
-                  <string>Confirm online source</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0" colspan="4">
-                <widget class="Line" name="line_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="1" rowspan="3">
-                <widget class="Line" name="line_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="5" column="0">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
@@ -277,12 +506,212 @@
                  </property>
                 </spacer>
                </item>
-               <item row="4" column="1">
-                <widget class="Line" name="line_5">
+               <item row="5" column="3">
+                <widget class="Line" name="line_7">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
                 </widget>
+               </item>
+               <item row="5" column="4">
+                <layout class="QGridLayout" name="gridLayout_20">
+                 <item row="0" column="0" colspan="3">
+                  <widget class="QLabel" name="label_44">
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Online source settings</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="label_40">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>End Time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QCheckBox" name="onl_archive_mode">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Archive </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QDateTimeEdit" name="onl_start_time">
+                   <property name="displayFormat">
+                    <string>yyyy/MM/dd hh:mm/ss</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QDateTimeEdit" name="onl_end_time">
+                   <property name="displayFormat">
+                    <string>yyyy/MM/dd hh:mm/ss</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="1" colspan="2">
+                  <widget class="QComboBox" name="onl_radar_list"/>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_41">
+                   <property name="text">
+                    <string>Source Link</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_39">
+                   <property name="text">
+                    <string>Start time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="2">
+                  <widget class="QPushButton" name="actionOpenURL">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Confirm online source</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0" colspan="3">
+                  <widget class="Line" name="line_6">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QCheckBox" name="onl_force">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Force</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QCheckBox" name="onl_dry_run">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Dry run</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="url">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>300</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>400</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="placeholderText">
+                    <string>URL Source</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="label_42">
+                   <property name="text">
+                    <string>Radar</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="3">
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="11" column="0">
+                  <spacer name="verticalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_43">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Output Diretory</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" colspan="2">
+                  <widget class="QLineEdit" name="onl_outputDir">
+                   <property name="placeholderText">
+                    <string>../Data</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QLabel" name="label_45">
+                   <property name="text">
+                    <string>Sleep</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QLineEdit" name="onl_sleep_secs"/>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -608,7 +1037,7 @@
              <item>
               <widget class="QStackedWidget" name="stackedWidget_2">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_5">
                 <layout class="QGridLayout" name="gridLayout_7">
@@ -637,7 +1066,7 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>796</width>
+                      <width>1003</width>
                       <height>440</height>
                      </rect>
                     </property>
@@ -808,7 +1237,7 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>796</width>
+                      <width>1003</width>
                       <height>529</height>
                      </rect>
                     </property>
@@ -1924,6 +2353,48 @@
   <tabstop>modeBox</tabstop>
   <tabstop>fileBox</tabstop>
   <tabstop>exit_btn_2</tabstop>
+  <tabstop>timerInput</tabstop>
+  <tabstop>changeDirData</tabstop>
+  <tabstop>errorBox</tabstop>
+  <tabstop>preFile</tabstop>
+  <tabstop>dateBox</tabstop>
+  <tabstop>nextFile</tabstop>
+  <tabstop>track_field_thresh</tabstop>
+  <tabstop>track_max_disparity</tabstop>
+  <tabstop>track_min_size</tabstop>
+  <tabstop>track_max_shift_disp</tabstop>
+  <tabstop>track_search_margin</tabstop>
+  <tabstop>track_iso_thresh</tabstop>
+  <tabstop>track_flow_margin</tabstop>
+  <tabstop>track_iso_smooth</tabstop>
+  <tabstop>track_max_flow_mag</tabstop>
+  <tabstop>track_gs_alt</tabstop>
+  <tabstop>track_vmin</tabstop>
+  <tabstop>track_vmax</tabstop>
+  <tabstop>track_accept_button</tabstop>
+  <tabstop>chooseSweep</tabstop>
+  <tabstop>clutterFilterToggle</tabstop>
+  <tabstop>gridCheckBox</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>checkBox_scan</tabstop>
+  <tabstop>resetView</tabstop>
+  <tabstop>scrollArea_2</tabstop>
+  <tabstop>plot_mode_box</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>scrollArea_4</tabstop>
+  <tabstop>slider_pro_x</tabstop>
+  <tabstop>slider_pro_z</tabstop>
+  <tabstop>threshold_pro</tabstop>
+  <tabstop>slider_pro_y</tabstop>
+  <tabstop>checkBox_scan_pro</tabstop>
+  <tabstop>resetView_pro</tabstop>
+  <tabstop>extraInfo_pro</tabstop>
+  <tabstop>otherIn4_pro</tabstop>
+  <tabstop>long_pro</tabstop>
+  <tabstop>lat_pro</tabstop>
+  <tabstop>stromList</tabstop>
+  <tabstop>view3d_2</tabstop>
+  <tabstop>view2d_1</tabstop>
  </tabstops>
  <resources>
   <include location="resource.qrc"/>
