@@ -642,6 +642,7 @@ class MainWindow(QMainWindow):
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.x_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_x.setText(str(int(tmp_value)) + "°")
 
 
     def updateSliderY(self, val):
@@ -649,22 +650,24 @@ class MainWindow(QMainWindow):
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.y_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_y.setText(str(int(tmp_value)) + "°")
 
     def updateSliderZ(self, val):
         self.glWidget.setRotZ(val)
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.z_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_z.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
-        self.ui.actionOpenURL.clicked.connect(self.getURL)
+        # self.ui.actionOpenURL.clicked.connect(self.getURL)
 
-    def getURL(self):
-        """get URL source"""
-        self.urlSource = self.ui.url.text()
-        print(self.urlSource)
+    # def getURL(self):
+    #     """get URL source"""
+    #     self.urlSource = self.ui.url.text()
+    #     print(self.urlSource)
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
       if dataDir is not None and dataDir != "":
@@ -762,9 +765,6 @@ class MainWindow(QMainWindow):
         dt_start_string = dt_start.toString(self.ui.onl_start_time.displayFormat())
         dt_end = self.ui.onl_end_time.dateTime()
         dt_end_string = dt_end.toString(self.ui.onl_end_time.displayFormat())
-
-        if self.ui.curData.text():
-            onlineSettings['outputDir'] = self.ui.curData.text()
         if self.ui.onl_sleep_secs.text():
             onlineSettings['sleepSecs'] = self.ui.onl_sleep_secs.text()
 
