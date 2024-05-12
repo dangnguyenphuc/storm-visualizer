@@ -1,12 +1,13 @@
 import sys
 import numpy as np
+import datetime
 
 import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
 from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl
 from PyQt5.QtGui import QIntValidator, QPixmap
-import datetime
+
 from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
@@ -434,6 +435,9 @@ class MainWindow(QMainWindow):
             self.ui.clutterFilterToggle.setChecked(False)
         else: 
             self.ui.clutterFilterToggle.setEnabled(True)
+
+        self.glWidget.update(isGrid=state)
+
     def getThreshold(self):
         if self.ui.threshold.text():
             self.glWidget.update(threshold=int(self.ui.threshold.text()))

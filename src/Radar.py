@@ -301,7 +301,10 @@ class Radar:
   def getRadar(self):
 
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
-    self.gridData = pyart.io.read_grid(self.DataManager.grid_data[self.currentIndex])
+    try:
+      self.gridData = pyart.io.read_grid(self.DataManager.grid_data[self.currentIndex])
+    except:
+      print("There are some errors with grid file!")
     # self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
 
     if self.isGrid:
