@@ -14,6 +14,7 @@ from Radar import DataManager
 from Utils import folderEmpty, getHourMinuteSecond
 from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG
 from messageBox import quitQuestionBox, errorBox
+from PullDataThread import PullDataWorkerThread
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -532,6 +533,7 @@ class MainWindow(QMainWindow):
         self.ui.slider_pro_z.setMaximum(115)
 
         self.ui.resetView_pro.clicked.connect(self.reset3DView)
+        self.ui.checkBox_scan_pro.clicked.connect(self.getScanPro)
 
         self.addInfor()
         self.addExtraInfor()
@@ -660,6 +662,7 @@ class MainWindow(QMainWindow):
         self.ui.z_value.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
+        self.pullDataThread = PullDataWorkerThread()
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
         self.ui.actionOpenURL.clicked.connect(self.getURL)
@@ -715,8 +718,8 @@ class MainWindow(QMainWindow):
         self.glWidget.updateGL()
 
     def getScanPro(self, state):
-        self.ui.checkBox_scan_pro.isChecked()
-        pass
+        self.glWidget.setUpVBO(flag=(not state))
+        self.glWidget.updateGL()
 
     def getTrackingInfo(self) -> dict:
         trackInfor = DEFAULT_2D_TRACK_CONFIG
@@ -796,4 +799,3 @@ if __name__ == "__main__":
 
     # Exit
     sys.exit(app.exec())
-

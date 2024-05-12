@@ -42,4 +42,5 @@ DEFAULT_PULL_DATA_CONFIG = {
   'force'  : False,
   'tmpDir' : "../Temp" ,
   'outputDir': "../Data",
+  'radarName': "KTLX"
 }

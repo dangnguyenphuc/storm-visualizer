@@ -475,7 +475,6 @@ class Radar:
       return {
           'position': self.positions[indices],
           'color': color(self.currentReflectivity[indices]),
-          # 'color': self.currentReflectivity[indices]
       }
 
   def get_all_vertices(self):
