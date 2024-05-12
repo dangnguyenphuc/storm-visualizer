@@ -780,6 +780,11 @@ class MainWindow(QMainWindow):
         examData = ["KDYX"]
         radarList = examData
         self.ui.onl_radar_list.addItems(radarList)
+    def getOnlineStopButton(self):
+        isChecked = self.ui.onl_stop.isChecked()
+    
+    def setOnlineLog(self):
+        self.ui.onl_log.setText("Log:....")
 
 def loadStyle(QApplication):
     """
