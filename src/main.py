@@ -5,7 +5,7 @@ import datetime
 import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl
+from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime
 from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
@@ -240,7 +240,6 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(0)
         self.ui.labelPage.setText("Home Page")
 
-
     def on_view3d_1_toggled(self):
         self.ui.scrollArea_4.takeWidget()
         self.ui.scrollArea.setWidget(self.glWidget)
@@ -296,7 +295,6 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
-
 
     def on_other_2_toggled(self, ):
         self.ui.stackedWidget.setCurrentIndex(1)
@@ -597,9 +595,15 @@ class MainWindow(QMainWindow):
           'This is other information box',
           f'Radar: {self.DataManager.radarName}', 
           f"Altitude: {self.glWidget.radar.data.altitude['data'][0]}",
-          f"Time: {currentTime}",
-          f"Ray Missing: {self.glWidget.radar.data.metadata['rays_missing']}"
+          f"Time: {currentTime}"
         ]
+
+        try:
+          rayMissing = self.glWidget.radar.data.metadata['rays_missing']
+          entries.append(f"Rays Missing: {rayMissing}")
+        except:
+          pass
+
         self.ui.otherIn4_pro.addItems(entries)
 
     def addExtraInfor(self):
@@ -647,6 +651,7 @@ class MainWindow(QMainWindow):
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.x_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_x.setText(str(int(tmp_value)) + "°")
 
 
     def updateSliderY(self, val):
@@ -654,23 +659,36 @@ class MainWindow(QMainWindow):
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.y_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_y.setText(str(int(tmp_value)) + "°")
 
     def updateSliderZ(self, val):
         self.glWidget.setRotZ(val)
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.z_value.setText(str(int(tmp_value)) + "°")
+        self.ui.pro_z.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
+
         self.pullDataThread = PullDataWorkerThread()
+        self.pullDataThread.update_signal.connect(self.setOnlineLog)
+        self.pullDataThread.doneSignal.connect(self.clearOnlineLog)
+        self.ui.onl_stop.setEnabled(False)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
-        self.ui.actionOpenURL.clicked.connect(self.getURL)
+        self.resetPullDataParams()
 
-    def getURL(self):
-        """get URL source"""
-        self.urlSource = self.ui.url.text()
-        print(self.urlSource)
+    def resetPullDataParams(self):
+        dt = QDateTime.fromString(DEFAULT_PULL_DATA_CONFIG['startTime'], "yyyy-MM-dd hh:mm:ss")
+        self.ui.onl_start_time.setDateTime(dt)
+        dt = QDateTime.fromString(DEFAULT_PULL_DATA_CONFIG['endTime'], "yyyy-MM-dd hh:mm:ss")
+        self.ui.onl_end_time.setDateTime(dt)
+        self.ui.onl_sleep_secs.setText(str(DEFAULT_PULL_DATA_CONFIG['sleepSecs']))
+        self.ui.onl_archive_mode.setChecked(DEFAULT_PULL_DATA_CONFIG['archiveMode'])
+        self.ui.onl_dry_run.setChecked(DEFAULT_PULL_DATA_CONFIG['dryRun'])
+        self.ui.onl_force.setChecked(DEFAULT_PULL_DATA_CONFIG['force'])
+        self.addRadarFromOnlineSource()
+    
 
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
@@ -749,30 +767,39 @@ class MainWindow(QMainWindow):
             trackInfor["VMAX"] = self.ui.track_vmax.text()
         return trackInfor
 
-    def getOnlineSettings(self) -> dict:
+    def getOnlineSettings(self):
         onlineSettings = DEFAULT_PULL_DATA_CONFIG
         dt_start = self.ui.onl_start_time.dateTime()
         dt_start_string = dt_start.toString(self.ui.onl_start_time.displayFormat())
         dt_end = self.ui.onl_end_time.dateTime()
         dt_end_string = dt_end.toString(self.ui.onl_end_time.displayFormat())
-
-        if self.ui.curData.text():
-            onlineSettings['outputDir'] = self.ui.curData.text()
         if self.ui.onl_sleep_secs.text():
-            onlineSettings['sleepSecs'] = self.ui.onl_sleep_secs.text()
+            onlineSettings['sleepSecs'] = int(self.ui.onl_sleep_secs.text())
 
         onlineSettings['startTime'] = dt_start_string
         onlineSettings['endTime'] = dt_end_string
         onlineSettings['archiveMode'] = self.ui.onl_archive_mode.isChecked()
         onlineSettings['dryRun'] = self.ui.onl_dry_run.isChecked()
         onlineSettings['force'] = self.ui.onl_force.isChecked()
-        self.setRadarFromOnlineSource(["KDYX"])
+        self.pullDataThread.params = onlineSettings
+        self.pullDataThread.run()
+        self.ui.onl_stop.setEnabled(True)
 
-        return onlineSettings
-    def setRadarFromOnlineSource(self, radarList):
-        examData = ["KDYX"]
-        radarList = examData
+    def addRadarFromOnlineSource(self):
+        self.ui.onl_radar_list.clear()
+        radarList = ["KDYX", "KTLX"]
         self.ui.onl_radar_list.addItems(radarList)
+
+    def getOnlineStopButton(self):
+        # isChecked = self.ui.onl_stop.isChecked()
+        self.pullDataThread.stop()
+        self.ui.onl_stop.setEnabled(False)
+    
+    def setOnlineLog(self, text):
+        self.ui.onl_log.setText(text)
+    
+    def clearOnlineLog(self, text):
+        self.ui.onl_log.clear()
 
 def loadStyle(QApplication):
     """

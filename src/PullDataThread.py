@@ -8,6 +8,7 @@ import urllib
 from xml.dom import minidom
 from sys import stdin
 from urllib.request import urlopen
+import subprocess
 from subprocess import call
 
 import pyart
@@ -40,6 +41,7 @@ class PullDataWorkerThread(QThread):
     """
     # Define a signal to communicate with the main thread
     update_signal = pyqtSignal(str)
+    doneSignal = pyqtSignal()
 
     def __init__(self, params = None):
         super().__init__()
@@ -70,6 +72,8 @@ class PullDataWorkerThread(QThread):
               self.manageRetrieval(startTime, endTime)
               time.sleep(self.params['sleepSecs'])
           self.update_signal.emit("Done")
+          time.sleep(1)
+          self.doneSignal.emit()
           return
 
         self.manageRetrieval()
@@ -79,12 +83,18 @@ class PullDataWorkerThread(QThread):
         endString += " at " + str(nowTime)
 
         self.update_signal.emit(endString)
+        time.sleep(1)
+        self.doneSignal.emit()
 
-    def manageRetrieval(self, startTime: None, endTime: None):
+    def manageRetrieval(self, startTime = None, endTime = None):
         if startTime is None:
           startTime = self.params['startTime']
         if endTime is None:
           endTime = self.params['endTime']
+
+        startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
+        endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+
 
         if (startTime.day == endTime.day):
 
