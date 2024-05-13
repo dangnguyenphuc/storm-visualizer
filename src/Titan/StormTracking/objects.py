@@ -165,7 +165,7 @@ def get_object_prop(image1, grid1, field, record, params):
         id1.append(obj)
 
         # 2D frame stats
-        center.append(np.median(obj_index, axis=0))
+        # center.append(np.median(obj_index, axis=0))
         this_centroid = np.round(np.mean(obj_index, axis=0), 3)
         grid_x.append(this_centroid[2])
         grid_y.append(this_centroid[1])
@@ -176,6 +176,7 @@ def get_object_prop(image1, grid1, field, record, params):
         cent_met = np.array([grid1.z['data'][rounded[0]],
                              grid1.y['data'][rounded[1]],
                              grid1.x['data'][rounded[2]]])
+        center.append(cent_met)
 
         projparams = grid1.get_projparams()
         lon, lat = pyart.core.transforms.cartesian_to_geographic(cent_met[2],
@@ -224,6 +225,7 @@ def write_tracks(old_tracks, record, current_objects, obj_props):
         'scan': scan_num,
         'uid': uid,
         'time': record.time,
+        'center': obj_props['center'],
         'grid_x': obj_props['grid_x'],
         'grid_y': obj_props['grid_y'],
         'grid_z': obj_props['grid_z'],

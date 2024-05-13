@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import pickle
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
@@ -78,6 +79,9 @@ class DataManager:
   def setData(self):
     self.raw_data = self.getAllDataFilePaths()
     self.setGridData()
+  
+  def getTrackFileName(self):
+    return self.year[-3:-1] + self.month[:-1] + self.day[:-1]
 
   def reconstructFile(self, filePath = None):
     if filePath is None:
@@ -287,6 +291,8 @@ class Radar:
 
   def __init__(self, fileIndex: int = 0, filePath = DEFAULT_FILE_PATH, radarName = DEFAULT_RADAR_NAME, year = DEFAULT_YEAR, month = DEFAULT_MONTH, day = DEFAULT_DATE, mode = DEFAULT_MODE):
     self.setDataMangerWithParam(filePath = filePath, radarName = radarName, year = year, month = month, day = day, mode = mode)
+    self.tracksObj = None
+    self.setTrackFile()
     self.isGrid = False
     self.stormCount = 0
     self.currentIndex = fileIndex
@@ -297,7 +303,21 @@ class Radar:
   
   def setDataManger(self, DataManager: DataManager):
     self.DataManager = DataManager
-
+  
+  def setTrackFile(self):
+    self.trackFile = "src/Titan/TrackingData/" + self.DataManager.getTrackFileName() + ".pkl"
+    if not os.path.exists(self.trackFile):
+      self.trackFile = None
+      self.tracksObj = None
+    else:
+      self.loadTrackFile()
+    
+    
+  def loadTrackFile(self):
+    if self.trackFile is not None:
+      with open(self.trackFile, 'rb') as file:
+        self.tracksObj = pickle.load(file)
+    
   def getRadar(self):
 
     self.data = pyart.io.read(self.DataManager.raw_data[self.currentIndex])
@@ -317,7 +337,6 @@ class Radar:
   def plot(self, mode = "wrl_ppi", sweep = 0):
       fig = plt.figure(figsize=(10, 7))
       plt.clf()
-
 
       data = np.ma.filled(self.data.fields['reflectivity']['data'], fill_value=-327)
       data = data[self.data.get_start(sweep) : self.data.get_end(sweep) + 1]
@@ -469,9 +488,42 @@ class Radar:
           combinations
       )
       
-
   def get_all_vertices_by_threshold(self, threshold = 0):
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
+
+      tracklines = {}
+      if self.tracksObj and self.currentIndex in self.tracksObj.tracks.index.levels[0]:
+        currentStormCenters = self.tracksObj.tracks.loc[self.currentIndex]
+
+        # iterator
+        for index, row in currentStormCenters.iterrows():
+          center = [
+            row.center[2],
+            row.center[1],
+            row.center[0]
+          ]
+          tracklines.setdefault(index, [center])
+        
+        # get all previous tracking objects
+        currentIndex = max(self.currentIndex - 1, 0)
+        if currentIndex != self.currentIndex:
+          while currentIndex in self.tracksObj.tracks.index:
+            for index, row in self.tracksObj.tracks.loc[currentIndex].iterrows():
+              centerPos = [
+                row.center[2],
+                row.center[1],
+                row.center[0]
+              ]
+              if index in tracklines:
+                tracklines[index].insert(0, centerPos)
+              else:
+                tracklines.setdefault(index, [centerPos])
+
+            currentIndex -= 1
+        if len(tracklines) == 0:
+          print("There is no storm in this file.")
+      print(tracklines)
+
       return {
           'position': self.positions[indices],
           'color': color(self.currentReflectivity[indices]),

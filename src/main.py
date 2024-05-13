@@ -784,6 +784,7 @@ class MainWindow(QMainWindow):
         self.pullDataThread.params = onlineSettings
         self.pullDataThread.run()
         self.ui.onl_stop.setEnabled(True)
+        self.ui.actionOpenURL.setEnabled(False)
 
     def addRadarFromOnlineSource(self):
         self.ui.onl_radar_list.clear()
@@ -794,6 +795,7 @@ class MainWindow(QMainWindow):
         # isChecked = self.ui.onl_stop.isChecked()
         self.pullDataThread.stop()
         self.ui.onl_stop.setEnabled(False)
+        self.ui.actionOpenURL.setEnabled(True)
     
     def setOnlineLog(self, text):
         self.ui.onl_log.setText(text)

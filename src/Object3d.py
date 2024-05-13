@@ -361,6 +361,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         DataManager.raw_data = DataManager.getAllDataFilePaths()
         self.radar.DataManager = DataManager
         self.radar.currentIndex = index
+        # self.radar.setTrackFile()
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold

@@ -31,8 +31,6 @@
 *.out
 *.app
 
-*Data/
-
 *.pyc
 *__pycache__*
 *pysteps_data*
