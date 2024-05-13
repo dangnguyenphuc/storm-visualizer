@@ -338,12 +338,23 @@ class GLWidget(QtOpenGL.QGLWidget):
           super().__init__(format, parent)
         else:
           super().__init__(parent)
+
         self.setUpRadar(index=0)
         self.setUpThreshold(threshold)
         self.setUpScale()
 
+        self.isGrid = False
+
+        self.vertices = []
+        self.vertVBO = None
+        self.color = []
+        self.colorVBO = None
+
         self.stormVBO = []
         self.stormSideVBO = None
+
+        self.tracksVBO = []
+        self.tracksVertices = []
 
         self.mousePos = [0, 0] 
         self.zoom_center = [0, 0] 
@@ -366,9 +377,9 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
 
-    def update(self, index=None, threshold=None, clutterFilter = None, isGrid = None,plot_mode = (None,0), flag = True):
+    def update(self, index=None, threshold=None, clutterFilter = None, isGrid = None, plot_mode = (None,0), flag = True):
         if index is not None:
-            self.radar.update(index)
+            self.radar.update(index, self.isGrid)
         if threshold is not None:
             self.threshold = threshold
         if clutterFilter is not None:
@@ -376,8 +387,10 @@ class GLWidget(QtOpenGL.QGLWidget):
         if plot_mode[0] is not None:
             self.radar.plot(mode=plot_mode[0], sweep=plot_mode[1])
         if isGrid is not None:
+            self.isGrid = isGrid
             self.radar.isGrid = isGrid
             self.radar.getRadar()
+        
 
         if flag:
           self.setUpVBO()
@@ -426,7 +439,30 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.drawMap()
         self.renderRaw()
 
-        
+        # render tracks
+        if self.radar.isGrid and len(self.tracksVBO) > 0:
+          colors = [
+            (1.0, 0.0, 0.0),  # Red
+            (0.0, 1.0, 0.0),  # Green
+            (1.0, 1.0, 0.0),  # Yellow
+            (0.0, 0.0, 1.0),  # Blue
+            (1.0, 0.0, 1.0),  # Pink
+            (1.0, 0.5, 0.0),   # Orange
+            (1.0, 1.0, 1.0)]  
+          for i in range(len(self.tracksVBO)):
+            self.tracksVBO[i].bind()
+            gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+            gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+            gl.glLineWidth(5.0)
+            gl.glColor3f(colors[i%len(colors)][0], colors[i%len(colors)][1], colors[i%len(colors)][2])
+            if len(self.tracksVertices[i]) == 1:
+              gl.glDrawArrays(gl.GL_POINTS, 0, len(self.tracksVertices[i]))
+            else:
+              gl.glDrawArrays(gl.GL_LINE_STRIP, 0, len(self.tracksVertices[i]))
+            self.tracksVBO[i].unbind()
+
+        gl.glLineWidth(1.0)
+        gl.glColor3f(1.0, 1.0, 1.0)
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
         gl.glPopMatrix()
 
@@ -455,10 +491,17 @@ class GLWidget(QtOpenGL.QGLWidget):
 
 
     def setUpVBO(self, flag = True):
+
         if flag:
           v = self.radar.get_all_vertices_by_threshold(self.threshold)
         else:
           v = self.radar.get_all_vertices()
+
+        del self.vertices, self.color
+        if self.vertVBO:
+          self.vertVBO.delete()
+        if self.colorVBO:
+          self.colorVBO.delete()
           
         self.vertices = v['position']
         self.vertVBO = vbo.VBO(np.reshape(self.vertices,
@@ -468,6 +511,22 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.colorVBO = vbo.VBO(np.reshape(self.color,
                                           (1, -1)).astype(np.float32))
         self.colorVBO.bind()
+
+        if self.radar.isGrid and 'trackLines' in v:
+          if len(self.tracksVBO) > 0:
+            for i in (self.tracksVBO).copy():
+              i.delete()
+              self.tracksVBO.remove(i)
+
+          if len(v['trackLines']) > 0:
+            self.tracksVBO = []
+            self.tracksVertices = []
+            self.tracksVertices.clear()
+            for i in v['trackLines']:
+              self.tracksVertices.append(v['trackLines'][i])
+              vertVBO = vbo.VBO(np.reshape(v['trackLines'][i],
+                                      (1, -1)).astype(np.float32))
+              self.tracksVBO.append(vertVBO)
 
     def setRotX(self, val):
         self.rotX = np.pi * val

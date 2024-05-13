@@ -438,11 +438,14 @@ class Radar:
   def readDataFromFilePath(self, filePath: str):
     self.data = pyart.io.read(filePath)
 
-  def update(self, index = None):
+  def update(self, index = None, isGrid = None):
     if index is not None:
       self.currentIndex = index
     else:
       self.increaseIndex()
+
+    if isGrid is not None:
+      self.isGrid = isGrid
 
     self.getRadar()
 
@@ -491,38 +494,62 @@ class Radar:
   def get_all_vertices_by_threshold(self, threshold = 0):
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
 
-      tracklines = {}
-      if self.tracksObj and self.currentIndex in self.tracksObj.tracks.index.levels[0]:
-        currentStormCenters = self.tracksObj.tracks.loc[self.currentIndex]
+      if self.isGrid:
+        tracklines = {}
+        if self.tracksObj and self.currentIndex in self.tracksObj.tracks.index.levels[0]:
+          currentStormCenters = self.tracksObj.tracks.loc[self.currentIndex]
 
-        # iterator
-        for index, row in currentStormCenters.iterrows():
-          center = [
-            row.center[2],
-            row.center[1],
-            row.center[0]
-          ]
-          tracklines.setdefault(index, [center])
-        
-        # get all previous tracking objects
-        currentIndex = max(self.currentIndex - 1, 0)
-        if currentIndex != self.currentIndex:
-          while currentIndex in self.tracksObj.tracks.index:
-            for index, row in self.tracksObj.tracks.loc[currentIndex].iterrows():
-              centerPos = [
-                row.center[2],
-                row.center[1],
-                row.center[0]
-              ]
-              if index in tracklines:
-                tracklines[index].insert(0, centerPos)
-              else:
-                tracklines.setdefault(index, [centerPos])
+          # iterator
+          for index, row in currentStormCenters.iterrows():
+            center = [
+              row.center[2],
+              row.center[1],
+              row.center[0]
+            ]
+            tracklines.setdefault(index, [center])
+          
+          # get all previous tracking objects
+          currentIndex = max(self.currentIndex - 1, 0)
+          if currentIndex != self.currentIndex:
+            while currentIndex in self.tracksObj.tracks.index:
+              for index, row in self.tracksObj.tracks.loc[currentIndex].iterrows():
+                centerPos = [
+                  row.center[2],
+                  row.center[1],
+                  row.center[0]
+                ]
+                if index in tracklines:
+                  tracklines[index].insert(0, centerPos)
+                else:
+                  tracklines.setdefault(index, [centerPos])
 
-            currentIndex -= 1
-        if len(tracklines) == 0:
-          print("There is no storm in this file.")
-      print(tracklines)
+              currentIndex -= 1
+          if len(tracklines) == 0:
+            print("There is no storm in this file.")
+          else:
+            scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+            for key in tracklines:
+              tracklines[key].append(
+                [
+                  self.gridData.x['data'].data[0], 
+                  self.gridData.y['data'].data[0], 
+                  self.gridData.z['data'].data[0]
+                ])
+              tracklines[key].append(
+                [
+                  self.gridData.x['data'].data[-1], 
+                  self.gridData.y['data'].data[-1], 
+                  self.gridData.z['data'].data[-1]
+                ])
+              tracklines[key] = scaler.fit_transform(tracklines[key])
+              tracklines[key] = tracklines[key][:-2]
+
+          return {
+            'position': self.positions[indices],
+            'color': color(self.currentReflectivity[indices]),
+            'trackLines': tracklines
+          } 
+          
 
       return {
           'position': self.positions[indices],
