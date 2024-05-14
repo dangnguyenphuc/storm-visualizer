@@ -111,6 +111,7 @@ class Cell_tracks(object):
         self.record = None
         self.current_objects = None
         self.tracks = pd.DataFrame()
+        self.stormFrames = {}
 
         self.__saved_record = None
         self.__saved_counter = None
@@ -218,6 +219,9 @@ class Cell_tracks(object):
             obj_props = get_object_prop(frame1, grid_obj1, self.field,
                                         self.record, self.params)
             self.record.add_uids(self.current_objects)
+            self.stormFrames.setdefault(
+              self.record.scan, frame1
+            )
             self.tracks = write_tracks(self.tracks, self.record,
                                        self.current_objects, obj_props)
             del grid_obj1, raw1, frame1, global_shift, pairs, obj_props

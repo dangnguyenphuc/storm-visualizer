@@ -40,6 +40,9 @@ def getStorm(grid, threshold, minSize):
   frame, count = ndimage.label(frame)
   return (frame, count)
 
+def getStormCount(frame):
+  return np.max(frame)
+
 # index: Start from 1
 def getStormWithIndex(grid, frame, index=1):
   storm = copy.deepcopy(frame)
@@ -64,8 +67,3 @@ def getStormWithIndex(grid, frame, index=1):
 
   edge_points_positions = np.concatenate(edge_points, axis=0)
   return edge_points_positions, plane
-
-
-  
-
-

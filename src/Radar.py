@@ -10,7 +10,7 @@ import pyart
 import wradlib as wrl
 import xarray
 
-from Titan.StormIdentification import getStorm, getStormWithIndex
+from Titan.StormIdentification import getStorm, getStormWithIndex, getStormCount
 from Titan.tint.grid_utils import *
 from Config import *
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate, color
@@ -329,6 +329,7 @@ class Radar:
 
     if self.isGrid:
       self.currentReflectivity = self.gridData.fields['reflectivity']['data'].flatten()
+      self.getStorm()
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
 
@@ -597,11 +598,13 @@ class Radar:
     else:
       self.currentReflectivity = self.data.fields['reflectivity']['data'].flatten()
   
-  def getStorm(self, threshold = 32, minSize = 10):
-    self.stormFrame, self.stormCount = getStorm(grid=self.gridData, threshold=threshold, minSize=minSize)
-    if self.stormCount == 0:
-      print("Error: There is no storm in this {}".format(self.currentIndex))
-      return
+  def getStorm(self):
+    if self.tracksObj.stormFrames.get(self.currentIndex) is not None:
+      self.stormFrame = self.tracksObj.stormFrames[self.currentIndex]
+      self.stormCount = getStormCount(self.stormFrame)
+      if self.stormCount == 0:
+        print("Error: There is no storm in this {}".format(self.currentIndex))
+        return
   
   def getStormVertex(self, index = 1):
     if self.stormCount == 0:
@@ -614,7 +617,21 @@ class Radar:
 
     concatenated_array, plane = getStormWithIndex(self.gridData, self.stormFrame)
     scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
+    
+    # append min and max point
+    concatenated_array = np.concatenate((
+      concatenated_array,
+      np.array([
+        [self.gridData.x['data'].data[0], self.gridData.y['data'].data[0], self.gridData.z['data'].data[0]],
+        [self.gridData.x['data'].data[-1], self.gridData.y['data'].data[-1], self.gridData.z['data'].data[-1]]
+      ])
+    ), axis = 0)
+
     scaled_array = scaler.fit_transform(concatenated_array)
+    
+    # remove last 2 points
+    scaled_array = scaled_array[:-2]
+
     edge_points = []
     for i in plane:
       edge_points.append(scaled_array[i[0]:i[1]])
@@ -624,6 +641,17 @@ class Radar:
       points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
       side_planes.append(points)
 
+    return edge_points, side_planes
+  
+  def getAllStormVertices(self):
+    edge_points = []
+    side_planes = []
+
+    for i in np.arange(self.stormCount) + 1:
+      points, sides = self.getStormVertex(index=i)
+      edge_points.append(points)
+      side_planes.append(sides)
+    
     return edge_points, side_planes
 
     

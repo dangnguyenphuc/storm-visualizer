@@ -351,7 +351,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.colorVBO = None
 
         self.stormVBO = []
-        self.stormSideVBO = None
+        self.stormSideVBO = []
 
         self.tracksVBO = []
         self.tracksVertices = []
@@ -390,19 +390,19 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.isGrid = isGrid
             self.radar.isGrid = isGrid
             self.radar.getRadar()
+
         
 
         if flag:
           self.setUpVBO()
 
-          # self.radar.getStorm()
-          # self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
-          # self.setUpStorm()
+        if self.isGrid:
+          self.stormLayer, self.stormSide = self.radar.getAllStormVertices()
+          self.setUpStorm()
 
     def initializeGL(self):
         self.qglClearColor(QColor(0, 0, 0))  
         gl.glEnable(gl.GL_DEPTH_TEST)  
-        # self.stormLayer, self.stormSide = self.radar.getStormVertex(index=1)
         self.setUpVBO()
         self.loadMap()
 
@@ -434,13 +434,12 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glRotate(self.rotY, 0.0, 1.0, 0.0)
         gl.glRotate(self.rotZ, 0.0, 0.0, 1.0)
 
-        # self.renderStorm()
-
         self.drawMap()
         self.renderRaw()
 
         # render tracks
         if self.radar.isGrid and len(self.tracksVBO) > 0:
+          self.renderStorm()
           colors = [
             (1.0, 0.0, 0.0),  # Red
             (0.0, 1.0, 0.0),  # Green
@@ -454,6 +453,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
             gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
             gl.glLineWidth(5.0)
+            gl.glPointSize(5.0);
             gl.glColor3f(colors[i%len(colors)][0], colors[i%len(colors)][1], colors[i%len(colors)][2])
             if len(self.tracksVertices[i]) == 1:
               gl.glDrawArrays(gl.GL_POINTS, 0, len(self.tracksVertices[i]))
@@ -461,6 +461,7 @@ class GLWidget(QtOpenGL.QGLWidget):
               gl.glDrawArrays(gl.GL_LINE_STRIP, 0, len(self.tracksVertices[i]))
             self.tracksVBO[i].unbind()
 
+        gl.glPointSize(1.0);
         gl.glLineWidth(1.0)
         gl.glColor3f(1.0, 1.0, 1.0)
         gl.glDisableClientState(gl.GL_VERTEX_ARRAY)
@@ -574,45 +575,56 @@ class GLWidget(QtOpenGL.QGLWidget):
       # clear up before setting VBO
       if len(self.stormVBO) > 0:
         for i in (self.stormVBO).copy():
-          i.delete()
+          for layer in i:
+            layer.delete()
           self.stormVBO.remove(i)
         
-      if self.stormSideVBO:
-          self.stormSideVBO.delete()
+      if len(self.stormSideVBO) > 0:
+        for i in (self.stormSideVBO).copy():
+          i.delete()
+          self.stormSideVBO.remove(i)
           
       if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
         self.stormVBO = []
         for i in range(len(self.stormLayer)):
-            vertVBO = vbo.VBO(np.reshape(self.stormLayer[i],
+          stormVBO = []
+          for j in range(len(self.stormLayer[i])):
+            vertVBO = vbo.VBO(np.reshape(self.stormLayer[i][j],
                                       (1, -1)).astype(np.float32))
-            self.stormVBO.append(vertVBO)
+            stormVBO.append(vertVBO)
+          self.stormVBO.append(stormVBO)
 
+        self.stormSideVBO = []
         self.stormSideLine = []
         for i in range(len(self.stormSide)):
+          stormSideLine = []
           for j in range(len(self.stormSide[i])):
-            if j < len(self.stormLayer[i]):
-              for k in range(len(self.stormLayer[i]), len(self.stormSide[i])):
-                  self.stormSideLine.append(self.stormSide[i][j])
-                  self.stormSideLine.append(self.stormSide[i][k])
-            else: continue
-        self.stormSideVBO = vbo.VBO(np.reshape(self.stormSideLine,
-                                      (1, -1)).astype(np.float32))
+            for k in range(len(self.stormSide[i][j])):
+              if k < len(self.stormLayer[i][j]):
+                for z in range(len(self.stormLayer[i][j]), len(self.stormSide[i][j])):
+                    stormSideLine.append(self.stormSide[i][j][k])
+                    stormSideLine.append(self.stormSide[i][j][z])
+              else: continue
+          self.stormSideLine.append(stormSideLine)
+          self.stormSideVBO.append(vbo.VBO(np.reshape(stormSideLine,
+                                      (1, -1)).astype(np.float32)))
 
     
     def renderStorm(self):
       
       if len(self.stormVBO) > 0:
-        
-        self.stormSideVBO.bind()
-        gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
-        gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
-        gl.glDrawArrays(gl.GL_LINES, 0, len(self.stormSideLine))
-        self.stormSideVBO.unbind()
+        for i in range(len(self.stormSideVBO)):
+          self.stormSideVBO[i].bind()
+          gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
+          gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
+          gl.glDrawArrays(gl.GL_LINES, 0, len(self.stormSideLine[i]))
+          self.stormSideVBO[i].unbind()
 
         for i in range(len(self.stormVBO)):
-            self.stormVBO[i].bind()
+          for j in range(len(self.stormVBO[i])):
+            self.stormVBO[i][j].bind()
             gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
             gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
-            gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i]))
-            self.stormVBO[i].unbind()
+            gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i][j]))
+            self.stormVBO[i][j].unbind()
 
