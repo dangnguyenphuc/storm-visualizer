@@ -512,17 +512,18 @@ class Radar:
           # get all previous tracking objects
           currentIndex = max(self.currentIndex - 1, 0)
           if currentIndex != self.currentIndex:
-            while currentIndex in self.tracksObj.tracks.index:
+            while currentIndex in self.tracksObj.tracks.index.levels[0]:
               for index, row in self.tracksObj.tracks.loc[currentIndex].iterrows():
-                centerPos = [
-                  row.center[2],
-                  row.center[1],
-                  row.center[0]
-                ]
                 if index in tracklines:
+                  centerPos = [
+                    row.center[2],
+                    row.center[1],
+                    row.center[0]
+                  ]
+                
                   tracklines[index].insert(0, centerPos)
-                else:
-                  tracklines.setdefault(index, [centerPos])
+                # else:
+                #   tracklines.setdefault(index, [centerPos])
 
               currentIndex -= 1
           if len(tracklines) == 0:
@@ -544,7 +545,6 @@ class Radar:
                 ])
               tracklines[key] = scaler.fit_transform(tracklines[key])
               tracklines[key] = tracklines[key][:-2]
-
           return {
             'position': self.positions[indices],
             'color': color(self.currentReflectivity[indices]),
@@ -615,7 +615,7 @@ class Radar:
       print("Error: Invalid storm index")
       return None, None
 
-    concatenated_array, plane = getStormWithIndex(self.gridData, self.stormFrame)
+    concatenated_array, plane = getStormWithIndex(self.gridData, self.stormFrame, index=index)
     scaler = MinMaxScaler(feature_range=(-1.0, 1.0))
     
     # append min and max point
@@ -640,13 +640,11 @@ class Radar:
     for i in range(len(edge_points) - 1):
       points = np.concatenate((edge_points[i], edge_points[i+1]), axis = 0)
       side_planes.append(points)
-
     return edge_points, side_planes
   
   def getAllStormVertices(self):
     edge_points = []
     side_planes = []
-
     for i in np.arange(self.stormCount) + 1:
       points, sides = self.getStormVertex(index=i)
       edge_points.append(points)

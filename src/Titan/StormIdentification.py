@@ -56,8 +56,8 @@ def getStormWithIndex(grid, frame, index=1):
   for val in z:
     edge_indices = getEdgeIndices(frame[val])
     points = np.vstack((
-      grid.x['data'][edge_indices[:, 0]], 
-      grid.y['data'][edge_indices[:, 1]]
+      grid.y['data'].data[edge_indices[:, 1]],
+      grid.x['data'].data[edge_indices[:, 0]]
       )).T
     points = np.hstack((points, np.full((points.shape[0], 1), grid.z['data'][val])))
     edge_points.append(points)

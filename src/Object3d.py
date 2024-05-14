@@ -391,8 +391,6 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.radar.isGrid = isGrid
             self.radar.getRadar()
 
-        
-
         if flag:
           self.setUpVBO()
 
@@ -611,7 +609,6 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     
     def renderStorm(self):
-      
       if len(self.stormVBO) > 0:
         for i in range(len(self.stormSideVBO)):
           self.stormSideVBO[i].bind()
