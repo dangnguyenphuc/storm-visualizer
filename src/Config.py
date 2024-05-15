@@ -18,7 +18,9 @@ DEFAULT_2D_TRACK_CONFIG = {
   'MAX_SHIFT_DISP': 15,
   'ISO_THRESH': 8,
   'ISO_SMOOTH': 3,
-  'GS_ALT': 1500
+  'GS_ALT': 1500,
+  'VMIN': 0,
+  'VMAX': 60
 }
 
 DEFAULT_3D_TRACK_CONFIG = {
@@ -40,7 +42,6 @@ DEFAULT_PULL_DATA_CONFIG = {
   'sleepSecs' : 10,
   'dryRun' : False,
   'force'  : False,
-  'tmpDir' : "../Temp" ,
-  'outputDir': "../Data",
+  'tmpDir' : "../Temp",
   'radarName': "KTLX"
 }

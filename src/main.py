@@ -15,6 +15,7 @@ from Utils import folderEmpty, getHourMinuteSecond
 from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG
 from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
+from TrackDataThread import TrackThread
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -95,10 +96,22 @@ class MainWindow(QMainWindow):
         self.errorTimer.stop()
 
         # just change when value change
+        self.ui.track_confirm_button.clicked.connect(self.getTrackingInfo)
         self.ui.actionOpenURL.clicked.connect(self.getOnlineSettings)
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
         self.page_2Connected = False
+
+        self.initThreads()
+
+    def initThreads(self):
+        self.pullDataThread = PullDataWorkerThread(self.DataManager)
+        self.pullDataThread.update_signal.connect(self.setOnlineLog)
+        self.pullDataThread.doneSignal.connect(self.clearOnlineLog)
+
+
+        self.genTrackThread = TrackThread(DataManager=self.DataManager)
+        self.genTrackThread.doneSignal.connect(self.trackDone)
 
 
     def closeEvent(self, event):
@@ -669,10 +682,7 @@ class MainWindow(QMainWindow):
         self.ui.pro_z.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
-
-        self.pullDataThread = PullDataWorkerThread()
-        self.pullDataThread.update_signal.connect(self.setOnlineLog)
-        self.pullDataThread.doneSignal.connect(self.clearOnlineLog)
+        self.ui.outputDir.setText(self.DataManager.filePath)
         self.ui.onl_stop.setEnabled(False)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
@@ -764,8 +774,11 @@ class MainWindow(QMainWindow):
         if self.ui.track_vmin.text():
             trackInfor["VMIN"] = self.ui.track_vmin.text()
         if self.ui.track_vmax.text():
-            trackInfor["VMAX"] = self.ui.track_vmax.text()
-        return trackInfor
+            trackInfor["VMAX"] = self.ui.track_vmax.text() 
+
+        self.ui.track_confirm_button.setEnabled(False)
+        self.genTrackThread.params = trackInfor
+        self.genTrackThread.run()
 
     def getOnlineSettings(self):
         onlineSettings = DEFAULT_PULL_DATA_CONFIG
@@ -802,6 +815,9 @@ class MainWindow(QMainWindow):
     
     def clearOnlineLog(self, text):
         self.ui.onl_log.clear()
+
+    def trackDone(self):
+        self.ui.track_confirm_button.setEnabled(True)
 
 def loadStyle(QApplication):
     """

@@ -43,12 +43,14 @@ class PullDataWorkerThread(QThread):
     update_signal = pyqtSignal(str)
     doneSignal = pyqtSignal()
 
-    def __init__(self, params = None):
+    def __init__(self, DataManager, params = None, ):
         super().__init__()
         if params is None:
           self.params = DEFAULT_PULL_DATA_CONFIG
         else:
           self.params = params
+        
+        self.DataManager = DataManager
 
     def run(self):
         self.fileCount = 0
@@ -204,7 +206,7 @@ class PullDataWorkerThread(QThread):
 
         # create final dir
         dateStr =  fileTime.strftime("%Y/%m/%d/fixed/")
-        radarDir = os.path.join(self.params['outputDir'], self.params['radarName'])
+        radarDir = os.path.join(self.DataManager.filePath, self.params['radarName'])
         outDayDir = os.path.join(radarDir, dateStr)
         try:
             os.makedirs(outDayDir)
@@ -236,7 +238,7 @@ class PullDataWorkerThread(QThread):
         # make the target directory and go there
         
         dateStr = date.strftime("%Y/%m/%d/fixed/")
-        radarDir = os.path.join(self.params['outputDir'], self.params['radarName'])
+        radarDir = os.path.join(self.DataManager.filePath, self.params['radarName'])
         dayDir = os.path.join(radarDir, dateStr)
         try:
             os.makedirs(dayDir)
