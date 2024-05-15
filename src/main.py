@@ -5,7 +5,7 @@ import datetime
 import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime, QThread
+from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime, QThread, pyqtSlot
 from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
@@ -113,6 +113,15 @@ class MainWindow(QMainWindow):
             event.ignore()
         else:
             self.glWidget.clear()
+
+            self.stopTask()
+            if self.dataThread:
+                self.dataThread.quit()
+                self.dataThread.wait()
+            
+            if self.trackThread:
+                self.trackThread.quit()
+                self.trackThread.wait()
             event.accept()
 
     def page2Connect(self, event):
@@ -678,6 +687,7 @@ class MainWindow(QMainWindow):
     def initHomePage(self):
         self.ui.outputDir.setText(self.DataManager.filePath)
         self.ui.onl_stop.setEnabled(False)
+        self.ui.onl_stop.clicked.connect(self.getOnlineStopButton)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
         self.reset2DTrackParams()
@@ -797,13 +807,27 @@ class MainWindow(QMainWindow):
         self.genTrackThread.params = trackInfor
         self.trackThread.start()
         self.ui.track_confirm_button.setEnabled(False)
+    
+    @pyqtSlot(str)
+    def updatePullDataLog(self, text):
+        self.ui.onl_log.setText(text)
+
+    def disableStopButton(self):
+        self.ui.onl_stop.setEnabled(False)
+        self.ui.actionOpenURL.setEnabled(True)
 
     def getOnlineSettings(self):
-        
-        # self.pullDataThread = PullDataWorkerThread(self.DataManager)
-        # self.pullDataThread.update_signal.connect(lambda text: self.ui.onl_log.setText(text))
-        # self.pullDataThread.doneSignal.connect(lambda: self.ui.onl_log.clear())
+        self.dataThread = QThread()
+        self.pullDataThread = PullDataWorkerThread(self.DataManager)
 
+        self.pullDataThread.moveToThread(self.dataThread)
+        self.dataThread.started.connect(self.pullDataThread.run)
+        self.pullDataThread.update_signal.connect(self.updatePullDataLog)
+        self.pullDataThread.doneSignal.connect(lambda: self.ui.onl_log.clear())
+        self.pullDataThread.doneSignal.connect(self.disableStopButton)
+        self.pullDataThread.doneSignal.connect(self.dataThread.quit)
+        self.pullDataThread.doneSignal.connect(self.pullDataThread.deleteLater)
+        self.dataThread.finished.connect(self.dataThread.deleteLater)
 
         onlineSettings = DEFAULT_PULL_DATA_CONFIG
         dt_start = self.ui.onl_start_time.dateTime()
@@ -819,7 +843,7 @@ class MainWindow(QMainWindow):
         onlineSettings['dryRun'] = self.ui.onl_dry_run.isChecked()
         onlineSettings['force'] = self.ui.onl_force.isChecked()
         self.pullDataThread.params = onlineSettings
-        self.pullDataThread.run()
+        self.dataThread.start()
         self.ui.onl_stop.setEnabled(True)
         self.ui.actionOpenURL.setEnabled(False)
 
@@ -829,10 +853,8 @@ class MainWindow(QMainWindow):
         self.ui.onl_radar_list.addItems(radarList)
 
     def getOnlineStopButton(self):
-        # isChecked = self.ui.onl_stop.isChecked()
+      if self.pullDataThread._is_running:
         self.pullDataThread.stop()
-        self.ui.onl_stop.setEnabled(False)
-        self.ui.actionOpenURL.setEnabled(True)
 
 def loadStyle(QApplication):
     """

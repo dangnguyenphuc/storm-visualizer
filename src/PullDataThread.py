@@ -13,7 +13,7 @@ from subprocess import call
 
 import pyart
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QThread
 from Config import DEFAULT_PULL_DATA_CONFIG
 
 def getNodeText(nodelist):
@@ -51,7 +51,12 @@ class PullDataWorkerThread(QObject):
           self.params = params
         
         self.DataManager = DataManager
-
+        self._is_running = True
+    
+    def stop(self):
+        """Stop the long-running task"""
+        self._is_running = False
+        
     def run(self):
         self.fileCount = 0
         self.thisScriptName = os.path.basename(__file__)
@@ -65,16 +70,15 @@ class PullDataWorkerThread(QObject):
 
         if not self.params['archiveMode']:
           lookbackSecs = timedelta(0, 1800)
-          while(True):
+          while(self._is_running):
               self.fileCount = 0
               nowTime = time.gmtime()
               endTime = datetime.datetime(nowTime.tm_year, nowTime.tm_mon, nowTime.tm_mday,
                                           nowTime.tm_hour, nowTime.tm_min, nowTime.tm_sec)
               startTime = endTime - lookbackSecs
               self.manageRetrieval(startTime, endTime)
-              time.sleep(self.params['sleepSecs'])
+              QThread.sleep(self.params['sleepSecs'])
           self.update_signal.emit("Done")
-          time.sleep(1)
           self.doneSignal.emit()
           return
 
@@ -85,7 +89,6 @@ class PullDataWorkerThread(QObject):
         endString += " at " + str(nowTime)
 
         self.update_signal.emit(endString)
-        time.sleep(1)
         self.doneSignal.emit()
 
     def manageRetrieval(self, startTime = None, endTime = None):
@@ -94,8 +97,10 @@ class PullDataWorkerThread(QObject):
         if endTime is None:
           endTime = self.params['endTime']
 
-        startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
-        endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
+        if not isinstance(startTime, datetime.datetime):
+          startTime = datetime.datetime.strptime(startTime, "%Y-%m-%d %H:%M:%S")
+        if not isinstance(endTime, datetime.datetime):
+          endTime = datetime.datetime.strptime(endTime, "%Y-%m-%d %H:%M:%S")
 
 
         if (startTime.day == endTime.day):
