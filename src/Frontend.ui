@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1243</width>
-    <height>704</height>
+    <height>705</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -139,7 +139,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QGridLayout" name="gridLayout_2">
@@ -451,7 +451,7 @@
                   <widget class="QComboBox" name="onl_radar_list"/>
                  </item>
                  <item row="3" column="1" colspan="2">
-                  <widget class="QLabel" name="label_20">
+                  <widget class="QLabel" name="outputDir">
                    <property name="font">
                     <font>
                      <italic>true</italic>
@@ -486,55 +486,36 @@
                </item>
                <item row="5" column="2">
                 <layout class="QGridLayout" name="gridLayout_18">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_24">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
+                 <item row="12" column="2">
+                  <widget class="QLabel" name="label_51">
                    <property name="text">
-                    <string>FIELD THRESH</string>
+                    <string>nb</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="track_field_thresh">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="7" column="3">
-                  <widget class="QPushButton" name="track_accept_button">
+                 <item row="12" column="0">
+                  <widget class="QLabel" name="label_47">
                    <property name="text">
-                    <string>Accept</string>
+                    <string>X limit</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="6" column="1">
-                  <widget class="QLineEdit" name="track_vmin">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_27">
+                 <item row="2" column="2">
+                  <widget class="QLabel" name="label_33">
                    <property name="text">
-                    <string>MIN SIZE</string>
+                    <string>MAX SHIFT DISP</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="3">
-                  <widget class="QLineEdit" name="track_iso_smooth">
+                 <item row="13" column="0">
+                  <widget class="QLabel" name="label_48">
+                   <property name="text">
+                    <string>Y limit</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="track_flow_margin">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -550,8 +531,105 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="3">
-                  <widget class="QLineEdit" name="track_max_shift_disp">
+                 <item row="11" column="0" colspan="2">
+                  <layout class="QGridLayout" name="gridLayout_19">
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="grid_shape_y">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>100</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>401</string>
+                     </property>
+                     <property name="placeholderText">
+                      <string>y</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLineEdit" name="grid_shape_x">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>100</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>150</string>
+                     </property>
+                     <property name="placeholderText">
+                      <string>x</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QLineEdit" name="grid_shape_z">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>100</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>401</string>
+                     </property>
+                     <property name="placeholderText">
+                      <string>z</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_31">
+                   <property name="text">
+                    <string>vmin </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_28">
+                   <property name="text">
+                    <string>SEARCH MARGIN</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="16" column="3">
+                  <spacer name="verticalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QLineEdit" name="track_vmin">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -560,13 +638,10 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="5" column="3">
-                  <widget class="QLineEdit" name="track_gs_alt">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
+                 <item row="14" column="0">
+                  <widget class="QLabel" name="label_49">
+                   <property name="text">
+                    <string>Z limit</string>
                    </property>
                   </widget>
                  </item>
@@ -577,6 +652,182 @@
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="14" column="3">
+                  <widget class="QLineEdit" name="grid_min_radius">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>200</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_24">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>FIELD THRESH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="14" column="2">
+                  <widget class="QLabel" name="label_53">
+                   <property name="text">
+                    <string>Min Radius</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="track_search_margin">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_32">
+                   <property name="text">
+                    <string>MAX DISPARITY</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="15" column="3">
+                  <widget class="QPushButton" name="grid_accept_button">
+                   <property name="text">
+                    <string>Accept</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="2">
+                  <widget class="QLabel" name="label_52">
+                   <property name="text">
+                    <string>bsp</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="1">
+                  <layout class="QGridLayout" name="gridLayout_21">
+                   <item row="0" column="0">
+                    <widget class="QLineEdit" name="grid_x_lims_1">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="inputMask">
+                      <string/>
+                     </property>
+                     <property name="text">
+                      <string>-120000</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="grid_x_lims_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>120000</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="track_min_size">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QLineEdit" name="track_iso_smooth">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="2">
+                  <widget class="QLabel" name="label_50">
+                   <property name="text">
+                    <string>h factor</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="13" column="3">
+                  <widget class="QLineEdit" name="grid_bsp">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="12" column="3">
+                  <widget class="QLineEdit" name="grid_nb">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>0.6</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="8" column="0" colspan="4">
+                  <widget class="Line" name="line_8">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="0" colspan="2">
+                  <widget class="QLabel" name="label_20">
+                   <property name="text">
+                    <string>Grid Shape</string>
                    </property>
                   </widget>
                  </item>
@@ -600,23 +851,121 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="3">
-                  <spacer name="verticalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                 <item row="3" column="3">
+                  <widget class="QLineEdit" name="track_iso_thresh">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
-                 <item row="6" column="0">
-                  <widget class="QLabel" name="label_31">
+                 <item row="3" column="2">
+                  <widget class="QLabel" name="label_34">
                    <property name="text">
-                    <string>vmin </string>
+                    <string>ISO THRESH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="3">
+                  <widget class="QLineEdit" name="track_vmax">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="3">
+                  <widget class="QLineEdit" name="track_gs_alt">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="2">
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>vmax </string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QLabel" name="label_35">
+                   <property name="text">
+                    <string>ISO SMOOTH</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="0" colspan="4">
+                  <widget class="QLabel" name="label_23">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>10</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Grid Information</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="3">
+                  <widget class="QPushButton" name="track_accept_button">
+                   <property name="text">
+                    <string>Accept</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="3">
+                  <widget class="QLineEdit" name="track_max_shift_disp">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="11" column="3">
+                  <widget class="QLineEdit" name="grid_h_factor">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="2">
+                  <widget class="QLabel" name="label_36">
+                   <property name="text">
+                    <string>GS ALT</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="track_field_thresh">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
                   </widget>
                  </item>
@@ -643,104 +992,96 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="3">
-                  <widget class="QLineEdit" name="track_iso_thresh">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="track_min_size">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="2">
-                  <widget class="QLabel" name="label_34">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_27">
                    <property name="text">
-                    <string>ISO THRESH</string>
+                    <string>MIN SIZE</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="1">
-                  <widget class="QLineEdit" name="track_flow_margin">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
+                 <item row="13" column="1">
+                  <layout class="QGridLayout" name="gridLayout_22">
+                   <item row="0" column="0">
+                    <widget class="QLineEdit" name="grid_y_lims_1">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>-120000</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="grid_y_lims_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>120000</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
-                 <item row="6" column="2">
-                  <widget class="QLabel" name="label_37">
-                   <property name="text">
-                    <string>vmax </string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="6" column="3">
-                  <widget class="QLineEdit" name="track_vmax">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_28">
-                   <property name="text">
-                    <string>SEARCH MARGIN</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="2">
-                  <widget class="QLabel" name="label_35">
-                   <property name="text">
-                    <string>ISO SMOOTH</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QLabel" name="label_32">
-                   <property name="text">
-                    <string>MAX DISPARITY</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="track_search_margin">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <widget class="QLabel" name="label_33">
-                   <property name="text">
-                    <string>MAX SHIFT DISP</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="2">
-                  <widget class="QLabel" name="label_36">
-                   <property name="text">
-                    <string>GS ALT</string>
-                   </property>
-                  </widget>
+                 <item row="14" column="1">
+                  <layout class="QGridLayout" name="gridLayout_23">
+                   <item row="0" column="0">
+                    <widget class="QLineEdit" name="grid_z_lims_1">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>0</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QLineEdit" name="grid_z_lims_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>50</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>15000</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
@@ -758,46 +1099,113 @@
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
                 <layout class="QGridLayout" name="gridLayout_9">
-                 <item row="1" column="5">
-                  <widget class="QComboBox" name="fileBox">
+                 <item row="1" column="7">
+                  <widget class="QLineEdit" name="timerInput">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="7">
+                  <widget class="QCheckBox" name="clutterFilterToggle">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Clutter Filter</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="6">
+                  <widget class="QCheckBox" name="gridCheckBox">
+                   <property name="layoutDirection">
+                    <enum>Qt::RightToLeft</enum>
+                   </property>
+                   <property name="text">
+                    <string>Grid</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="3">
+                  <widget class="QComboBox" name="dateBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="tabletTracking">
+                    <bool>false</bool>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::WheelFocus</enum>
+                   </property>
                    <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="whatsThis">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="inputMethodHints">
+                    <set>Qt::ImhNone</set>
+                   </property>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="5">
+                  <widget class="QComboBox" name="modeBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="whatsThis">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="editable">
                     <bool>true</bool>
                    </property>
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>-1</number>
                    </property>
                    <property name="insertPolicy">
                     <enum>QComboBox::NoInsert</enum>
                    </property>
                    <item>
                     <property name="text">
-                     <string>All file</string>
+                     <string>Mode 1</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>File 2</string>
+                     <string>Mode 2</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>File 3</string>
+                     <string>Mode 3</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>File 4</string>
+                     <string>Mode 4</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>File 5</string>
+                     <string>Mode 5</string>
                     </property>
                    </item>
                   </widget>
@@ -855,13 +1263,6 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="1" column="6">
-                  <widget class="QLabel" name="label_12">
-                   <property name="text">
-                    <string>Switch Frame Timer</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="4">
                   <widget class="QLabel" name="label_16">
                    <property name="text">
@@ -869,41 +1270,17 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="3">
-                  <widget class="QComboBox" name="dateBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="tabletTracking">
-                    <bool>false</bool>
-                   </property>
-                   <property name="focusPolicy">
-                    <enum>Qt::WheelFocus</enum>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="whatsThis">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DD/MM/YY&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="inputMethodHints">
-                    <set>Qt::ImhNone</set>
-                   </property>
-                   <property name="editable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="insertPolicy">
-                    <enum>QComboBox::NoInsert</enum>
+                 <item row="0" column="6">
+                  <widget class="QLabel" name="label_26">
+                   <property name="text">
+                    <string>Sweep No.</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="4">
-                  <widget class="QLabel" name="label_17">
+                 <item row="1" column="6">
+                  <widget class="QLabel" name="label_12">
                    <property name="text">
-                    <string>FILE</string>
+                    <string>Switch Frame Timer</string>
                    </property>
                   </widget>
                  </item>
@@ -913,74 +1290,6 @@
                     <string>DATE</string>
                    </property>
                   </widget>
-                 </item>
-                 <item row="0" column="5">
-                  <widget class="QComboBox" name="modeBox">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="whatsThis">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;mode name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="editable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="currentIndex">
-                    <number>-1</number>
-                   </property>
-                   <property name="insertPolicy">
-                    <enum>QComboBox::NoInsert</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Mode 1</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Mode 2</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Mode 3</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Mode 4</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Mode 5</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="2" column="5">
-                  <layout class="QGridLayout" name="gridLayout_6">
-                   <item row="0" column="0">
-                    <widget class="QPushButton" name="preFile">
-                     <property name="text">
-                      <string>Previous File</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QPushButton" name="nextFile">
-                     <property name="text">
-                      <string>Next File</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
                  </item>
                  <item row="1" column="1">
                   <widget class="QLineEdit" name="errorBox">
@@ -1001,16 +1310,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="7">
-                  <widget class="QLineEdit" name="timerInput">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_13">
                    <property name="sizePolicy">
@@ -1024,13 +1323,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="0" column="6">
-                  <widget class="QLabel" name="label_26">
-                   <property name="text">
-                    <string>Sweep No.</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="7">
                   <widget class="QLineEdit" name="chooseSweep">
                    <property name="sizePolicy">
@@ -1041,24 +1333,73 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="7">
-                  <widget class="QCheckBox" name="clutterFilterToggle">
-                   <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
-                   </property>
+                 <item row="2" column="5">
+                  <layout class="QGridLayout" name="gridLayout_6">
+                   <item row="0" column="0">
+                    <widget class="QPushButton" name="preFile">
+                     <property name="text">
+                      <string>Previous File</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QPushButton" name="nextFile">
+                     <property name="text">
+                      <string>Next File</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item row="1" column="4">
+                  <widget class="QLabel" name="label_17">
                    <property name="text">
-                    <string>Clutter Filter</string>
+                    <string>FILE</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="6">
-                  <widget class="QCheckBox" name="gridCheckBox">
-                   <property name="layoutDirection">
-                    <enum>Qt::RightToLeft</enum>
+                 <item row="1" column="5">
+                  <widget class="QComboBox" name="fileBox">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="text">
-                    <string>Grid</string>
+                   <property name="whatsThis">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;choose file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
+                   <property name="editable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="currentIndex">
+                    <number>0</number>
+                   </property>
+                   <property name="insertPolicy">
+                    <enum>QComboBox::NoInsert</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>All file</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>File 2</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>File 3</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>File 4</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>File 5</string>
+                    </property>
+                   </item>
                   </widget>
                  </item>
                 </layout>
@@ -1098,7 +1439,7 @@
                       <x>0</x>
                       <y>0</y>
                       <width>1003</width>
-                      <height>440</height>
+                      <height>441</height>
                      </rect>
                     </property>
                    </widget>
@@ -1269,7 +1610,7 @@
                       <x>0</x>
                       <y>0</y>
                       <width>1003</width>
-                      <height>529</height>
+                      <height>530</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_16">
@@ -1342,78 +1683,20 @@
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>-311</y>
+                      <y>-232</y>
                       <width>986</width>
-                      <height>861</height>
+                      <height>782</height>
                      </rect>
                     </property>
                     <layout class="QGridLayout" name="gridLayout_10">
-                     <item row="7" column="1" rowspan="4">
-                      <widget class="QLabel" name="label2d_pro">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>300</width>
-                         <height>300</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>600</width>
-                         <height>600</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>label for 2D</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="19" column="0" colspan="3">
+                     <item row="16" column="0" colspan="4">
                       <widget class="Line" name="line">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
                       </widget>
                      </item>
-                     <item row="7" column="0" rowspan="6">
-                      <widget class="QScrollArea" name="scrollArea_4">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>500</width>
-                         <height>600</height>
-                        </size>
-                       </property>
-                       <property name="mouseTracking">
-                        <bool>true</bool>
-                       </property>
-                       <property name="widgetResizable">
-                        <bool>true</bool>
-                       </property>
-                       <widget class="QWidget" name="scrollAreaWidgetContents_4">
-                        <property name="geometry">
-                         <rect>
-                          <x>0</x>
-                          <y>0</y>
-                          <width>498</width>
-                          <height>598</height>
-                         </rect>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_13"/>
-                       </widget>
-                      </widget>
-                     </item>
-                     <item row="13" column="0">
+                     <item row="10" column="0">
                       <layout class="QGridLayout" name="gridLayout_14">
                        <item row="0" column="3">
                         <widget class="QLabel" name="label">
@@ -1556,124 +1839,47 @@
                        </item>
                       </layout>
                      </item>
-                     <item row="17" column="0" colspan="3">
+                     <item row="7" column="0" rowspan="3">
+                      <widget class="QScrollArea" name="scrollArea_4">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>500</width>
+                         <height>600</height>
+                        </size>
+                       </property>
+                       <property name="mouseTracking">
+                        <bool>true</bool>
+                       </property>
+                       <property name="widgetResizable">
+                        <bool>true</bool>
+                       </property>
+                       <widget class="QWidget" name="scrollAreaWidgetContents_4">
+                        <property name="geometry">
+                         <rect>
+                          <x>0</x>
+                          <y>0</y>
+                          <width>498</width>
+                          <height>598</height>
+                         </rect>
+                        </property>
+                        <layout class="QGridLayout" name="gridLayout_13"/>
+                       </widget>
+                      </widget>
+                     </item>
+                     <item row="14" column="0" colspan="4">
                       <widget class="Line" name="line_2">
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
                       </widget>
                      </item>
-                     <item row="11" column="1">
-                      <widget class="QLabel" name="label_10">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Others Information</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="24" column="0" colspan="3">
-                      <widget class="QListWidget" name="extraInfo_pro"/>
-                     </item>
-                     <item row="12" column="1" rowspan="2">
-                      <widget class="QListWidget" name="otherIn4_pro">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="7" column="2">
-                      <layout class="QGridLayout" name="gridLayout_15">
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="label_6">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>Latitude</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QLabel" name="label_8">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>Longitude</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLineEdit" name="long_pro">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>50</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLineEdit" name="lat_pro">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>50</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="label_9">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>Storm List</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="0" colspan="2">
-                        <widget class="QComboBox" name="stromList"/>
-                       </item>
-                      </layout>
-                     </item>
-                     <item row="18" column="0" colspan="3">
+                     <item row="15" column="0" colspan="4">
                       <layout class="QGridLayout" name="gridLayout_17">
                        <item row="0" column="1">
                         <widget class="QLabel" name="wrl_polar">
@@ -1876,6 +2082,242 @@
                         </widget>
                        </item>
                       </layout>
+                     </item>
+                     <item row="7" column="3">
+                      <layout class="QGridLayout" name="gridLayout_15">
+                       <item row="1" column="1">
+                        <widget class="QLineEdit" name="long_pro">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="label_8">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Longitude</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLineEdit" name="lat_pro">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>50</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_6">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Latitude</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="4" column="0" colspan="2">
+                        <widget class="QComboBox" name="stromList"/>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_9">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>Storm List</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="5" column="0" colspan="2">
+                        <widget class="QListWidget" name="extraInfo_pro"/>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="8" column="3">
+                      <widget class="QLabel" name="label_10">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Others Information</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="10" column="3">
+                      <widget class="QListWidget" name="otherIn4_pro">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="10" column="2">
+                      <layout class="QGridLayout" name="gridLayout_24">
+                       <item row="2" column="0">
+                        <widget class="QLabel" name="label_55">
+                         <property name="text">
+                          <string>Z axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="label_54">
+                         <property name="text">
+                          <string>Y axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLabel" name="pro_y_2">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QLabel" name="pro_z_2">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="pro_x_2">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>0°</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="0">
+                        <widget class="QLabel" name="label_46">
+                         <property name="text">
+                          <string>X axis</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="2">
+                        <widget class="QSlider" name="slider_pro_x_2">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="2">
+                        <widget class="QSlider" name="slider_pro_y_2">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="2">
+                        <widget class="QSlider" name="slider_pro_z_2">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="7" column="2" rowspan="2">
+                      <widget class="QScrollArea" name="scrollArea_5">
+                       <property name="minimumSize">
+                        <size>
+                         <width>300</width>
+                         <height>300</height>
+                        </size>
+                       </property>
+                       <property name="widgetResizable">
+                        <bool>true</bool>
+                       </property>
+                       <widget class="QWidget" name="scrollAreaWidgetContents_5">
+                        <property name="geometry">
+                         <rect>
+                          <x>0</x>
+                          <y>0</y>
+                          <width>298</width>
+                          <height>598</height>
+                         </rect>
+                        </property>
+                       </widget>
+                      </widget>
                      </item>
                     </layout>
                    </widget>
@@ -2404,20 +2846,20 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>home_btn_1</tabstop>
-  <tabstop>home_btn_2</tabstop>
-  <tabstop>view2d_2</tabstop>
-  <tabstop>other_2</tabstop>
-  <tabstop>exit_btn_1</tabstop>
-  <tabstop>other_1</tabstop>
-  <tabstop>view3d_1</tabstop>
-  <tabstop>slider_3d_y</tabstop>
-  <tabstop>change_btn</tabstop>
-  <tabstop>slider_3d_z</tabstop>
-  <tabstop>slider_3d_x</tabstop>
-  <tabstop>threshold</tabstop>
-  <tabstop>radarBox</tabstop>
-  <tabstop>modeBox</tabstop>
+  <tabstop>grid_shape_x</tabstop>
+  <tabstop>grid_shape_y</tabstop>
+  <tabstop>grid_shape_z</tabstop>
+  <tabstop>grid_x_lims_1</tabstop>
+  <tabstop>grid_x_lims_2</tabstop>
+  <tabstop>grid_y_lims_1</tabstop>
+  <tabstop>grid_y_lims_2</tabstop>
+  <tabstop>grid_z_lims_1</tabstop>
+  <tabstop>grid_z_lims_2</tabstop>
+  <tabstop>grid_h_factor</tabstop>
+  <tabstop>grid_nb</tabstop>
+  <tabstop>grid_bsp</tabstop>
+  <tabstop>grid_min_radius</tabstop>
+  <tabstop>grid_accept_button</tabstop>
   <tabstop>fileBox</tabstop>
   <tabstop>exit_btn_2</tabstop>
   <tabstop>timerInput</tabstop>
@@ -2455,13 +2897,34 @@
   <tabstop>slider_pro_y</tabstop>
   <tabstop>checkBox_scan_pro</tabstop>
   <tabstop>resetView_pro</tabstop>
-  <tabstop>extraInfo_pro</tabstop>
-  <tabstop>otherIn4_pro</tabstop>
   <tabstop>long_pro</tabstop>
   <tabstop>lat_pro</tabstop>
   <tabstop>stromList</tabstop>
   <tabstop>view3d_2</tabstop>
   <tabstop>view2d_1</tabstop>
+  <tabstop>onl_start_time</tabstop>
+  <tabstop>actionOpenURL</tabstop>
+  <tabstop>onl_end_time</tabstop>
+  <tabstop>onl_stop</tabstop>
+  <tabstop>onl_force</tabstop>
+  <tabstop>onl_sleep_secs</tabstop>
+  <tabstop>onl_radar_list</tabstop>
+  <tabstop>onl_archive_mode</tabstop>
+  <tabstop>onl_dry_run</tabstop>
+  <tabstop>slider_3d_z</tabstop>
+  <tabstop>slider_3d_x</tabstop>
+  <tabstop>threshold</tabstop>
+  <tabstop>radarBox</tabstop>
+  <tabstop>modeBox</tabstop>
+  <tabstop>home_btn_1</tabstop>
+  <tabstop>home_btn_2</tabstop>
+  <tabstop>view2d_2</tabstop>
+  <tabstop>other_2</tabstop>
+  <tabstop>exit_btn_1</tabstop>
+  <tabstop>other_1</tabstop>
+  <tabstop>view3d_1</tabstop>
+  <tabstop>slider_3d_y</tabstop>
+  <tabstop>change_btn</tabstop>
  </tabstops>
  <resources>
   <include location="resource.qrc"/>
@@ -2478,8 +2941,8 @@
      <y>151</y>
     </hint>
     <hint type="destinationlabel">
-     <x>185</x>
-     <y>180</y>
+     <x>189</x>
+     <y>156</y>
     </hint>
    </hints>
   </connection>
@@ -2495,7 +2958,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>189</x>
-     <y>146</y>
+     <y>123</y>
     </hint>
    </hints>
   </connection>
@@ -2523,7 +2986,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>189</x>
-     <y>180</y>
+     <y>156</y>
     </hint>
     <hint type="destinationlabel">
      <x>21</x>
@@ -2539,7 +3002,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>189</x>
-     <y>146</y>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -2558,8 +3021,8 @@
      <y>189</y>
     </hint>
     <hint type="destinationlabel">
-     <x>21</x>
-     <y>213</y>
+     <x>32</x>
+     <y>189</y>
     </hint>
    </hints>
   </connection>
@@ -2571,7 +3034,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>190</x>
-     <y>621</y>
+     <y>695</y>
     </hint>
     <hint type="destinationlabel">
      <x>284</x>
@@ -2586,8 +3049,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>34</x>
-     <y>592</y>
+     <x>43</x>
+     <y>695</y>
     </hint>
     <hint type="destinationlabel">
      <x>47</x>
@@ -2606,8 +3069,8 @@
      <y>83</y>
     </hint>
     <hint type="destinationlabel">
-     <x>109</x>
-     <y>112</y>
+     <x>179</x>
+     <y>90</y>
     </hint>
    </hints>
   </connection>
@@ -2618,8 +3081,8 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>188</x>
-     <y>112</y>
+     <x>189</x>
+     <y>90</y>
     </hint>
     <hint type="destinationlabel">
      <x>32</x>
@@ -2634,8 +3097,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>204</x>
-     <y>47</y>
+     <x>236</x>
+     <y>35</y>
     </hint>
     <hint type="destinationlabel">
      <x>50</x>
@@ -2650,8 +3113,8 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>204</x>
-     <y>49</y>
+     <x>236</x>
+     <y>35</y>
     </hint>
     <hint type="destinationlabel">
      <x>168</x>

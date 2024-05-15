@@ -12,7 +12,7 @@ from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
 from Utils import folderEmpty, getHourMinuteSecond
-from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG
+from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG, DEFAULT_GRID_CONFIG
 from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         self.errorTimer.stop()
 
         # just change when value change
-        self.ui.track_confirm_button.clicked.connect(self.getTrackingInfo)
+        self.ui.track_accept_button.clicked.connect(self.getTrackingInfo)
         self.ui.actionOpenURL.clicked.connect(self.getOnlineSettings)
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
@@ -531,12 +531,13 @@ class MainWindow(QMainWindow):
     def initProView(self):
 
         self.ui.scrollArea.setWidget(self.glWidget)
-
+        # * init second glWidget here
+        self.initGL2()
         # 2D 
         source = ['./plot/wrl_plot_scan_strategy.png']
         scanStrategyImage = QPixmap(source[0])
-        self.ui.label2d_pro.setPixmap(scanStrategyImage)
-        self.ui.label2d_pro.setScaledContents(True)
+        # self.ui.label2d_pro.setPixmap(scanStrategyImage)
+        # self.ui.label2d_pro.setScaledContents(True)
 
         self.ui.slider_pro_x.valueChanged.connect(self.updateSliderX)
         self.ui.slider_pro_y.valueChanged.connect(self.updateSliderY)
@@ -558,7 +559,7 @@ class MainWindow(QMainWindow):
 
         # self.ui.scrollArea_4.setMinimumHeight(int(self.ui.page_3.height() * 0.75))
         # self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
-        self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
+        # self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
     
     def addPlotBoxMode(self):
         plotMode = [
@@ -685,7 +686,7 @@ class MainWindow(QMainWindow):
         self.ui.pro_z.setText(str(int(tmp_value)) + "°")
 
     def initHomePage(self):
-        self.ui.outputDir.setText(self.DataManager.filePath)
+        # self.ui.outputDir.setText(self.DataManager.filePath)
         self.ui.onl_stop.setEnabled(False)
         self.ui.onl_stop.clicked.connect(self.getOnlineStopButton)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
@@ -776,7 +777,7 @@ class MainWindow(QMainWindow):
         self.genTrackThread.doneSignal.connect(self.trackThread.quit)
         self.genTrackThread.doneSignal.connect(self.genTrackThread.deleteLater)
         self.trackThread.finished.connect(self.trackThread.deleteLater)
-        self.genTrackThread.doneSignal.connect(lambda: self.ui.track_confirm_button.setEnabled(True))
+        self.genTrackThread.doneSignal.connect(lambda: self.ui.track_accept_button.setEnabled(True))
         
         trackInfor = DEFAULT_2D_TRACK_CONFIG
         if  self.ui.track_field_thresh.text() :
@@ -806,8 +807,65 @@ class MainWindow(QMainWindow):
 
         self.genTrackThread.params = trackInfor
         self.trackThread.start()
-        self.ui.track_confirm_button.setEnabled(False)
+        self.ui.track_accept_button.setEnabled(False)
+    def initGL2(self):
+        sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
+        self.glWidget_2 = GLWidget(self)        
+        self.glWidget_2.setSizePolicy(sizePolicy)
+        self.ui.scrollArea_5.setWidget(self.glWidget_2)
+        
+        self.ui.scrollArea_5.setWidgetResizable(True)
+        self.ui.scrollArea_5.setAlignment(Qt.AlignHCenter)
+        self.ui.scrollArea_5.setAlignment( Qt.AlignVCenter)
+
+        self.ui.slider_pro_x_2.valueChanged.connect(self.updateSliderX_Pro_2)
+        self.ui.slider_pro_y_2.valueChanged.connect(self.updateSliderY_Pro_2)
+        self.ui.slider_pro_z_2.valueChanged.connect(self.updateSliderZ_Pro_2)
+
+        self.ui.slider_pro_x_2.setMaximum(115)
+        self.ui.slider_pro_y_2.setMaximum(115)
+        self.ui.slider_pro_z_2.setMaximum(115)
+
+# * slider for second GLwidget here
+    def updateSliderX_Pro_2(self, val):
+        self.glWidget_2.setRotX(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.pro_x_2.setText(str(int(tmp_value)) + "°")
+    def updateSliderY_Pro_2(self, val):
+        self.glWidget_2.setRotX(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.pro_y_2.setText(str(int(tmp_value)) + "°")
+    def updateSliderZ_Pro_2(self, val):
+        self.glWidget_2.setRotX(val)
+        tmp_value = val * np.pi
+        tmp_value = min(tmp_value, 360)
+        self.ui.pro_z_2.setText(str(int(tmp_value)) + "°")
+#  * to here
+    def getGridInfor(self):
+        # ! get grid accept button  here
+        self.ui.grid_accept_button.isChecked()
+        # !Get grid infor here
+        gridInfor = DEFAULT_GRID_CONFIG
+        if self.ui.grid_shape_x.text() and self.ui.grid_shape_y.text()  and self.ui.grid_shape_z.text():
+            gridInfor['grid_shape'] = "(" + self.ui.grid_shape_x.text()  + "," + self.ui.grid_shape_y.text()  + ","+ self.ui.grid_shape_z.text()  +")"
+        if self.ui.grid_x_lims_1.text() and self.ui.grid_x_lims_2.text() :
+            gridInfor['x_lims'] = "(" + self.ui.grid_x_lims_1.text() +","+ self.ui.grid_x_lims_2.text() + ")"
+        if self.ui.grid_y_lims_1.text() and self.ui.grid_y_lims_2.text() :
+            gridInfor['y_lims'] = "(" + self.ui.grid_y_lims_1.text() +","+ self.ui.grid_y_lims_2.text() + ")"
+        if self.ui.grid_z_lims_1.text() and self.ui.grid_z_lims_2.text() :
+            gridInfor['z_lims'] = "(" + self.ui.grid_z_lims_1.text() +","+ self.ui.grid_z_lims_2.text() + ")"
+        if self.ui.grid_h_factor.text() :
+            gridInfor['h_factor'] = self.ui.grid_h_factor.text()
+        if self.ui.grid_nb.text() :
+            gridInfor['nb'] = self.ui.grid_nb.text()
+        if self.ui.grid_bsp.text():
+            gridInfor['bsp'] = self.ui.grid_bsp.text()
+        if self.ui.grid_min_radius.text() :
+            gridInfor['min_radius'] = self.ui.grid_min_radius.text()
     
+        
     @pyqtSlot(str)
     def updatePullDataLog(self, text):
         self.ui.onl_log.setText(text)
