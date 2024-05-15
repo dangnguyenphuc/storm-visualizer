@@ -13,7 +13,7 @@ from subprocess import call
 
 import pyart
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from Config import DEFAULT_PULL_DATA_CONFIG
 
 def getNodeText(nodelist):
@@ -35,7 +35,7 @@ def runCommand(cmd):
     except OSError as e:
         print >>sys.stderr, "Execution failed:", e
 
-class PullDataWorkerThread(QThread):
+class PullDataWorkerThread(QObject):
     """
     Worker thread class.
     """

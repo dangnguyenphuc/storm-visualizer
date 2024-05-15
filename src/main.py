@@ -5,7 +5,7 @@ import datetime
 import PyQt5
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
-from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime
+from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime, QThread
 from PyQt5.QtGui import QIntValidator, QPixmap
 
 from Object3d import GLWidget
@@ -102,16 +102,10 @@ class MainWindow(QMainWindow):
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
         self.page_2Connected = False
 
-        self.initThreads()
 
-    def initThreads(self):
-        self.pullDataThread = PullDataWorkerThread(self.DataManager)
-        self.pullDataThread.update_signal.connect(self.setOnlineLog)
-        self.pullDataThread.doneSignal.connect(self.clearOnlineLog)
-
-
-        self.genTrackThread = TrackThread(DataManager=self.DataManager)
-        self.genTrackThread.doneSignal.connect(self.trackDone)
+        # self.pullDataThread = PullDataWorkerThread(self.DataManager)
+        # self.pullDataThread.update_signal.connect(lambda text: self.ui.onl_log.setText(text))
+        # self.pullDataThread.doneSignal.connect(lambda: self.ui.onl_log.clear())
 
 
     def closeEvent(self, event):
@@ -686,6 +680,7 @@ class MainWindow(QMainWindow):
         self.ui.onl_stop.setEnabled(False)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
+        self.reset2DTrackParams()
         self.resetPullDataParams()
 
     def resetPullDataParams(self):
@@ -699,6 +694,19 @@ class MainWindow(QMainWindow):
         self.ui.onl_force.setChecked(DEFAULT_PULL_DATA_CONFIG['force'])
         self.addRadarFromOnlineSource()
     
+    def reset2DTrackParams(self):
+        self.ui.track_field_thresh.setText(str(DEFAULT_2D_TRACK_CONFIG['FIELD_THRESH']))
+        self.ui.track_min_size.setText(str(DEFAULT_2D_TRACK_CONFIG['MIN_SIZE']))
+        self.ui.track_search_margin.setText(str(DEFAULT_2D_TRACK_CONFIG['SEARCH_MARGIN']))
+        self.ui.track_flow_margin.setText(str(DEFAULT_2D_TRACK_CONFIG['FLOW_MARGIN']))
+        self.ui.track_max_flow_mag.setText(str(DEFAULT_2D_TRACK_CONFIG['MAX_FLOW_MAG']))
+        self.ui.track_max_disparity.setText(str(DEFAULT_2D_TRACK_CONFIG['MAX_DISPARITY']))
+        self.ui.track_max_shift_disp.setText(str(DEFAULT_2D_TRACK_CONFIG['MAX_SHIFT_DISP']))
+        self.ui.track_iso_thresh.setText(str(DEFAULT_2D_TRACK_CONFIG['ISO_THRESH']))
+        self.ui.track_iso_smooth.setText(str(DEFAULT_2D_TRACK_CONFIG['ISO_SMOOTH']))
+        self.ui.track_gs_alt.setText(str(DEFAULT_2D_TRACK_CONFIG['GS_ALT']))
+        self.ui.track_vmax.setText(str(DEFAULT_2D_TRACK_CONFIG['VMAX'])) 
+        self.ui.track_vmin.setText(str(DEFAULT_2D_TRACK_CONFIG['VMIN'])) 
 
     def chooseDir(self):
       dataDir = QFileDialog.getExistingDirectory()
@@ -749,7 +757,17 @@ class MainWindow(QMainWindow):
         self.glWidget.setUpVBO(flag=(not state))
         self.glWidget.updateGL()
 
-    def getTrackingInfo(self) -> dict:
+    def getTrackingInfo(self):
+        self.trackThread = QThread()
+        self.genTrackThread = TrackThread(DataManager=self.DataManager)
+        
+        self.genTrackThread.moveToThread(self.trackThread)
+        self.trackThread.started.connect(self.genTrackThread.run)
+        self.genTrackThread.doneSignal.connect(self.trackThread.quit)
+        self.genTrackThread.doneSignal.connect(self.genTrackThread.deleteLater)
+        self.trackThread.finished.connect(self.trackThread.deleteLater)
+        self.genTrackThread.doneSignal.connect(lambda: self.ui.track_confirm_button.setEnabled(True))
+        
         trackInfor = DEFAULT_2D_TRACK_CONFIG
         if  self.ui.track_field_thresh.text() :
             trackInfor["FIELD_THRESH"] =  self.ui.track_field_thresh.text()
@@ -776,11 +794,17 @@ class MainWindow(QMainWindow):
         if self.ui.track_vmax.text():
             trackInfor["VMAX"] = self.ui.track_vmax.text() 
 
-        self.ui.track_confirm_button.setEnabled(False)
         self.genTrackThread.params = trackInfor
-        self.genTrackThread.run()
+        self.trackThread.start()
+        self.ui.track_confirm_button.setEnabled(False)
 
     def getOnlineSettings(self):
+        
+        # self.pullDataThread = PullDataWorkerThread(self.DataManager)
+        # self.pullDataThread.update_signal.connect(lambda text: self.ui.onl_log.setText(text))
+        # self.pullDataThread.doneSignal.connect(lambda: self.ui.onl_log.clear())
+
+
         onlineSettings = DEFAULT_PULL_DATA_CONFIG
         dt_start = self.ui.onl_start_time.dateTime()
         dt_start_string = dt_start.toString(self.ui.onl_start_time.displayFormat())
@@ -809,15 +833,6 @@ class MainWindow(QMainWindow):
         self.pullDataThread.stop()
         self.ui.onl_stop.setEnabled(False)
         self.ui.actionOpenURL.setEnabled(True)
-    
-    def setOnlineLog(self, text):
-        self.ui.onl_log.setText(text)
-    
-    def clearOnlineLog(self, text):
-        self.ui.onl_log.clear()
-
-    def trackDone(self):
-        self.ui.track_confirm_button.setEnabled(True)
 
 def loadStyle(QApplication):
     """

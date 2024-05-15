@@ -2,13 +2,14 @@ from Titan.tint.visualization import full_domain
 from Titan.tint import Cell_tracks
 import os
 import pyart
+import numpy as np
 
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 from Config import DEFAULT_2D_TRACK_CONFIG
 from Utils import listFile
 from Radar import DataManager
 
-class TrackThread(QThread):
+class TrackThread(QObject):
     """
     Worker thread class.
     """
@@ -37,5 +38,5 @@ class TrackThread(QThread):
       full_domain(tracks_obj, grids, "../Images/" + self.DataManager.radarName + self.DataManager.date + self.DataManager.mode, 
         lat_lines=np.arange(radar.latitude['data'][0]-2.0, radar.latitude['data'][0]+2.5, 0.5),
         lon_lines=np.arange(radar.longitude['data'][0]-2.0, radar.longitude['data'][0]+2.5, 0.5),
-        tracers=True, vmin = self.params['VMIN'], vmax = self.params['VMAX'])
+        tracers=True, vmin = int(self.params['VMIN']), vmax = int(self.params['VMAX']))
       self.doneSignal.emit()
