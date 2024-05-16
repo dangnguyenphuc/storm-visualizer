@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         # init HomePage
         self.initHomePage() 
         # init 2D Page
-        # self.init2DView() 
+        self.init2DView() 
         # init Pro view
         self.initProView()
 
@@ -428,12 +428,13 @@ class MainWindow(QMainWindow):
     def getFile(self, index=0):
       f = self.ui.fileBox.currentText()
       if f != "":
-        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked())
+        self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked(), isGrid=self.ui.gridCheckBox.isChecked())
         self.getPlotMode()
         self.glWidget.updateGL()
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
+        
         self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
         self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
 
@@ -483,7 +484,7 @@ class MainWindow(QMainWindow):
     def init2DView(self): 
       '''create mode box for user choosing mode'''
     #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-
+      self.ui.chooseSweep.setText("0")
       self.addPlotBoxMode()
       self.addPlotModeImage()
 
@@ -577,8 +578,8 @@ class MainWindow(QMainWindow):
 
 
     def addPlotModeImage(self):
-        pixmap = QPixmap('temp.png')
-        pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
+        # pixmap = QPixmap('temp.png')
+        # pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
         self.ui.pyart_ppi.setPixmap(QPixmap('./plot/pyart_ppi.png'))
         self.ui.wrl_polar.setPixmap(QPixmap('./plot/wrl_ppi.png'))
         self.ui.wrl_ppi.setPixmap(QPixmap('./plot/wrl_ppi.png'))
@@ -587,15 +588,6 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_attenuation_correction.setPixmap(QPixmap('./plot/wrl_.png').scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio))
         self.ui.wrl_plot_rain.setPixmap(QPixmap('./plot/wrl_plot_rain.png'))
         self.ui.wrl_plot_scan_strategy.setPixmap(QPixmap('./plot/wrl_plot_scan_strategy.png'))
-
-        # self.ui.pyart_ppi.setScaledContents(True)   
-        # self.ui.wrl_polar.setScaledContents(True)
-        # self.ui.wrl_ppi.setScaledContents(True)
-        # self.ui.wrl_clutter.setScaledContents(True)
-        # self.ui.wrl_ppi_no_clutter.setScaledContents(True)
-        # self.ui.wrl_attenuation_correction.setScaledContents(True)
-        # self.ui.wrl_plot_rain.setScaledContents(True)
-        # self.ui.wrl_plot_scan_strategy.setScaledContents(True)
 
     def getPlotMode(self, mode=None, sweep=0):
       if mode is None or isinstance(mode, int):
@@ -629,7 +621,11 @@ class MainWindow(QMainWindow):
 
     def addStormList(self):
         self.ui.stromList.clear()
-        entries = [f'storm 1: theshold...', 'storm 1: theshold...', 'storm 1: theshold...']
+        if self.glWidget.radar.tracksObj.stormFrames.get(self.glWidget.radar.currentIndex) is not None:
+          storms= self.glWidget.radar.tracksObj.tracks.loc[self.glWidget.radar.currentIndex].index
+          entries = [f'Storm {i}' for i in storms]
+        else:
+          entries = ['0 Storm']
         self.ui.stromList.addItems(entries)
         self.ui.stromList.setCurrentIndex(-1)
 

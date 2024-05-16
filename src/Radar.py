@@ -10,7 +10,7 @@ import pyart
 import wradlib as wrl
 import xarray
 
-from Titan.StormIdentification import getStorm, getStormWithIndex, getStormCount
+from Titan.StormIdentification import getStormWithIndex, getStormCount
 from Titan.tint.grid_utils import *
 from Config import *
 from Utils import listDirInDir, listFile, is_valid_day_for_month_year, getYearMonthDate, color
@@ -442,8 +442,8 @@ class Radar:
   def update(self, index = None, isGrid = None):
     if index is not None:
       self.currentIndex = index
-    else:
-      self.increaseIndex()
+    # else:
+    #   self.increaseIndex()
 
     if isGrid is not None:
       self.isGrid = isGrid

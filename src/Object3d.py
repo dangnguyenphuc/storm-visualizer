@@ -379,7 +379,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def update(self, index=None, threshold=None, clutterFilter = None, isGrid = None, plot_mode = (None,0), flag = True):
         if index is not None:
-            self.radar.update(index, self.isGrid)
+            self.radar.update(index)
         if threshold is not None:
             self.threshold = threshold
         if clutterFilter is not None:
@@ -387,14 +387,12 @@ class GLWidget(QtOpenGL.QGLWidget):
         if plot_mode[0] is not None:
             self.radar.plot(mode=plot_mode[0], sweep=plot_mode[1])
         if isGrid is not None:
-            self.isGrid = isGrid
-            self.radar.isGrid = isGrid
-            self.radar.getRadar()
+            self.radar.update(isGrid=isGrid)
 
         if flag:
           self.setUpVBO()
 
-        if self.isGrid:
+        if isGrid:
           self.stormLayer, self.stormSide = self.radar.getAllStormVertices()
           self.setUpStorm()
 
@@ -576,11 +574,13 @@ class GLWidget(QtOpenGL.QGLWidget):
           for layer in i:
             layer.delete()
           self.stormVBO.remove(i)
+        self.stormVBO.clear()
         
       if len(self.stormSideVBO) > 0:
         for i in (self.stormSideVBO).copy():
           i.delete()
           self.stormSideVBO.remove(i)
+        self.stormSideVBO.clear()
           
       if self.stormSide and self.stormLayer and len(self.stormSide) > 0 and len(self.stormLayer) > 0:
         self.stormVBO = []
