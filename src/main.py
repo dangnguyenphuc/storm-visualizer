@@ -371,9 +371,6 @@ class MainWindow(QMainWindow):
           self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
           self.ui.fileBox.setCurrentIndex(0)
 
-
-          
-
     def getRadar(self, index = 0):
         #! get value of radar
         radar = self.ui.radarBox.currentText()
@@ -429,8 +426,13 @@ class MainWindow(QMainWindow):
       f = self.ui.fileBox.currentText()
       if f != "":
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked(), isGrid=self.ui.gridCheckBox.isChecked())
-        self.getPlotMode()
         self.glWidget.updateGL()
+
+        if self.glWidget_2:
+          self.glWidget_2.update(index=index)
+          self.glWidget_2.updateGL()
+        self.getPlotMode()
+        
         self.addInfor()
         self.addExtraInfor()
         self.addStormList()
@@ -524,6 +526,7 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setMaximum(115)
         self.ui.slider_3d_z.setMaximum(115)
 
+        # self.ui.fileBox.currentIndexChanged.connect(self.getFile)
         self.ui.preFile.clicked.connect(self.goPrevFile)
         self.ui.nextFile.clicked.connect(self.goNextFile)
         self.ui.resetView.clicked.connect(self.reset3DView)
@@ -652,12 +655,12 @@ class MainWindow(QMainWindow):
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
         self.ui.fileBox.setCurrentIndex(index)
-        self.getFile(index=index)
+        # self.getFile(index=index)
 
     def goNextFile(self):
         index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
         self.ui.fileBox.setCurrentIndex(index)
-        self.getFile(index=index)
+        # self.getFile(index=index)
 
     def updateSliderX(self, val):
         self.glWidget.setRotX(val)
@@ -665,7 +668,6 @@ class MainWindow(QMainWindow):
         tmp_value = min(tmp_value, 360)
         self.ui.x_value.setText(str(int(tmp_value)) + "°")
         self.ui.pro_x.setText(str(int(tmp_value)) + "°")
-
 
     def updateSliderY(self, val):
         self.glWidget.setRotY(val)
@@ -804,9 +806,11 @@ class MainWindow(QMainWindow):
         self.genTrackThread.params = trackInfor
         self.trackThread.start()
         self.ui.track_accept_button.setEnabled(False)
+        
     def initGL2(self):
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
-        self.glWidget_2 = GLWidget(self)        
+        self.glWidget_2 = GLWidget(self)    
+        self.glWidget_2.resetRadar(self.DataManager)    
         self.glWidget_2.setSizePolicy(sizePolicy)
         self.ui.scrollArea_5.setWidget(self.glWidget_2)
         
@@ -822,19 +826,26 @@ class MainWindow(QMainWindow):
         self.ui.slider_pro_y_2.setMaximum(115)
         self.ui.slider_pro_z_2.setMaximum(115)
 
+        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+
 # * slider for second GLwidget here
     def updateSliderX_Pro_2(self, val):
         self.glWidget_2.setRotX(val)
+        self.glWidget_2.updateGL()
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.pro_x_2.setText(str(int(tmp_value)) + "°")
+
     def updateSliderY_Pro_2(self, val):
-        self.glWidget_2.setRotX(val)
+        self.glWidget_2.setRotY(val)
+        self.glWidget_2.updateGL()
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.pro_y_2.setText(str(int(tmp_value)) + "°")
+
     def updateSliderZ_Pro_2(self, val):
-        self.glWidget_2.setRotX(val)
+        self.glWidget_2.setRotZ(val)
+        self.glWidget_2.updateGL()
         tmp_value = val * np.pi
         tmp_value = min(tmp_value, 360)
         self.ui.pro_z_2.setText(str(int(tmp_value)) + "°")

@@ -488,9 +488,14 @@ class Radar:
       # Create all combinations of indices
       idx_a, idx_b, idx_c = np.meshgrid(np.arange(len(a)), np.arange(len(b)), np.arange(len(c)), indexing='ij')
       combinations = np.array([c[idx_c.ravel()], b[idx_b.ravel()], a[idx_a.ravel()]]).T
+      maxPoint = np.array([np.max(self.data.gate_x['data']), np.max(self.data.gate_y['data']), np.max(self.data.gate_z['data'])])
+      appendPoints = np.array([
+        maxPoint
+      ])
+      combinations = np.concatenate((combinations, appendPoints), axis=0)
       return scaler.fit_transform(
           combinations
-      )
+      )[:-1]
       
   def get_all_vertices_by_threshold(self, threshold = 0):
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
@@ -539,9 +544,9 @@ class Radar:
                 ])
               tracklines[key].append(
                 [
-                  self.gridData.x['data'].data[-1], 
-                  self.gridData.y['data'].data[-1], 
-                  self.gridData.z['data'].data[-1]
+                  np.max(self.data.gate_x['data']), 
+                  np.max(self.data.gate_y['data']), 
+                  np.max(self.data.gate_z['data'])
                 ])
               tracklines[key] = scaler.fit_transform(tracklines[key])
               tracklines[key] = tracklines[key][:-2]
@@ -623,7 +628,7 @@ class Radar:
       concatenated_array,
       np.array([
         [self.gridData.x['data'].data[0], self.gridData.y['data'].data[0], self.gridData.z['data'].data[0]],
-        [self.gridData.x['data'].data[-1], self.gridData.y['data'].data[-1], self.gridData.z['data'].data[-1]]
+        [np.max(self.data.gate_x['data']), np.max(self.data.gate_y['data']), np.max(self.data.gate_z['data'])]
       ])
     ), axis = 0)
 
