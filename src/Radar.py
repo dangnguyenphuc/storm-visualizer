@@ -193,8 +193,8 @@ class DataManager:
 
       if mode: os.rmdir(filePath + radarName + date + mode)
 
-  def genNhaBeRadarGrid(self):
-    def get_grid(radar, grid_shape = (150, 401, 401), z_range = None, y_range = None, x_range = None):
+  def genGrid(self, params = DEFAULT_GRID_CONFIG):
+    def get_grid(radar, grid_shape = (150, 401, 401), z_range = None, y_range = None, x_range = None, h_factor = 0., nb = 0.6, bsp = 1., min_radius = 200):
       
       if z_range is None:
         z_range = (0,radar.gate_z['data'][-1])
@@ -208,7 +208,7 @@ class DataManager:
           radar, grid_shape=grid_shape, 
           grid_limits=(z_range, y_range, x_range),
           fields=['reflectivity'], gridding_algo='map_gates_to_grid',
-          h_factor=0., nb=0.6, bsp=1., min_radius=200.)
+          h_factor=h_factor, nb=nb, bsp=bsp, min_radius=min_radius)
       return grid
 
     def write_grid():
@@ -223,10 +223,10 @@ class DataManager:
         keys = self.getAllDataFilePaths()
         for key in keys:
             radar = pyart.io.read(key)
-            grid = get_grid(radar)
+            grid = get_grid(radar, params['grid_shape'], params['z_lims'], params['y_lims'], params['x_lims'], params['h_factor'], params['nb'], params['bsp'], params['min_radius'])
             pyart.io.write_grid(tmp_dir + 'grid_' + key.split("/")[-1].split(".")[0] + '.nc', grid)
             del radar, grid
-
+            
     write_grid()
 
   def listAllRadar(self):

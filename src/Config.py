@@ -47,12 +47,12 @@ DEFAULT_PULL_DATA_CONFIG = {
 }
 
 DEFAULT_GRID_CONFIG = {
-        'grid_shape' : "(150, 401, 401)",
-        'z_lims': "(0, 15000)", 
-        'y_lims':"(-120000,120000)",
-        'x_lims': "(-120000, 120000)",
-        'h_factor':0, 
-        'nb':0.6, 
+        'grid_shape' : (150, 401, 401),
+        'z_lims': (0, 15000), 
+        'y_lims': (-120000,120000),
+        'x_lims': (-120000, 120000),
+        'h_factor': 0, 
+        'nb': 0.6, 
         'bsp':1,
         'min_radius':200,
 }

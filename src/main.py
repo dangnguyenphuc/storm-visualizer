@@ -16,6 +16,7 @@ from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONF
 from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
+from GenGridThread import GenGridThread
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -122,6 +123,10 @@ class MainWindow(QMainWindow):
             if self.trackThread:
                 self.trackThread.quit()
                 self.trackThread.wait()
+              
+            if self.genGridThread:
+                self.genGridThread.quit()
+                self.genGridThread.wait()
             event.accept()
 
     def page2Connect(self, event):
@@ -370,6 +375,10 @@ class MainWindow(QMainWindow):
         if len(files) > 0:
           self.DataManager.raw_data = self.DataManager.getAllDataFilePaths()
           self.ui.fileBox.setCurrentIndex(0)
+          self.glWidget.update(index=0)
+          self.glWidget.updateGL()
+          self.glWidget_2.update(index=0)
+          self.glWidget_2.updateGL()
 
     def getRadar(self, index = 0):
         #! get value of radar
@@ -417,7 +426,6 @@ class MainWindow(QMainWindow):
             self.DataManager.mode = mode + "/"
             self.clearPage2Box(files = True)
             self.addItemFile()
-            self.glWidget.resetRadar(DataManager=self.DataManager)
             self.getFile()
         else:
             print(f"{mode} mode is empty")
@@ -510,7 +518,7 @@ class MainWindow(QMainWindow):
 
     def initGL(self):
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
-        self.glWidget = GLWidget(self)        
+        self.glWidget = GLWidget(self, DataManager=self.DataManager)        
         self.glWidget.setSizePolicy(sizePolicy)
         self.ui.scrollArea.setWidget(self.glWidget)
         
@@ -687,6 +695,7 @@ class MainWindow(QMainWindow):
         # self.ui.outputDir.setText(self.DataManager.filePath)
         self.ui.onl_stop.setEnabled(False)
         self.ui.onl_stop.clicked.connect(self.getOnlineStopButton)
+        self.ui.grid_accept_button.clicked.connect(self.getGridInfor)
         self.ui.changeDirData.clicked.connect(self.chooseDir)
         self.ui.actionOpen_Folder.triggered.connect(self.chooseDir)
         self.reset2DTrackParams()
@@ -718,6 +727,7 @@ class MainWindow(QMainWindow):
         self.ui.track_vmin.setText(str(DEFAULT_2D_TRACK_CONFIG['VMIN'])) 
 
     def chooseDir(self):
+      self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
       dataDir = QFileDialog.getExistingDirectory()
       if dataDir is not None and dataDir != "":
         self.DataManager.reconstructFile(dataDir)
@@ -730,6 +740,7 @@ class MainWindow(QMainWindow):
         self.addItemDate()
         self.addItemMode()
         self.addItemFile()
+        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
 
     def getError(self, err):
         """
@@ -809,8 +820,8 @@ class MainWindow(QMainWindow):
         
     def initGL2(self):
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
-        self.glWidget_2 = GLWidget(self)    
-        self.glWidget_2.resetRadar(self.DataManager)    
+        self.glWidget_2 = GLWidget(self, DataManager=self.DataManager)    
+        # self.glWidget_2.resetRadar(self.DataManager)    
         self.glWidget_2.setSizePolicy(sizePolicy)
         self.ui.scrollArea_5.setWidget(self.glWidget_2)
         
@@ -852,26 +863,38 @@ class MainWindow(QMainWindow):
 #  * to here
     def getGridInfor(self):
         # ! get grid accept button  here
-        self.ui.grid_accept_button.isChecked()
+        self.genGridThread = QThread()
+        self.genGrid = GenGridThread(self.DataManager)
+
+        self.genGrid.moveToThread(self.genGridThread)
+        self.genGridThread.started.connect(self.genGrid.run)
+        self.genGrid.doneSignal.connect(lambda: self.ui.grid_accept_button.setEnabled(True))
+        self.genGrid.doneSignal.connect(self.genGridThread.quit)
+        self.genGrid.doneSignal.connect(self.genGrid.deleteLater)
+        self.genGridThread.finished.connect(self.genGridThread.deleteLater)
+
         # !Get grid infor here
         gridInfor = DEFAULT_GRID_CONFIG
         if self.ui.grid_shape_x.text() and self.ui.grid_shape_y.text()  and self.ui.grid_shape_z.text():
-            gridInfor['grid_shape'] = "(" + self.ui.grid_shape_x.text()  + "," + self.ui.grid_shape_y.text()  + ","+ self.ui.grid_shape_z.text()  +")"
+            gridInfor['grid_shape'] = (int(self.ui.grid_shape_x.text()), int(self.ui.grid_shape_y.text()), int(self.ui.grid_shape_z.text()))
         if self.ui.grid_x_lims_1.text() and self.ui.grid_x_lims_2.text() :
-            gridInfor['x_lims'] = "(" + self.ui.grid_x_lims_1.text() +","+ self.ui.grid_x_lims_2.text() + ")"
+            gridInfor['x_lims'] = (int(self.ui.grid_x_lims_1.text()), int(self.ui.grid_x_lims_2.text()))
         if self.ui.grid_y_lims_1.text() and self.ui.grid_y_lims_2.text() :
-            gridInfor['y_lims'] = "(" + self.ui.grid_y_lims_1.text() +","+ self.ui.grid_y_lims_2.text() + ")"
+            gridInfor['y_lims'] = (int(self.ui.grid_y_lims_1.text()), int(self.ui.grid_y_lims_2.text()))
         if self.ui.grid_z_lims_1.text() and self.ui.grid_z_lims_2.text() :
-            gridInfor['z_lims'] = "(" + self.ui.grid_z_lims_1.text() +","+ self.ui.grid_z_lims_2.text() + ")"
+            gridInfor['z_lims'] = (int(self.ui.grid_z_lims_1.text()), int(self.ui.grid_z_lims_2.text()))
         if self.ui.grid_h_factor.text() :
-            gridInfor['h_factor'] = self.ui.grid_h_factor.text()
+            gridInfor['h_factor'] = float(self.ui.grid_h_factor.text())
         if self.ui.grid_nb.text() :
-            gridInfor['nb'] = self.ui.grid_nb.text()
+            gridInfor['nb'] = float(self.ui.grid_nb.text())
         if self.ui.grid_bsp.text():
-            gridInfor['bsp'] = self.ui.grid_bsp.text()
+            gridInfor['bsp'] = float(self.ui.grid_bsp.text())
         if self.ui.grid_min_radius.text() :
-            gridInfor['min_radius'] = self.ui.grid_min_radius.text()
-    
+            gridInfor['min_radius'] = float(self.ui.grid_min_radius.text())
+
+        self.genGrid.params = gridInfor
+        self.genGridThread.start()
+        self.ui.grid_accept_button.setEnabled(True)
         
     @pyqtSlot(str)
     def updatePullDataLog(self, text):

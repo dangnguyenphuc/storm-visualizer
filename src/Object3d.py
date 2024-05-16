@@ -332,7 +332,7 @@ from OpenGL.arrays import vbo
 from Radar import *
 
 class GLWidget(QtOpenGL.QGLWidget):
-    def __init__(self, parent=None, index = 0, threshold = 0, format = None):
+    def __init__(self, parent=None, index = 0, threshold = 0, format = None, DataManager = None):
         self.parent = parent
         if format:
           super().__init__(format, parent)
@@ -358,8 +358,10 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         self.mousePos = [0, 0] 
         self.zoom_center = [0, 0] 
-        
 
+        if DataManager is not None:
+          self.radar.DataManager = DataManager
+        
     def setUpScale(self, val=1.0):
         self.scale = val
 
@@ -606,7 +608,6 @@ class GLWidget(QtOpenGL.QGLWidget):
           self.stormSideLine.append(stormSideLine)
           self.stormSideVBO.append(vbo.VBO(np.reshape(stormSideLine,
                                       (1, -1)).astype(np.float32)))
-
     
     def renderStorm(self):
       if len(self.stormVBO) > 0:
