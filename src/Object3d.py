@@ -334,6 +334,7 @@ from Radar import *
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None, index = 0, threshold = 0, format = None, DataManager = None):
         self.parent = parent
+        self.plotThread = None
         if format:
           super().__init__(format, parent)
         else:
@@ -365,16 +366,22 @@ class GLWidget(QtOpenGL.QGLWidget):
     def setUpScale(self, val=1.0):
         self.scale = val
 
-    def setUpRadar(self, index = 0, filePath: str = DEFAULT_FILE_PATH, radarName: str = DEFAULT_RADAR_NAME, year: str = DEFAULT_YEAR, month: str = DEFAULT_MONTH, day: str = DEFAULT_DATE, mode: str = DEFAULT_MODE):
+    def setUpRadar(
+          self, 
+          index = 0, 
+          filePath: str = DEFAULT_FILE_PATH, 
+          radarName: str = DEFAULT_RADAR_NAME, 
+          year: str = DEFAULT_YEAR, 
+          month: str = DEFAULT_MONTH, 
+          day: str = DEFAULT_DATE, 
+          mode: str = DEFAULT_MODE):
+
         self.radar = Radar(index, filePath, radarName, year, month, day, mode)
 
     def resetRadar(self, DataManager: DataManager, index = 0):
-        # del self.radar
-        # self.radar = Radar(index, filePath, radarName, year, month, day, mode)
         DataManager.raw_data = DataManager.getAllDataFilePaths()
         self.radar.DataManager = DataManager
         self.radar.currentIndex = index
-        # self.radar.setTrackFile()
 
     def setUpThreshold(self, threshold = 0):
         self.threshold = threshold
@@ -625,4 +632,3 @@ class GLWidget(QtOpenGL.QGLWidget):
             gl.glVertexPointer(3, gl.GL_FLOAT, 0, None)
             gl.glDrawArrays(gl.GL_POLYGON, 0, len(self.stormLayer[i][j]))
             self.stormVBO[i][j].unbind()
-

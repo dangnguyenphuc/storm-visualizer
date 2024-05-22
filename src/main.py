@@ -12,7 +12,7 @@ from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
 from Utils import folderEmpty, getHourMinuteSecond
-from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG, DEFAULT_GRID_CONFIG
+from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG, DEFAULT_GRID_CONFIG, DEFAULT_FILE_PATH
 from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
@@ -102,11 +102,6 @@ class MainWindow(QMainWindow):
         self.ui.page_2.showEvent = lambda event: self.page2Connect(event)
         self.ui.page_2.hideEvent = lambda event: self.page2Disconnect(event)
         self.page_2Connected = False
-
-
-        # self.pullDataThread = PullDataWorkerThread(self.DataManager)
-        # self.pullDataThread.update_signal.connect(lambda text: self.ui.onl_log.setText(text))
-        # self.pullDataThread.doneSignal.connect(lambda: self.ui.onl_log.clear())
 
 
     def closeEvent(self, event):
@@ -492,29 +487,29 @@ class MainWindow(QMainWindow):
 
     #write a fuction init 2d view add image to label: ui.view_2d_label
     def init2DView(self): 
-      '''create mode box for user choosing mode'''
-    #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
-      self.ui.chooseSweep.setText("0")
-      self.addPlotBoxMode()
-      self.addPlotModeImage()
+        '''create mode box for user choosing mode'''
+        #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
+        self.ui.chooseSweep.setText("0")
+        self.addPlotBoxMode()
+        self.addPlotModeImage()
 
-      # Gen 1st plots
-      modes = [
-          ("wrl_polar", 0),
-          ("pyart_ppi", 0),
-          ("wrl_ppi", 0), 
-          ("wrl_clutter", 0), 
-          ("wrl_ppi_no_clutter", 0), 
-          ("wrl_attenuation_correction", 0),
-          ("wrl_plot_rain", 0), 
-          ("wrl_plot_scan_strategy", 0),
+        # Gen 1st plots
+        modes = [
+            ("wrl_polar", 0),
+            ("pyart_ppi", 0),
+            ("wrl_ppi", 0), 
+            ("wrl_clutter", 0), 
+            ("wrl_ppi_no_clutter", 0), 
+            ("wrl_attenuation_correction", 0),
+            ("wrl_plot_rain", 0), 
+            ("wrl_plot_scan_strategy", 0),
         ]
 
-      for (mode, sweep) in (modes):
-        self.getPlotMode(mode, sweep)
+        for (mode, sweep) in (modes):
+            self.getPlotMode(mode)
 
-      self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
-      self.ui.view_2d_label.setScaledContents(True)
+        self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
+        self.ui.view_2d_label.setScaledContents(True)
 
     def initGL(self):
         sizePolicy = PyQt5.QtWidgets.QSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding)
@@ -587,11 +582,10 @@ class MainWindow(QMainWindow):
         self.ui.plot_mode_box.addItems(plotMode)
         self.ui.plot_mode_box.setCurrentIndex(0)
         self.ui.plot_mode_box.currentIndexChanged.connect(self.getPlotMode)
+        self.ui.chooseSweep.textChanged.connect(self.getPlotSweep)
 
 
     def addPlotModeImage(self):
-        # pixmap = QPixmap('temp.png')
-        # pixmap = pixmap.scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio)
         self.ui.pyart_ppi.setPixmap(QPixmap('./plot/pyart_ppi.png'))
         self.ui.wrl_polar.setPixmap(QPixmap('./plot/wrl_ppi.png'))
         self.ui.wrl_ppi.setPixmap(QPixmap('./plot/wrl_ppi.png'))
@@ -601,21 +595,34 @@ class MainWindow(QMainWindow):
         self.ui.wrl_plot_rain.setPixmap(QPixmap('./plot/wrl_plot_rain.png'))
         self.ui.wrl_plot_scan_strategy.setPixmap(QPixmap('./plot/wrl_plot_scan_strategy.png'))
 
-    def getPlotMode(self, mode=None, sweep=0):
-      if mode is None or isinstance(mode, int):
-        mode = self.ui.plot_mode_box.currentText()
-      self.glWidget.update(plot_mode = (mode, sweep), flag=False)
-      self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+    def getPlotMode(self, mode=None):
+        if mode is None or isinstance(mode, int):
+            mode = self.ui.plot_mode_box.currentText()
+        self.glWidget.update(plot_mode = (mode, 0), flag=False)
+        self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+
+    def getPlotSweep(self, sweep=None):
+        if sweep is None or sweep == "":
+            return
+        
+        if int(sweep) < self.glWidget.radar.data.nsweeps and int(sweep) >= 0:
+            mode = self.ui.plot_mode_box.currentText()
+            self.glWidget.update(plot_mode = (mode, int(sweep)), flag=False)
+            self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
       
     def addInfor(self):
         self.ui.otherIn4_pro.clear()
         time = getHourMinuteSecond(self.glWidget.radar.data)
         currentTime = f'{time[0]}:{time[1]}:{time[2]}'
         entries = [
-          'This is other information box',
           f'Radar: {self.DataManager.radarName}', 
           f"Altitude: {self.glWidget.radar.data.altitude['data'][0]}",
-          f"Time: {currentTime}"
+          f"Time: {currentTime}",
+          f"nsweeps: {self.glWidget.radar.data.nsweeps}",
+          f"nrays: {self.glWidget.radar.data.nrays}",
+          f"ngates/ray: {self.glWidget.radar.data.ngates}",
+          f"Scan Type: {self.glWidget.radar.data.scan_type}",
+          f"Current Sweep Mode: {self.glWidget.radar.data.sweep_mode['data'][int(self.ui.chooseSweep.text())].decode()}"
         ]
 
         try:
@@ -729,7 +736,7 @@ class MainWindow(QMainWindow):
     def chooseDir(self):
       self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
       dataDir = QFileDialog.getExistingDirectory()
-      if dataDir is not None and dataDir != "":
+      if dataDir is not None and dataDir != "" and os.path.abspath(dataDir) != os.path.abspath(DEFAULT_FILE_PATH):
         self.DataManager.reconstructFile(dataDir)
         self.DataManager.clearAll()
         self.ui.curData.setText(dataDir)
@@ -863,8 +870,9 @@ class MainWindow(QMainWindow):
 #  * to here
     def getGridInfor(self):
         # ! get grid accept button  here
+        self.ui.grid_accept_button.setEnabled(False)
         self.genGridThread = QThread()
-        self.genGrid = GenGridThread(self.DataManager)
+        self.genGrid = GenGridThread(DataManager=self.DataManager)
 
         self.genGrid.moveToThread(self.genGridThread)
         self.genGridThread.started.connect(self.genGrid.run)
