@@ -632,9 +632,9 @@ class MainWindow(QMainWindow):
     def getPlotMode(self, mode=None):
         if mode is None or isinstance(mode, int):
             mode = self.ui.plot_mode_box.currentText()
-        if self.ui.chooseSweep is not None and self.ui.chooseSweep.text() != ""
-        self.glWidget.update(plot_mode = (mode, int(self.ui.chooseSweep.text())), flag=False)
-        self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+        if self.ui.chooseSweep is not None and self.ui.chooseSweep.text() != "":
+            self.glWidget.update(plot_mode = (mode, int(self.ui.chooseSweep.text())), flag=False)
+            self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
 
     def getPlotSweep(self, sweep=None):
         if sweep is None or sweep == "":
