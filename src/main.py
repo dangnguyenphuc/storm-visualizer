@@ -598,7 +598,7 @@ class MainWindow(QMainWindow):
     def getPlotMode(self, mode=None):
         if mode is None or isinstance(mode, int):
             mode = self.ui.plot_mode_box.currentText()
-        self.glWidget.update(plot_mode = (mode, 0), flag=False)
+        self.glWidget.update(plot_mode = (mode, int(self.ui.chooseSweep.text())), flag=False)
         self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
 
     def getPlotSweep(self, sweep=None):
@@ -635,7 +635,15 @@ class MainWindow(QMainWindow):
 
     def addExtraInfor(self):
         self.ui.extraInfo_pro.clear()
-        entries = ['This is extra information box',f'Radar: {self.DataManager.radarName}', 'two', 'three']
+        currentTrack = self.glWidget.radar.getCurrentTracks()
+        if currentTrack is not None:
+            entries = [
+                f"Storm {i.Index}, Center: {str(i.center)}, Center longitude: {i.lon}, Center Latitude: {i.lat}"
+                for i in currentTrack.itertuples()
+            ]
+        
+        else:
+            entries=["None"]
         self.ui.extraInfo_pro.addItems(entries)
 
     def addStormList(self):

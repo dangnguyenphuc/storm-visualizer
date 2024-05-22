@@ -496,6 +496,12 @@ class Radar:
       return scaler.fit_transform(
           combinations
       )[:-1]
+  
+  def getCurrentTracks(self):
+    if self.tracksObj and self.currentIndex in self.tracksObj.tracks.index.levels[0]:
+      return self.tracksObj.tracks.loc[self.currentIndex]
+    else:
+      return None
       
   def get_all_vertices_by_threshold(self, threshold = 0):
       indices = np.where(np.logical_and(np.logical_not(self.currentReflectivity.mask), self.currentReflectivity.data >= threshold))
