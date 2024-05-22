@@ -4,7 +4,7 @@ import datetime
 
 import PyQt5
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QFileDialog, QMessageBox, QLabel
 from PyQt5.QtCore import QFile, QTextStream, Qt, QUrl, QDateTime, QThread, pyqtSlot
 from PyQt5.QtGui import QIntValidator, QPixmap
 
@@ -17,6 +17,7 @@ from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
 from GenGridThread import GenGridThread
+from PlotThread import PlotWorker
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -34,6 +35,17 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.DataManager = DataManager()
+
+        self.plotThreads = {
+            "wrl_polar": None,
+            "pyart_ppi": None,
+            "wrl_ppi": None, 
+            "wrl_clutter": None, 
+            "wrl_ppi_no_clutter": None, 
+            "wrl_attenuation_correction": None,
+            "wrl_plot_rain": None, 
+            "wrl_plot_scan_strategy": None
+        }
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -434,7 +446,11 @@ class MainWindow(QMainWindow):
         if self.glWidget_2:
           self.glWidget_2.update(index=index)
           self.glWidget_2.updateGL()
+
         self.getPlotMode()
+        self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
+        self.ui.view_2d_label.setScaledContents(True)
+        
         
         self.addInfor()
         self.addExtraInfor()
@@ -491,7 +507,6 @@ class MainWindow(QMainWindow):
         #   self.glWidget.radar.plot(mode="wrl_plot_scan_strategy", sweep=1)
         self.ui.chooseSweep.setText("0")
         self.addPlotBoxMode()
-        self.addPlotModeImage()
 
         # Gen 1st plots
         modes = [
@@ -594,10 +609,30 @@ class MainWindow(QMainWindow):
         # self.ui.wrl_attenuation_correction.setPixmap(QPixmap('./plot/wrl_.png').scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio))
         self.ui.wrl_plot_rain.setPixmap(QPixmap('./plot/wrl_plot_rain.png'))
         self.ui.wrl_plot_scan_strategy.setPixmap(QPixmap('./plot/wrl_plot_scan_strategy.png'))
+    
+    def pro_AddPlotImage(self, mode, sweep):
+        plotWorker = PlotWorker()
+        self.plotThreads[mode] = QThread()
+        
+        plotWorker.moveToThread(self.plotThreads[mode])
+        
+        # Connect signals and slots
+        self.plotThreads[mode].started.connect(plotWorker.plot)
+        plotWorker.doneSignal.connect(self.plotThreads[mode].quit)
+        plotWorker.doneSignal.connect(plotWorker.deleteLater)
+        self.plotThreads[mode].finished.connect(self.plotThreads[mode].deleteLater)
+        
+        plotWorker.mode = mode
+        plotWorker.sweep = sweep
+
+        # Start the thread
+        self.plotThreads[mode].start()
+
 
     def getPlotMode(self, mode=None):
         if mode is None or isinstance(mode, int):
             mode = self.ui.plot_mode_box.currentText()
+        if self.ui.chooseSweep is not None and self.ui.chooseSweep.text() != ""
         self.glWidget.update(plot_mode = (mode, int(self.ui.chooseSweep.text())), flag=False)
         self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
 
