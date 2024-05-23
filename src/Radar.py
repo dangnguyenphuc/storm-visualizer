@@ -400,7 +400,7 @@ class Radar:
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths
       elif mode == "wrl_ppi":
-        da_geo.wrl.vis.plot(add_colorbar=True)
+        da_geo.wrl.vis.plot(add_colorbar=True, vmax=70, vmin=20)
         plt.savefig('plot/wrl_ppi.png', bbox_inches='tight', pad_inches=0)
         plt.close()
         del da, da_geo, clutter, pia, data_attcorr, z, R, depths

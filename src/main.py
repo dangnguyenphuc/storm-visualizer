@@ -97,6 +97,7 @@ class MainWindow(QMainWindow):
         mainTimer = PyQt5.QtCore.QTimer(self)
         mainTimer.setInterval(int(TICK))   # period, in milliseconds
         mainTimer.timeout.connect(self.glWidget.updateGL)
+        mainTimer.timeout.connect(self.glWidget_2.updateGL)
         mainTimer.start()
 
         self.switchFrameTimer = PyQt5.QtCore.QTimer(self)
@@ -137,20 +138,23 @@ class MainWindow(QMainWindow):
             event.accept()
 
     def page2Connect(self, event):
-      if not self.page_2Connected:
-        self.ui.threshold.textChanged.connect(self.getThreshold)
-        self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
-        self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
-        # self.ui.timerInput_pro.textChanged.connect(self.getSwichFrameTimerPro)
-        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
-        self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
-        self.ui.modeBox.currentIndexChanged.connect(self.getMode)
-        self.ui.dateBox.currentIndexChanged.connect(self.getDate)
-        self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
-        self.ui.gridCheckBox.stateChanged.connect(self.getGrid)
+        if not self.page_2Connected:
+            self.ui.threshold.textChanged.connect(self.getThreshold)
+            self.ui.timerInput.textChanged.connect(self.getSwichFrameTimer)
+            self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
+            self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+            self.ui.radarBox.currentIndexChanged.connect(self.getRadar)
+            self.ui.modeBox.currentIndexChanged.connect(self.getMode)
+            self.ui.dateBox.currentIndexChanged.connect(self.getDate)
+            self.ui.clutterFilterToggle.stateChanged.connect(self.getClutterFilter)
+            self.ui.gridCheckBox.stateChanged.connect(self.getGrid)
+            self.ui.preFile.clicked.connect(self.goPrevFile)
+            self.ui.nextFile.clicked.connect(self.goNextFile)
+            self.ui.resetView.clicked.connect(self.reset3DView)
+            self.ui.checkBox_scan.clicked.connect(self.getScan3D)
 
-        self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
-        self.page_2Connected = True
+            self.ui.threshold_pro.textChanged.connect(self.getThresholdPro)
+            self.page_2Connected = True
       
     def page2Disconnect(self, event):
       if self.page_2Connected:
@@ -162,6 +166,10 @@ class MainWindow(QMainWindow):
         self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
         self.ui.clutterFilterToggle.stateChanged.disconnect(self.getClutterFilter)
         self.ui.gridCheckBox.stateChanged.disconnect(self.getGrid)
+        self.ui.preFile.clicked.disconnect(self.goPrevFile)
+        self.ui.nextFile.clicked.disconnect(self.goNextFile)
+        self.ui.resetView.clicked.disconnect(self.reset3DView)
+        self.ui.checkBox_scan.clicked.disconnect(self.getScan3D)
 
         self.page_2Connected = False
 
@@ -301,9 +309,6 @@ class MainWindow(QMainWindow):
         self.ui.clutterFilterToggle.setEnabled(False)
         self.ui.gridCheckBox.setEnabled(False)
 
-        # self.ui.slider_3d_x.setDisabled(True)
-        # self.ui.slider_3d_y.setDisabled(True)
-
     def on_view2d_2_toggled(self):
         self.ui.scrollArea.takeWidget()
         self.ui.scrollArea_4.setWidget(self.glWidget)
@@ -324,7 +329,7 @@ class MainWindow(QMainWindow):
         self.ui.stackedWidget_2.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
 
-    def on_other_2_toggled(self, ):
+    def on_other_2_toggled(self):
         self.ui.stackedWidget.setCurrentIndex(1)
         self.ui.stackedWidget_2.setCurrentIndex(2)
         self.ui.labelPage.setText("Pro View")
@@ -443,21 +448,23 @@ class MainWindow(QMainWindow):
         self.glWidget.update(index=index, clutterFilter=self.ui.clutterFilterToggle.isChecked(), isGrid=self.ui.gridCheckBox.isChecked())
         self.glWidget.updateGL()
 
-        if self.glWidget_2:
-          self.glWidget_2.update(index=index)
-          self.glWidget_2.updateGL()
+        if self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 2: 
+            self.glWidget_2.update(index=index)
+            self.glWidget_2.updateGL()
 
-        self.getPlotMode()
-        self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
-        self.ui.view_2d_label.setScaledContents(True)
+            self.addInfor()
+            self.addExtraInfor()
+            self.addStormList()
+            
+            self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
+            self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
+
+        if self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 1:
+            self.getPlotMode()
+            self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
+            self.ui.view_2d_label.setScaledContents(True)
         
-        
-        self.addInfor()
-        self.addExtraInfor()
-        self.addStormList()
-        
-        self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
-        self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
+
 
     def getClutterFilter(self, state):
         if state:
@@ -544,12 +551,6 @@ class MainWindow(QMainWindow):
         self.ui.slider_3d_y.setMaximum(115)
         self.ui.slider_3d_z.setMaximum(115)
 
-        # self.ui.fileBox.currentIndexChanged.connect(self.getFile)
-        self.ui.preFile.clicked.connect(self.goPrevFile)
-        self.ui.nextFile.clicked.connect(self.goNextFile)
-        self.ui.resetView.clicked.connect(self.reset3DView)
-        self.ui.checkBox_scan.clicked.connect(self.getScan3D)
-
     def initProView(self):
 
         self.ui.scrollArea.setWidget(self.glWidget)
@@ -558,8 +559,6 @@ class MainWindow(QMainWindow):
         # 2D 
         source = ['./plot/wrl_plot_scan_strategy.png']
         scanStrategyImage = QPixmap(source[0])
-        # self.ui.label2d_pro.setPixmap(scanStrategyImage)
-        # self.ui.label2d_pro.setScaledContents(True)
 
         self.ui.slider_pro_x.valueChanged.connect(self.updateSliderX)
         self.ui.slider_pro_y.valueChanged.connect(self.updateSliderY)
@@ -578,10 +577,6 @@ class MainWindow(QMainWindow):
         self.addPlotModeImage()
         self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
         self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
-
-        # self.ui.scrollArea_4.setMinimumHeight(int(self.ui.page_3.height() * 0.75))
-        # self.ui.scrollArea_4.setMinimumWidth(int(self.ui.page_3.width() * 0.75))
-        # self.ui.label2d_pro.setMinimumWidth(int(self.ui.page_3.width() * 0.25))
     
     def addPlotBoxMode(self):
         plotMode = [
@@ -713,12 +708,10 @@ class MainWindow(QMainWindow):
     def goPrevFile(self):
         index = max(0, self.ui.fileBox.currentIndex()-1)
         self.ui.fileBox.setCurrentIndex(index)
-        # self.getFile(index=index)
 
     def goNextFile(self):
         index = min(self.ui.fileBox.count() - 1,self.ui.fileBox.currentIndex()+1)
         self.ui.fileBox.setCurrentIndex(index)
-        # self.getFile(index=index)
 
     def updateSliderX(self, val):
         self.glWidget.setRotX(val)
@@ -777,7 +770,7 @@ class MainWindow(QMainWindow):
         self.ui.track_vmin.setText(str(DEFAULT_2D_TRACK_CONFIG['VMIN'])) 
 
     def chooseDir(self):
-      self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
+    #   self.ui.fileBox.currentIndexChanged.disconnect(self.getFile)
       dataDir = QFileDialog.getExistingDirectory()
       if dataDir is not None and dataDir != "" and os.path.abspath(dataDir) != os.path.abspath(DEFAULT_FILE_PATH):
         self.DataManager.reconstructFile(dataDir)
@@ -790,7 +783,7 @@ class MainWindow(QMainWindow):
         self.addItemDate()
         self.addItemMode()
         self.addItemFile()
-        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
+        # self.ui.fileBox.currentIndexChanged.connect(self.getFile)
 
     def getError(self, err):
         """
@@ -887,7 +880,6 @@ class MainWindow(QMainWindow):
         self.ui.slider_pro_y_2.setMaximum(115)
         self.ui.slider_pro_z_2.setMaximum(115)
 
-        self.ui.fileBox.currentIndexChanged.connect(self.getFile)
 
 # * slider for second GLwidget here
     def updateSliderX_Pro_2(self, val):
