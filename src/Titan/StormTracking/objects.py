@@ -172,10 +172,10 @@ def get_object_prop(image1, grid1, field, record, params):
         grid_z.append(this_centroid[0])
         # area.append(obj_index.shape[0] * unit_area)
 
-        rounded = np.round(this_centroid).astype('i')
-        cent_met = np.array([grid1.z['data'][rounded[0]],
-                             grid1.y['data'][rounded[1]],
-                             grid1.x['data'][rounded[2]]])
+        # rounded = np.round(this_centroid).astype('i')
+        cent_met = np.array([grid1.z['data'][this_centroid[0]],
+                             grid1.y['data'][this_centroid[1]],
+                             grid1.x['data'][this_centroid[2]]])
         center.append(cent_met)
 
         projparams = grid1.get_projparams()

@@ -47,7 +47,7 @@ def get_filtered_frame(grid, min_size, thresh):
     # masked = grid
     # masked.data[masked.data == masked.fill_value] = 0
     grid[grid < thresh] = 0
-    labeled_echo = ndimage.label(grid, structure = structure)[0]
+    labeled_echo = ndimage.label(grid)[0]
     frame = clear_small_echoes(labeled_echo, min_size)
     return frame
 
@@ -61,7 +61,7 @@ def clear_small_echoes(label_image, min_size):
 
     for obj in small_objects:
         label_image[label_image == obj] = 0
-    label_image = ndimage.label(label_image, structure = structure)
+    label_image = ndimage.label(label_image)
     return label_image[0]
 
 

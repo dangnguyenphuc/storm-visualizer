@@ -331,6 +331,16 @@ from OpenGL.arrays import vbo
 
 from Radar import *
 
+colors = [
+  (1.0, 0.0, 0.0),  # Red
+  (0.0, 1.0, 0.0),  # Green
+  (1.0, 1.0, 0.0),  # Yellow
+  (0.0, 0.0, 1.0),  # Blue
+  (1.0, 0.0, 1.0),  # Pink
+  (1.0, 0.5, 0.0),  # Orange
+  (1.0, 1.0, 1.0)
+]  
+
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None, index = 0, threshold = 0, format = None, DataManager = None):
         self.parent = parent
@@ -445,14 +455,6 @@ class GLWidget(QtOpenGL.QGLWidget):
         # render tracks
         if self.radar.isGrid and len(self.tracksVBO) > 0:
           self.renderStorm()
-          colors = [
-            (1.0, 0.0, 0.0),  # Red
-            (0.0, 1.0, 0.0),  # Green
-            (1.0, 1.0, 0.0),  # Yellow
-            (0.0, 0.0, 1.0),  # Blue
-            (1.0, 0.0, 1.0),  # Pink
-            (1.0, 0.5, 0.0),   # Orange
-            (1.0, 1.0, 1.0)]  
           for i in range(len(self.tracksVBO)):
             self.tracksVBO[i].bind()
             gl.glEnableClientState(gl.GL_VERTEX_ARRAY)
