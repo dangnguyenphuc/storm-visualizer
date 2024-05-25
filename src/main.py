@@ -17,7 +17,6 @@ from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
 from GenGridThread import GenGridThread
-from PlotThread import PlotWorker
 
 # Set high DPI scaling attributes
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
@@ -452,9 +451,6 @@ class MainWindow(QMainWindow):
             self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
             self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
 
-            
-
-            
 
         if self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 1:
             self.getPlotMode()
