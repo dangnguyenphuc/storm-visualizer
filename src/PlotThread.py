@@ -11,7 +11,5 @@ class PlotWorker(QObject):
         self.sweep = None
       
     def plot(self):
-        if self.mode and self.sweep:
-            self.radar.plot(mode=self.mode, sweep=self.sweep)
-
+        self.radar.plot(mode=self.mode, sweep=self.sweep)
         self.doneSignal.emit()

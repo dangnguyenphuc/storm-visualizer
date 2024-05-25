@@ -56,3 +56,14 @@ DEFAULT_GRID_CONFIG = {
         'bsp':1,
         'min_radius':200,
 }
+
+MODES = [
+    ("wrl_polar", 0),
+    ("pyart_ppi", 0),
+    ("wrl_ppi", 0), 
+    ("wrl_clutter", 0), 
+    ("wrl_ppi_no_clutter", 0), 
+    ("wrl_attenuation_correction", 0),
+    ("wrl_plot_rain", 0), 
+    ("wrl_plot_scan_strategy", 0),
+]

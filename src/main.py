@@ -12,7 +12,7 @@ from Object3d import GLWidget
 from Frontend import Ui_MainWindow
 from Radar import DataManager
 from Utils import folderEmpty, getHourMinuteSecond
-from Config import SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG, DEFAULT_GRID_CONFIG, DEFAULT_FILE_PATH
+from Config import MODES, SECOND, TICK, DEFAULT_2D_TRACK_CONFIG, DEFAULT_PULL_DATA_CONFIG, DEFAULT_GRID_CONFIG, DEFAULT_FILE_PATH
 from messageBox import quitQuestionBox, errorBox
 from PullDataThread import PullDataWorkerThread
 from TrackDataThread import TrackThread
@@ -35,17 +35,6 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.DataManager = DataManager()
-
-        self.plotThreads = {
-            "wrl_polar": None,
-            "pyart_ppi": None,
-            "wrl_ppi": None, 
-            "wrl_clutter": None, 
-            "wrl_ppi_no_clutter": None, 
-            "wrl_attenuation_correction": None,
-            "wrl_plot_rain": None, 
-            "wrl_plot_scan_strategy": None
-        }
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -452,12 +441,20 @@ class MainWindow(QMainWindow):
             self.glWidget_2.update(index=index)
             self.glWidget_2.updateGL()
 
+            self.clearPlotImage()
+            self.getPlotSweep(sweep=self.ui.chooseSweep.text())
+            self.addPlotModeImage()
+
             self.addInfor()
             self.addExtraInfor()
             self.addStormList()
             
             self.ui.lat_pro.setText(f"{self.glWidget.radar.data.longitude['data'][0]:.4f}")
             self.ui.long_pro.setText(f"{self.glWidget.radar.data.latitude['data'][0]:.4f}")
+
+            
+
+            
 
         if self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 1:
             self.getPlotMode()
@@ -515,19 +512,7 @@ class MainWindow(QMainWindow):
         self.ui.chooseSweep.setText("0")
         self.addPlotBoxMode()
 
-        # Gen 1st plots
-        modes = [
-            ("wrl_polar", 0),
-            ("pyart_ppi", 0),
-            ("wrl_ppi", 0), 
-            ("wrl_clutter", 0), 
-            ("wrl_ppi_no_clutter", 0), 
-            ("wrl_attenuation_correction", 0),
-            ("wrl_plot_rain", 0), 
-            ("wrl_plot_scan_strategy", 0),
-        ]
-
-        for (mode, sweep) in (modes):
+        for (mode, sweep) in (MODES):
             self.getPlotMode(mode)
 
         self.ui.view_2d_label.setPixmap(QPixmap('plot/' + self.ui.plot_mode_box.currentText() + '.png'))
@@ -594,34 +579,24 @@ class MainWindow(QMainWindow):
         self.ui.plot_mode_box.currentIndexChanged.connect(self.getPlotMode)
         self.ui.chooseSweep.textChanged.connect(self.getPlotSweep)
 
+    def clearPlotImage(self):
+        self.ui.pyart_ppi.clear()
+        self.ui.wrl_polar.clear()
+        self.ui.wrl_ppi.clear()
+        self.ui.wrl_clutter.clear()
+        self.ui.wrl_ppi_no_clutter.clear()
+        self.ui.wrl_plot_rain.clear()
+        self.ui.wrl_plot_scan_strategy.clear()
 
     def addPlotModeImage(self):
         self.ui.pyart_ppi.setPixmap(QPixmap('./plot/pyart_ppi.png'))
-        self.ui.wrl_polar.setPixmap(QPixmap('./plot/wrl_ppi.png'))
+        self.ui.wrl_polar.setPixmap(QPixmap('./plot/wrl_polar.png'))
         self.ui.wrl_ppi.setPixmap(QPixmap('./plot/wrl_ppi.png'))
         self.ui.wrl_clutter.setPixmap(QPixmap('./plot/wrl_clutter.png'))
         self.ui.wrl_ppi_no_clutter.setPixmap(QPixmap('./plot/wrl_ppi_no_clutter.png'))
         # self.ui.wrl_attenuation_correction.setPixmap(QPixmap('./plot/wrl_.png').scaled(int(self.ui.scrollArea_3.width() *0.5),int(self.ui.scrollArea_3.width() *0.5), Qt.KeepAspectRatio))
         self.ui.wrl_plot_rain.setPixmap(QPixmap('./plot/wrl_plot_rain.png'))
         self.ui.wrl_plot_scan_strategy.setPixmap(QPixmap('./plot/wrl_plot_scan_strategy.png'))
-    
-    def pro_AddPlotImage(self, mode, sweep):
-        plotWorker = PlotWorker()
-        self.plotThreads[mode] = QThread()
-        
-        plotWorker.moveToThread(self.plotThreads[mode])
-        
-        # Connect signals and slots
-        self.plotThreads[mode].started.connect(plotWorker.plot)
-        plotWorker.doneSignal.connect(self.plotThreads[mode].quit)
-        plotWorker.doneSignal.connect(plotWorker.deleteLater)
-        self.plotThreads[mode].finished.connect(self.plotThreads[mode].deleteLater)
-        
-        plotWorker.mode = mode
-        plotWorker.sweep = sweep
-
-        # Start the thread
-        self.plotThreads[mode].start()
 
 
     def getPlotMode(self, mode=None):
@@ -630,15 +605,20 @@ class MainWindow(QMainWindow):
         if self.ui.chooseSweep is not None and self.ui.chooseSweep.text() != "":
             self.glWidget.update(plot_mode = (mode, int(self.ui.chooseSweep.text())), flag=False)
             self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+            
 
     def getPlotSweep(self, sweep=None):
         if sweep is None or sweep == "":
             return
         
         if int(sweep) < self.glWidget.radar.data.nsweeps and int(sweep) >= 0:
-            mode = self.ui.plot_mode_box.currentText()
-            self.glWidget.update(plot_mode = (mode, int(sweep)), flag=False)
-            self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+            if self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 1:
+                mode = self.ui.plot_mode_box.currentText()
+                self.glWidget.update(plot_mode = (mode, int(sweep)), flag=False)
+                self.ui.view_2d_label.setPixmap(QPixmap('plot/' + mode + '.png'))
+            elif self.ui.stackedWidget.currentIndex() == 1 and self.ui.stackedWidget_2.currentIndex() == 2:
+                for (mode, _) in MODES:
+                    self.glWidget.radar.plot(mode, sweep=int(sweep))
       
     def addInfor(self):
         self.ui.otherIn4_pro.clear()
