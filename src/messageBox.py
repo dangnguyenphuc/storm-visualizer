@@ -26,7 +26,6 @@ def errorBox(text):
     msg.setWindowIcon(icon)
     msg.setIcon(QMessageBox.Critical)
     msg.setText(text)
-    msg.styleSheet("Qlabel:{color:red}")
     msg.setWindowTitle("Titan: Something is wrong")
     msg.setStandardButtons(QMessageBox.Ok)
     msg.setDefaultButton(QMessageBox.Ok)

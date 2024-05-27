@@ -1,7 +1,5 @@
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
-from OpenGL.GL.shaders import compileProgram,compileShader
+
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import ListedColormap
@@ -9,6 +7,10 @@ import calendar
 from datetime import datetime
 from Config import TICK
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+from OpenGL.GL.shaders import compileProgram,compileShader
 
 IGNOR_DIR = ["__pycache__", "icon", "style", "src"]
 
@@ -56,22 +58,29 @@ def getYearMonthDate(radar):
 
     return (dt.year, dt.strftime("%m"), dt.strftime("%d"))
 
-def create_shader(vertex_filepath: str, fragment_filepath: str) -> int:
+def getHourMinuteSecond(radar):
+    date_string = radar.time['units'].split(" ")[-1]
+    dt = datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%SZ")
+
+    return (dt.strftime("%H"), dt.strftime("%M"), dt.strftime("%S"))
+
+
+def read_shader(vertex_filepath: str = "shaders/vertex.txt", fragment_filepath: str = "shaders/fragment.txt") -> int:
     with open(vertex_filepath,'r') as f:
         vertex_src = f.readlines()
 
     with open(fragment_filepath,'r') as f:
         fragment_src = f.readlines()
 
-    shader = compileProgram(compileShader(vertex_src, GL_VERTEX_SHADER),
-                            compileShader(fragment_src, GL_FRAGMENT_SHADER))
-
-    return shader
+    return {
+      'vertex': vertex_src,
+      'fragment': fragment_src
+    }
 
 def color(value):
-    normalized_values = (value + 20) / (65 + 20)
+    normalized_values = (value + 0) / (65 + 0)
     colors = np.zeros((len(value), 3))
-    colors[:, 0] = 0.2 + normalized_values # Red channel
+    colors[:, 0] = 0.3 + normalized_values # Red channel
     colors[:, 1] = normalized_values        # Green channel
-    colors[:, 2] = 0.6-normalized_values     # Blue channel
+    colors[:, 2] = 0.8-normalized_values     # Blue channel
     return colors

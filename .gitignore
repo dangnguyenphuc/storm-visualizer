@@ -31,8 +31,17 @@
 *.out
 *.app
 
+<<<<<<< HEAD
 *Data*
 
 *.pyc
 *__pycache__*
 *.DS_Store*
+=======
+*.pyc
+*__pycache__*
+*pysteps_data*
+*.DS_Store*
+*.ipynb
+src/Titan/TrackingData/230601.pkl
+>>>>>>> dev

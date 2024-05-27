@@ -143,4 +143,26 @@
 		border: none;
 	}
 /*= END
+<<<<<<< HEAD
+=======
+  ==================================================== */
+
+  /*= Style for 2d page
+  ==================================================== */
+  #view_2d_label{
+	border: 1px solid #000;
+  }
+	#page_6 {
+		border: none;
+	}
+	#scrollArea_3{
+		border: none;
+		background : #fff;
+	}
+	#scrollAreaWidgetContents {
+		border: none;
+
+	}
+/*= END
+>>>>>>> dev
   ==================================================== */
